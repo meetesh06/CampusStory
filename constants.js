@@ -1,0 +1,6 @@
+const constants = {
+    LOGIN_STATUS: 'login_status',
+    SET_UP_STATUS: 'set_up_status'
+}
+
+export default constants;
