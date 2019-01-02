@@ -45,7 +45,7 @@ class App extends React.Component {
                     <View style={{ flex: 1 }}>
                         {
                             this.state.loading &&
-                            <ActivityIndicator size="small" color="#00ff00" />
+                            <ActivityIndicator size="small" color="#fff" />
                         }
                         {
                             !this.state.loading &&
@@ -53,12 +53,12 @@ class App extends React.Component {
                                 onchange={this.continueNext}
                                 state1={ () => 
                                     <View style={{ backgroundColor: '#fff', alignItems: 'center', marginLeft: 20, marginRight: 20, padding: 15, borderRadius: 10 }}> 
-                                        <Text style={{ fontFamily: 'Roboto-Regular' }}>Continue With Google</Text>
+                                        <Text style={{ fontFamily: 'Roboto-Regular' }}>Let's get started</Text>
                                     </View>
                                 }
                                 state2={ () => 
                                     <View style={{ backgroundColor: '#fff', alignItems: 'center', marginLeft: 20, marginRight: 20, padding: 15, borderRadius: 10 }}> 
-                                        <Text style={{ fontFamily: 'Roboto-Regular' }}>Continue With Google</Text>
+                                        <Text style={{ fontFamily: 'Roboto-Regular' }}>Welcome to Dock</Text>
                                     </View>
                                 }
                             />
