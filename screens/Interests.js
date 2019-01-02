@@ -18,18 +18,6 @@ class Interests extends React.Component {
           }
         };
       }
-    componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
-      }
-    
-      componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
-      }
-    
-      handleBackPress = () => {
-        this.props.navigation.goBack();
-        return true;
-      }
     
     render() {
         return(
