@@ -87,7 +87,7 @@ class Interests extends React.Component {
         formData = new FormData();
         formData.append("dummy", "");
         // axios.post("https://www.mycampusdock.com/users/get-category-list", formData, {
-        axios.post("http://127.0.0.1:65534/users/get-category-list", formData, {
+        axios.post("https://www.mycampusdock.com/users/get-category-list", formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             //   'x-access-token': this.props.auth.user_token
@@ -106,7 +106,7 @@ class Interests extends React.Component {
                 this.setState({ refreshing: false });
           } )
 
-        axios.post("http://127.0.0.1:65534/users/get-college-list", formData, {
+        axios.post("https://www.mycampusdock.com/users/get-college-list", formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             //   'x-access-token': this.props.auth.user_token
