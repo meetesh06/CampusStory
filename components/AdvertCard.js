@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Image } from 'react-native';
 // import AnimatedImageButton from './Button';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image'
+
 
 class AdvertCard extends React.Component {
     state = {
@@ -11,13 +12,12 @@ class AdvertCard extends React.Component {
     render() {
         return(
                 <TouchableOpacity onPress={ () => this.setState({ pressed: !this.state.pressed }) }>
-                    <View style={{ overflow: 'hidden', width: 200, height: 150, backgroundColor: '#c0c0c0', margin: 10, borderRadius: 10, padding: 5 }}>
+                    <View style={{ overflow: 'hidden', width: this.props.width, height: this.props.height, backgroundColor: '#c0c0c0', margin: 10, borderRadius: 10, padding: 5 }}>
                         <FastImage
-                            style={{ opacity: this.state.pressed ? 0.6 : 1, width: 200, height: 150, borderRadius: 10, position: 'absolute' }}
-                            source={{
-                                uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRExW4zgSVFW7BQm8z2CEXLLLNA2sG5ZsfPqw9GixiSEKBnZN9DWA',
-                            }}
+                            style={{ opacity: this.state.pressed ? 0.6 : 1, width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
+                            source={{ uri: this.props.image }}
                             resizeMode={FastImage.resizeMode.cover}
+                            // resizeMode='cover'
                         />
                         {
                             this.state.pressed &&

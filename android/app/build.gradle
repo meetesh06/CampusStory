@@ -141,6 +141,7 @@ android {
 }
 
 dependencies {
+    compile 'com.facebook.fresco:webpsupport:1.10.0'
     compile project(':react-native-fast-image')
     compile project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])

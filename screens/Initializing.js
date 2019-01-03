@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, AsyncStorage, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import AnimatedImageButton from '../components/Button';
-import { Navigation } from 'react-native-navigation'
+// import { Navigation } from 'react-native-navigation'
 import { goToInterestsSelector } from './helpers/Navigation';
 
 import Constants from '../constants';
@@ -39,6 +39,7 @@ class App extends React.Component {
                 <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
                     <View style={{ flex: 2, justifyContent: 'center' }}>
                         <Image source={require('../media/LogoWhite.png')} style={{ width: 150, height: 150, resizeMode: 'contain', alignSelf: 'center' }} />
+                        {/* <Image source={{ uri: "" }} style={{ width: 150, height: 150, resizeMode: 'contain', alignSelf: 'center' }} /> */}
                         <Text style={{ textAlign: 'center', marginTop: 20, color: 'white', fontSize: 35, fontFamily: 'Roboto-Regular' }}> Campus Story </Text>
                         <Text style={{ textAlign: 'center', marginTop: 20, color: 'white', fontSize: 20, fontFamily: 'Roboto-Light' }}> Think. Learn. Inspire.</Text>
                     </View>
