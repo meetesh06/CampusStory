@@ -17,15 +17,34 @@ export const goToInterestsSelector = () => Navigation.setRoot({
 
 export const goHome = () => Navigation.setRoot({
   root: {
-    stack: {
-      id: 'Home Screen',
+    bottomTabs: {
+      id: 'BottomTabsId',
       children: [
         {
           component: {
             name: 'Home Screen',
-          }
-        }
-    ],
+            options: {
+              bottomTab: {
+                fontSize: 12,
+                text: 'Home',
+                // icon: require('./signin.png')
+              }
+            }
+          },
+        },
+        {
+          component: {
+            name: 'Discover Screen',
+            options: {
+              bottomTab: {
+                text: 'Discover',
+                fontSize: 12,
+                // icon: require('./signup.png')
+              }
+            }
+          },
+        },
+      ],
     }
   }
-})
+});
