@@ -3,7 +3,7 @@ import { View, Text, Image, AsyncStorage, ActivityIndicator } from 'react-native
 import LinearGradient from 'react-native-linear-gradient';
 import AnimatedImageButton from '../components/Button';
 // import { Navigation } from 'react-native-navigation'
-import { goToInterestsSelector } from './helpers/Navigation';
+import { goToInterestsSelector, goHome } from './helpers/Navigation';
 
 import Constants from '../constants';
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
@@ -12,8 +12,8 @@ class App extends React.Component {
     async componentDidMount() {
         try {
           const status = await AsyncStorage.getItem(SET_UP_STATUS);
-          if (status) {
-            // console.log('set_up_status: ', status);
+          if (status === "true") {
+            goHome();
           } else {
             this.setState({ loading: false });
           }

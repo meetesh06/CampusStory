@@ -11,7 +11,10 @@ class AdvertCard extends React.Component {
     }
     render() {
         return(
-                <TouchableOpacity onPress={ () => this.setState({ pressed: !this.state.pressed }) }>
+                <TouchableOpacity onPress={ () => {
+                        this.props.onChecked();
+                        this.setState({ pressed: !this.state.pressed }) 
+                    }}>
                     <View style={{ overflow: 'hidden', width: this.props.width, height: this.props.height, backgroundColor: '#c0c0c0', margin: 10, borderRadius: 10, padding: 5 }}>
                         <FastImage
                             style={{ opacity: this.state.pressed ? 0.6 : 1, width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
