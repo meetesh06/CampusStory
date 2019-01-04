@@ -22,6 +22,13 @@ class App extends React.Component {
           this.setState({ loading: false });
         }
     }
+    static options(passProps) {
+		return {
+		  topBar: {
+			visible: false,
+		  }
+		};
+	}
     constructor(props) {
         super(props);
         this.continueNext = this.continueNext.bind(this);

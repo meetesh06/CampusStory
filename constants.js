@@ -3,6 +3,7 @@ const constants = {
     SET_UP_STATUS: 'set_up_status',
     COLLEGE: 'college',
     INTERESTS: 'interests',
+    TOKEN: 'token'
 }
 
 export default constants;

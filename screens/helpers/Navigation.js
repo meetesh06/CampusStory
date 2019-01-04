@@ -15,6 +15,21 @@ export const goToInterestsSelector = () => Navigation.setRoot({
       }
 });
 
+export const goInitializing = () => Navigation.setRoot({
+    root: {
+        stack: {
+          id: 'Initializing Screen',
+          children: [
+            {
+              component: {
+                name: 'Initializing Screen',
+              }
+            }
+        ],
+        }
+      }
+});
+
 export const goHome = () => Navigation.setRoot({
   root: {
     bottomTabs: {
@@ -25,10 +40,13 @@ export const goHome = () => Navigation.setRoot({
             name: 'Home Screen',
             options: {
               bottomTab: {
-                fontSize: 12,
+                fontSize: 10,
+                selectedFontSize: 12,
                 text: 'Home',
-                // icon: require('./signin.png')
+                icon: require('../../media/navigation/home-not.png'),
+                selectedIcon: require('../../media/navigation/home.png')
               }
+              
             }
           },
         },
@@ -38,8 +56,24 @@ export const goHome = () => Navigation.setRoot({
             options: {
               bottomTab: {
                 text: 'Discover',
-                fontSize: 12,
-                // icon: require('./signup.png')
+                fontSize: 10,
+                selectedFontSize: 12,
+                icon: require('../../media/navigation/home-not.png'),
+                selectedIcon: require('../../media/navigation/home.png')
+              }
+            }
+          },
+        },
+        {
+          component: {
+            name: 'Profile Screen',
+            options: {
+              bottomTab: {
+                text: 'Profile',
+                fontSize: 10,
+                selectedFontSize: 12,
+                icon: require('../../media/navigation/home-not.png'),
+                selectedIcon: require('../../media/navigation/home.png')
               }
             }
           },
