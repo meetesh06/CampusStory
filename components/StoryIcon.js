@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 class AdvertCard extends React.Component {
     render() {
         return(
-            <View elevation={5} 
+            <TouchableOpacity elevation={5} 
                 style = {{ 
                     width: this.props.width, 
                     height: this.props.height, 
@@ -69,7 +69,7 @@ class AdvertCard extends React.Component {
                             !this.state.pressed &&
                             <Icon name='radio-button-unchecked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
                         } */}
-            </View>
+            </TouchableOpacity>
         );
     }
 }

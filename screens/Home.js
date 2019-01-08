@@ -1,16 +1,19 @@
 import React from 'react';
-import { ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
+import { TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
 import { goInitializing } from './helpers/Navigation';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import StoryIcon from '../components/StoryIcon';
 import ImageGradient from 'react-native-image-gradient';
+import { Navigation } from 'react-native-navigation'
+
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 import FastImage from 'react-native-fast-image'
 class Home extends React.Component {
     constructor(props) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.handleEventDetail = this.handleEventDetail.bind(this);
         this.handleEventClick = this.handleEventClick.bind(this);
         
     }
@@ -31,6 +34,22 @@ class Home extends React.Component {
         eventsChannels: [],
     }
 
+    handleEventDetail = (id) => {
+        Navigation.push(this.props.componentId, {
+            component: {
+              name: 'Event Detail Screen',
+              passProps: {
+                id
+              },
+              options: {
+                topBar: {
+                    visible: false
+                }
+              }
+            }
+          });
+    }
+
     handleLogout = async () => {
         try {
             await AsyncStorage.removeItem(SET_UP_STATUS);
@@ -42,6 +61,7 @@ class Home extends React.Component {
     }
 
     handleEventClick = (item) => {
+        this.handleEventDetail(item.title);
         console.log(item.image);
     }
     render() {
@@ -65,7 +85,8 @@ class Home extends React.Component {
                 <ScrollView style={{ paddingTop: 10 }}>
 					<FlatList 
 						horizontal={true}
-						showsHorizontalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
 						data={this.state.stories} 
 						renderItem={({item}) => 
                             <StoryIcon pressed={this.handleEventClick} width={100} height={80} item={item} />
@@ -88,14 +109,14 @@ class Home extends React.Component {
                         <Text style={{ marginTop: 10, fontFamily: 'Roboto', color: 'white', fontSize: 25 }}>
                             In the spotlight
                         </Text>
-                        <View >
+                        <TouchableOpacity activeOpacity={0.6}>
                             <FastImage
                                 style={{ width: 150, height: 100, borderRadius: 10, margin: 10 }}
                                 source={{ uri: "https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25" }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
                             {/* <EventCard pressed={this.handleEventClick} width={150} height={100} item={{ image: 'https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25' }} /> */}
-                        </View>
+                        </TouchableOpacity>
                         <View style={{ flex: 1, paddingTop: 5}}>
                             <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 20, color: '#fff' }}>
                                 {this.state.eventsToday[0].title}
@@ -113,7 +134,8 @@ class Home extends React.Component {
 					</Text>
 					<FlatList 
 						horizontal={true}
-						showsHorizontalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
 						data={this.state.eventsToday} 
 						renderItem={({item}) => 
                             <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
@@ -125,7 +147,8 @@ class Home extends React.Component {
 					<FlatList 
 						horizontal={true}
 						showsHorizontalScrollIndicator={false}
-						data={this.state.eventsToday} 
+                        keyExtractor={(item, index) => index+""}
+                        data={this.state.eventsToday} 
 						renderItem={({item}) => 
                             <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
                         } 

@@ -11,6 +11,7 @@ const SET_UP_STATUS = Constants.SET_UP_STATUS;
 class App extends React.Component {
     async componentDidMount() {
         try {
+            // goHome();
           const status = await AsyncStorage.getItem(SET_UP_STATUS);
           if (status === "true") {
             goHome();
@@ -22,13 +23,13 @@ class App extends React.Component {
           this.setState({ loading: false });
         }
     }
-    static options(passProps) {
-		return {
-		  topBar: {
-			visible: false,
-		  }
-		};
-	}
+    // static options(passProps) {
+	// 	return {
+	// 	  topBar: {
+	// 		visible: false,
+	// 	  }
+	// 	};
+	// }
     constructor(props) {
         super(props);
         this.continueNext = this.continueNext.bind(this);

@@ -8,7 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 class EventCard extends React.Component {
     render() {
         return(
-            <View elevation={5} 
+            <TouchableOpacity elevation={5} 
                 style = {{ 
                     overflow: 'hidden',
                     width: this.props.width, 
@@ -72,7 +72,7 @@ class EventCard extends React.Component {
                             !this.state.pressed &&
                             <Icon name='radio-button-unchecked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
                         } */}
-            </View>
+            </TouchableOpacity>
         );
     }
 }

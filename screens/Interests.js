@@ -9,6 +9,7 @@ import Constants from '../constants';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ChannelCard from '../components/ChannelCard';
+import CustomModal from '../components/CustomModal';
 
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 const COLLEGE = Constants.COLLEGE;
@@ -21,15 +22,17 @@ class Interests extends React.Component {
 		this.state = {
 			refreshing: true,
 			college: '',
+			showModal: false,
 			channelList: [
-				{ creator: 'Mr Sangwan', title: 'Wild Cats', image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WILD-CATS-new.jpg", read: false },
-				{ creator: 'Mr Ranjpoot', title: 'Air Falcons', image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/air-falcons-new.jpg", read: true },
-				{ creator: 'Mr Mehta', title: 'Water Sharks', image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WATER-SHARKS-new.jpg", read: false },
-				{ creator: 'Mr Bhalla', title: 'Forest Rhinos', image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/FOREST-RHINOS-new.jpg", read: false },
+				{ creator: 'Mr Sangwan', title: 'Wild Cats', media: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WILD-CATS-new.jpg", read: false },
+				{ creator: 'Mr Ranjpoot', title: 'Air Falcons', media: "https://manavrachna.edu.in/wp-content/uploads/2017/07/air-falcons-new.jpg", read: true },
+				{ creator: 'Mr Mehta', title: 'Water Sharks', media: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WATER-SHARKS-new.jpg", read: false },
+				{ creator: 'Mr Bhalla', title: 'Forest Rhinos', media: "https://manavrachna.edu.in/wp-content/uploads/2017/07/FOREST-RHINOS-new.jpg", read: false },
 		],
-			collegeSelection: { media: "general/college.webp", name: '', location: '' },
+			collegeSelection: { _id: '', media: "general/college.webp", name: '', location: '' },
 			interests: {},
-			categories: [ { image: '', value: '', text: '' }, { image: '', value: '', text: '' }, { image: '', value: '', text: '' } ],
+			// categories: [ { image: '', value: '', text: '' }, { image: '', value: '', text: '' }, { image: '', value: '', text: '' } ],
+			categories: [],
 			colleges: [ { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' } ]
 		}
 		this.handleInterestSelection = this.handleInterestSelection.bind(this);
@@ -45,7 +48,10 @@ class Interests extends React.Component {
 	}
 
 	handleNextScreen = async () => {
-		const { college, interests } = this.state;
+		if(this.state.refreshing || this.state.loading) return;
+		this.setState({ loading: true });
+		const { interests } = this.state;
+		const college = this.state.collegeSelection._id;
 		const updateLocalState = this.updateLocalState;
 		let interestsProcessed = Object.keys(interests).map(function(key) {
 			return key;
@@ -71,11 +77,12 @@ class Interests extends React.Component {
 
 		formData.append(COLLEGE, college);
 		formData.append(INTERESTS, interestsProcessed);
-		formData.append("others", {});
+		formData.append("others", JSON.stringify({}));
 
-		axios.post("http://127.0.0.1:65534/auth/get-general-token", formData, {
+		axios.post("https://www.mycampusdock.com/auth/get-general-token", formData, {
 			headers: {
 			  'Content-Type': 'multipart/form-data',
+			//   'Accept': 'application/json',
 			//   'x-access-token': this.props.auth.user_token
 			}
 		  })
@@ -86,25 +93,33 @@ class Interests extends React.Component {
 						console.log(result);
 						updateLocalState(college, interestsProcessed, result.data);
 					} catch (error) {
+						console.log(error);
 						Alert.alert(
 							"An unknown error occured"
 						)
 					}
 			  } else {
+					console.log("SERVER REPLY ERROR");
 					Alert.alert(
 						"'An unknown error occured',"
 					);
+					this.setState({ loading: false });
 			  }
 			
 		  })
-		  .catch( (err) => Alert.alert(
-			"'An unknown error occured',"
-			));
+		  .catch( (err) => {
+			  	console.log("DOPE ", err);
+			  	Alert.alert(
+					err.toString()
+				)
+				this.setState({ loading: false });
+			})
 
 		
 	}
 
 	handleInterestSelection = (value) => {
+		if(this.state.refreshing) return;
 		let current = {...this.state.interests};
 		if(current.hasOwnProperty(value)) {
 			delete current[value];
@@ -122,14 +137,14 @@ class Interests extends React.Component {
 			title: {
 			  text: 'Select your Interests'
 			},
-			// drawBehind: true,
-			visible: true,
+			drawBehind: true,
+			visible: false,
 		  }
 		};
 	}
 	
 	_onRefresh = () => {
-		this.setState({refreshing: true});
+		this.setState({ refreshing: true, collegeSelection: { _id: '', media: "general/college.webp", name: '', location: '' } });
 		formData = new FormData();
 		formData.append("dummy", "");
 		// axios.post("https://www.mycampusdock.com/users/get-category-list", formData, {
@@ -175,12 +190,13 @@ class Interests extends React.Component {
 	}
 
 	render() {
-		
+		// console.log(this.state.showModal);
 		return(
 			<View style={{ flex: 1 }}>
+				
 				{/* <Text style={{ fontFamily: 'Roboto-Regular', fontSize: 25, marginTop: Platform.OS === 'ios' ? 70 : 10, marginBottom: 10 }}> Select your Interests </Text> */}
 				<ScrollView 
-					style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10, marginBottom: 5 }}
+					style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10 }}
 					refreshControl={
 						<RefreshControl
 						  refreshing={this.state.refreshing}
@@ -189,15 +205,7 @@ class Interests extends React.Component {
 					}
 				>
 
-					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-						Select your interests 
-					</Text>
-					<FlatList 
-						horizontal={true}
-						showsHorizontalScrollIndicator={false}
-						data={this.state.categories} 
-						renderItem={({item}) => <AdvertCard width={200} height={150} onChecked={() => this.handleInterestSelection(item.value)} image={"https://www.mycampusdock.com/"+item.media} /> } 
-					/>
+					
 
 					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10, marginTop: 20 }}> 
 						Select your college
@@ -233,7 +241,12 @@ class Interests extends React.Component {
 							</Text>
 
 						</View>
-						<TouchableOpacity style={{ alignSelf: 'center', marginRight: 5 }}>
+						<TouchableOpacity 
+							onPress={
+								() => this.setState({ showModal: !this.state.showModal })
+							}
+							style={{ alignSelf: 'center', marginRight: 5 }}
+						>
 							<Icon style={{ color: '#505050'}} size={30} name="circle-edit-outline" />
 
 						</TouchableOpacity>
@@ -241,30 +254,40 @@ class Interests extends React.Component {
 					<Text
 						style={{  marginLeft: 15, fontFamily: 'Roboto-Light', marginTop: 15, fontSize: 15 }}
 					>
-						Official Channels
+						Official Content Creators
+					</Text>
+					<FlatList 
+						horizontal={true}
+						style={{ marginBottom: 10 }}
+						showsHorizontalScrollIndicator={false}
+						keyExtractor={ (value, index) => index + "" }
+						data={this.state.channelList} 
+						renderItem={({item}) => {
+							console.log(item);
+							return <FastImage 
+								style={{ width: 120, height: 100, margin: 10, borderRadius: 10}}
+								resizeMode={FastImage.resizeMode.cover}
+								source={{ uri: item.media }}
+							/>;
+						}
+						} 
+					/>
+					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+						Select your interests 
 					</Text>
 					<FlatList 
 						horizontal={true}
 						showsHorizontalScrollIndicator={false}
-						data={this.state.channelList} 
-						renderItem={({item}) => 
-								<ChannelCard pressed={this.handleEventClick} width={250} height={150} item={item} />
-						} 
+						keyExtractor={ (item, index) => index+"" }
+						extraData={this.state.categories}
+						data={this.state.categories} 
+						renderItem={({item}) => <AdvertCard width={200} height={150} onChecked={() => this.handleInterestSelection(item.value)} image={"https://www.mycampusdock.com/"+item.media} /> } 
 					/>
 					{/* <FastImage source={{ uri: this.state.collegeSelection.media }} /> */}
-
-					{/* <FlatList 
-						horizontal={false}
-						// legacyImplementation={true}
-						extraData={this.state.college}
-						showsHorizontalScrollIndicator={false}
-						data={this.state.colleges} 
-						renderItem={({item}) => <AdvertCardText id={item._id} clicked={ (value) => { this.setState({ college: value }); } } sub={item.location} title={item.name} width={200} height={150} image={"https://www.mycampusdock.com/"+item.media} pressed={ this.state.college } /> } 
-					/> */}
 					
-					<LinearGradient style={{ flex: 1, height: 330, margin: 5, borderRadius: 10}} colors={['#FF4A3F', '#FF6A15']}>
+					<LinearGradient style={{ flex: 1, height: 370, margin: 5, borderRadius: 10}} colors={['#FF4A3F', '#FF6A15']}>
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, padding: 15, color: 'white' }}>
-							Thank you for installing Campus Story
+							Thank you for installing Campus Story, this app collects anonymous app usage data to improve user experience and stability of the app
 						</Text>
 						<Image source={require('../media/LogoWhite.png')} style={{ width: 150, height: 150, resizeMode: 'contain', alignSelf: 'center' }} />
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 20, padding: 15, color: 'white' }}>
@@ -276,7 +299,12 @@ class Interests extends React.Component {
 					</LinearGradient>
 					
 				</ScrollView>
-
+				<CustomModal newSelection={ (data) => {
+						this.setState({ showModal: false, collegeSelection: data })
+					}} 
+					data={this.state.colleges} 
+					visible={this.state.showModal}
+				/>
 			</View>
 		);
 	}
