@@ -9,7 +9,6 @@ import Constants from '../constants';
 import firebase from 'react-native-firebase';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
-firebase.messaging().unsubscribeFromTopic("TESTER");
 firebase.messaging().subscribeToTopic("68krj3x28zn1");
 
 firebase.messaging().getToken()
@@ -53,6 +52,7 @@ class App extends React.Component {
         this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
             console.log(message);
         });
+
         try {
         //   const status = await AsyncStorage.getItem(SET_UP_STATUS);
         //   if (status === "true") {
@@ -67,10 +67,10 @@ class App extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        this.notificationDisplayedListener();
-        this.notificationListener();
-    }
+    // componentWillUnmount() {
+    //     this.notificationDisplayedListener();
+    //     this.notificationListener();
+    // }
     constructor(props) {
         super(props);
         this.continueNext = this.continueNext.bind(this);

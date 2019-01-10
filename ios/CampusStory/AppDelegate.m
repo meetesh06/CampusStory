@@ -11,6 +11,8 @@
 #import <React/RCTRootView.h>
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 
+@import Firebase;
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -24,7 +26,7 @@
   #endif
 
   [ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
-  
+  [FIRApp configure];
 //  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
 //                                                      moduleName:@"CampusStory"
 //                                               initialProperties:nil
