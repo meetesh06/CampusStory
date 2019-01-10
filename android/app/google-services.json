@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "7449865696",
+    "firebase_url": "https://mycampusdock-12f5a.firebaseio.com",
+    "project_id": "mycampusdock-12f5a",
+    "storage_bucket": "mycampusdock-12f5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7449865696:android:83e58018449666b2",
+        "android_client_info": {
+          "package_name": "com.campusstory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7449865696-m18v9im2g0b07bk38dbuhasjem1d2lpg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.campusstory",
+            "certificate_hash": "71ab41430e6e299e3de162256846ea5eee3cc8f7"
+          }
+        },
+        {
+          "client_id": "7449865696-tch9hkdlq5q3mu0tnk7dc8cuk7q1v014.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKnc9bvH71_vJ9bP1ElQ8aj02aMnRpazE"
+        },
+        {
+          "current_key": "AIzaSyD1saNJARIFepN8MambOxftW692zpCpLDI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7449865696-tch9hkdlq5q3mu0tnk7dc8cuk7q1v014.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "7449865696-f0gevigpsirhflrihhvvhh1h18st6ujg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycampusdock.dock"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7449865696:android:f6eb7d870a2832cc",
+        "android_client_info": {
+          "package_name": "com.mycampusdock.dock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7449865696-8b5pklakjgf9cr1mh3e5hslj48v12org.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycampusdock.dock",
+            "certificate_hash": "78f647cf31acbe2b27643ed537cd641cb205b5b2"
+          }
+        },
+        {
+          "client_id": "7449865696-tch9hkdlq5q3mu0tnk7dc8cuk7q1v014.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKnc9bvH71_vJ9bP1ElQ8aj02aMnRpazE"
+        },
+        {
+          "current_key": "AIzaSyD1saNJARIFepN8MambOxftW692zpCpLDI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7449865696-tch9hkdlq5q3mu0tnk7dc8cuk7q1v014.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "7449865696-f0gevigpsirhflrihhvvhh1h18st6ujg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycampusdock.dock"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
