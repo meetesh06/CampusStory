@@ -1,35 +1,76 @@
 import React from 'react';
-import { View, Text, Image, AsyncStorage, ActivityIndicator } from 'react-native';
+import { Alert, View, Text, Image, AsyncStorage, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import AnimatedImageButton from '../components/Button';
 // import { Navigation } from 'react-native-navigation'
 import { goToInterestsSelector, goHome } from './helpers/Navigation';
 
 import Constants from '../constants';
+import firebase from 'react-native-firebase';
+import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
+
+firebase.messaging().unsubscribeFromTopic("TESTER");
+firebase.messaging().subscribeToTopic("68krj3x28zn1");
+
+firebase.messaging().getToken()
+  .then(fcmToken => {
+    console.log(fcmToken);
+    if (fcmToken) {
+    } else {
+      // user doesn't have a device token yet
+    } 
+});
+
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 
 class App extends React.Component {
     async componentDidMount() {
+        const notificationOpen: NotificationOpen = await firebase.notifications().getInitialNotification();
+        if (notificationOpen) {
+            // App was opened by a notification
+            // Get the action triggered by the notification being opened
+            const action = notificationOpen.action;
+            // Get information about the notification that was opened
+            const notification: Notification = notificationOpen.notification;
+            console.log(JSON.parse(notification._data.content));
+        }
+        this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
+            // Get the action triggered by the notification being opened
+            const action = notificationOpen.action;
+            // Get information about the notification that was opened
+            const notification: Notification = notificationOpen.notification;
+            
+            console.log(action, notification, notificationOpen);
+        });
+        this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
+            // Process your notification as required
+            console.log(notification);
+        });
+        this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+            // Process your notification as required
+            console.log(notification);
+        });
+        this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
+            console.log(message);
+        });
         try {
-            // goHome();
-          const status = await AsyncStorage.getItem(SET_UP_STATUS);
-          if (status === "true") {
-            goHome();
-          } else {
-            this.setState({ loading: false });
-          }
+        //   const status = await AsyncStorage.getItem(SET_UP_STATUS);
+        //   if (status === "true") {
+        //     goHome();
+        //   } else {
+        //     this.setState({ loading: false });
+        //   }
+        this.setState({ loading: false });
         } catch (err) {
           console.log('error: ', err)
           this.setState({ loading: false });
         }
     }
-    // static options(passProps) {
-	// 	return {
-	// 	  topBar: {
-	// 		visible: false,
-	// 	  }
-	// 	};
-	// }
+
+    componentWillUnmount() {
+        this.notificationDisplayedListener();
+        this.notificationListener();
+    }
     constructor(props) {
         super(props);
         this.continueNext = this.continueNext.bind(this);

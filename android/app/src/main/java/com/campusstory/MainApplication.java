@@ -3,6 +3,7 @@ package com.campusstory;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
@@ -16,6 +17,11 @@ import java.util.List;
 import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
+
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // <-- Add this line
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage; // <-- Add this line
+
 
 import com.BV.LinearGradient.LinearGradientPackage;
 
@@ -44,7 +50,10 @@ public class MainApplication extends NavigationApplication {
             // eg. new VectorIconsPackage()
             new LinearGradientPackage(),
             new FastImageViewPackage(),
-            new VectorIconsPackage()
+            new VectorIconsPackage(),
+            new RNFirebasePackage(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage()
         );
     }
   
