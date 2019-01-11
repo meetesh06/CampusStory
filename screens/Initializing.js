@@ -9,6 +9,7 @@ import Constants from '../constants';
 import firebase from 'react-native-firebase';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
+
 firebase.messaging().subscribeToTopic("68krj3x28zn1");
 
 firebase.messaging().getToken()
