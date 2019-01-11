@@ -52,12 +52,12 @@
 		A0D38CEEFEB84442A1E5104E /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD2DA2F5FAB44BDDB0F07718 /* Zocial.ttf */; };
 		AA42FC8A3505449FA6B57BA6 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C38BB5365FAA4CD39EF0CC74 /* Roboto-Regular.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
-		B064452F21E7C05400994813 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B064452E21E7C05400994813 /* GoogleService-Info.plist */; };
 		B0B2ADE121DBC37700331394 /* libReactNativeNavigation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0B2ADDE21DBC33200331394 /* libReactNativeNavigation.a */; };
 		B0B2AE1F21DBD58400331394 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0B2ADF521DBD55700331394 /* libBVLinearGradient.a */; };
 		B312C08B300D4F6C9D4A5BD5 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7A3F93ACCE39409890C0BFEE /* Octicons.ttf */; };
 		C9383020F7DA4063BB621F07 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 171896AC42A24DE181C0DD34 /* libRNFirebase.a */; };
 		CA2A06A228C84610B9C2F344 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED976ADF828D4BFC98A64592 /* MaterialIcons.ttf */; };
+		CB3DF0B721E8C1EE00682203 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB3DF0B621E8C1EE00682203 /* GoogleService-Info.plist */; };
 		CE5416B2BDE1D0DB1222B722 /* libPods-CampusStory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41D1F38B0D1D32A3A3276253 /* libPods-CampusStory.a */; };
 		D05A15FF06314E10A22ACB48 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 694887EFCF544D48A99997E1 /* Feather.ttf */; };
 		D69D5D39D04D4657B3EBDADD /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 86762695C5E74715A8AC21E3 /* EvilIcons.ttf */; };
@@ -436,7 +436,6 @@
 		8E11433E5B164162B53CC971 /* libFastImage.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libFastImage.a; sourceTree = "<group>"; };
 		ACA7BD3340FD479E8D5ED8F2 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../fonts/Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
-		B064452E21E7C05400994813 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B064456C21E7C49600994813 /* CampusStory.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = CampusStory.entitlements; path = CampusStory/CampusStory.entitlements; sourceTree = "<group>"; };
 		B0B2ADB321DBC33100331394 /* ReactNativeNavigation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeNavigation.xcodeproj; path = "../node_modules/react-native-navigation/lib/ios/ReactNativeNavigation.xcodeproj"; sourceTree = "<group>"; };
 		B0B2ADEF21DBD55600331394 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
@@ -449,6 +448,7 @@
 		C38BB5365FAA4CD39EF0CC74 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		C8E40876043A444F894D6688 /* libRNVectorIcons-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNVectorIcons-tvOS.a"; sourceTree = "<group>"; };
 		C9DC3DDB27B04D2DAA9E63DD /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		CB3DF0B621E8C1EE00682203 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CBFB6A9A638E4AFF8546BAA4 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		D7ADE9A33A2D335A67679FCC /* Pods-CampusStoryTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CampusStoryTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CampusStoryTests/Pods-CampusStoryTests.release.xcconfig"; sourceTree = "<group>"; };
 		E5629D649851F13A6F3A0758 /* libPods-CampusStoryTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CampusStoryTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -601,8 +601,8 @@
 		13B07FAE1A68108700A75B9A /* CampusStory */ = {
 			isa = PBXGroup;
 			children = (
+				CB3DF0B621E8C1EE00682203 /* GoogleService-Info.plist */,
 				B064456C21E7C49600994813 /* CampusStory.entitlements */,
-				B064452E21E7C05400994813 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -1359,7 +1359,7 @@
 				B312C08B300D4F6C9D4A5BD5 /* Octicons.ttf in Resources */,
 				79163C9A23EE445D8D8B5FFB /* SimpleLineIcons.ttf in Resources */,
 				A0D38CEEFEB84442A1E5104E /* Zocial.ttf in Resources */,
-				B064452F21E7C05400994813 /* GoogleService-Info.plist in Resources */,
+				CB3DF0B721E8C1EE00682203 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

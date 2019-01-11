@@ -9,18 +9,6 @@ import Constants from '../constants';
 import firebase from 'react-native-firebase';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
-
-firebase.messaging().subscribeToTopic("68krj3x28zn1");
-
-firebase.messaging().getToken()
-  .then(fcmToken => {
-    console.log(fcmToken);
-    if (fcmToken) {
-    } else {
-      // user doesn't have a device token yet
-    } 
-});
-
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 
 class App extends React.Component {

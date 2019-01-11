@@ -8,7 +8,7 @@ import { goHome } from './helpers/Navigation';
 import Constants from '../constants';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import ChannelCard from '../components/ChannelCard';
+import firebase from 'react-native-firebase';
 import CustomModal from '../components/CustomModal';
 
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
@@ -31,7 +31,6 @@ class Interests extends React.Component {
 		],
 			collegeSelection: { _id: '', media: "general/college.webp", name: '', location: '' },
 			interests: {},
-			// categories: [ { image: '', value: '', text: '' }, { image: '', value: '', text: '' }, { image: '', value: '', text: '' } ],
 			categories: [],
 			colleges: [ { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' } ]
 		}
@@ -56,7 +55,7 @@ class Interests extends React.Component {
 		let interestsProcessed = Object.keys(interests).map(function(key) {
 			return key;
 		});
-		console.log(interestsProcessed, college === "");
+		console.log(interestsProcessed, college, college === "");
 		
 		if( interestsProcessed.length < 2 ) {
 			Alert.alert(
@@ -72,9 +71,6 @@ class Interests extends React.Component {
 		}
 		interestsProcessed = interestsProcessed.join();
 		let formData = new FormData();
-
-		
-
 		formData.append(COLLEGE, college);
 		formData.append(INTERESTS, interestsProcessed);
 		formData.append("others", JSON.stringify({}));
@@ -82,30 +78,29 @@ class Interests extends React.Component {
 		axios.post("https://www.mycampusdock.com/auth/get-general-token", formData, {
 			headers: {
 			  'Content-Type': 'multipart/form-data',
-			//   'Accept': 'application/json',
-			//   'x-access-token': this.props.auth.user_token
 			}
 		  })
 		  .then( (result) => {
 				result = result.data;
-			  if(!result.error) {
-					try {
-						console.log(result);
-						updateLocalState(college, interestsProcessed, result.data);
-					} catch (error) {
-						console.log(error);
+				if(!result.error) {
+						try {
+							console.log(result);
+							this.subsribeFB(interestsProcessed, college, ()=>{
+								updateLocalState(college, interestsProcessed, result.data);
+							});
+						} catch (error) {
+							console.log(error);
+							Alert.alert(
+								"An unknown error occured"
+							)
+						}
+				} else {
+						console.log("SERVER REPLY ERROR");
 						Alert.alert(
-							"An unknown error occured"
-						)
-					}
-			  } else {
-					console.log("SERVER REPLY ERROR");
-					Alert.alert(
-						"'An unknown error occured',"
-					);
-					this.setState({ loading: false });
-			  }
-			
+							"'An unknown error occured',"
+						);
+						this.setState({ loading: false });
+				}
 		  })
 		  .catch( (err) => {
 			  	console.log("DOPE ", err);
@@ -114,8 +109,15 @@ class Interests extends React.Component {
 				)
 				this.setState({ loading: false });
 			})
+	}
 
-		
+	subsribeFB = (array, clg, callback) =>{
+		firebase.messaging().subscribeToTopic("global");
+		for(var i=0; i<array.length; i++){
+			firebase.messaging().subscribeToTopic(array[i]);
+		}
+		firebase.messaging().subscribeToTopic(clg);
+		callback();
 	}
 
 	handleInterestSelection = (value) => {
@@ -146,7 +148,7 @@ class Interests extends React.Component {
 	_onRefresh = () => {
 		this.setState({ refreshing: true, collegeSelection: { _id: '', media: "general/college.webp", name: '', location: '' } });
 		formData = new FormData();
-		formData.append("dummy", "");
+		formData.append("dummy", ""); /* DO NOT DELETE */
 		// axios.post("https://www.mycampusdock.com/users/get-category-list", formData, {
 		axios.post("https://www.mycampusdock.com/users/get-category-list", formData, {
 			headers: {
@@ -205,9 +207,7 @@ class Interests extends React.Component {
 					}
 				>
 
-					
-
-					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10, marginTop: 20 }}> 
+					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop: 20, marginBottom : 10 }}> 
 						Select your college
 					</Text>
 					<View
@@ -219,12 +219,13 @@ class Interests extends React.Component {
 							paddingBottom: 5,
 							paddingLeft: 5,
 							paddingRight: 5,
-							margin: 5,
+							marginLeft : 10, marginRight : 10,
+							marginTop : 5, marginBottom : 5,
 							flexDirection: 'row'
 						}}
 					>
 						<FastImage
-							style={{  width: 100, height: 80, borderRadius: 15 }}
+							style={{  width: 90, height: 75, borderRadius: 15 }}
 							source={{ uri: "https://www.mycampusdock.com/" + this.state.collegeSelection.media }}
 							resizeMode={ FastImage.resizeMode.contain }
 						/>
@@ -235,7 +236,7 @@ class Interests extends React.Component {
 								{this.state.collegeSelection.name}
 							</Text>
 							<Text
-								style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 15 }}
+								style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 14 }}
 							>
 								{this.state.collegeSelection.location}
 							</Text>
@@ -251,9 +252,8 @@ class Interests extends React.Component {
 
 						</TouchableOpacity>
 					</View>
-					<Text
-						style={{  marginLeft: 15, fontFamily: 'Roboto-Light', marginTop: 15, fontSize: 15 }}
-					>
+					{/* <Text
+						style={{  marginLeft: 15, fontFamily: 'Roboto-Light', marginTop: 20, fontSize: 20, textAlign : 'center', marginBottom : 10}}>
 						Official Content Creators
 					</Text>
 					<FlatList 
@@ -271,8 +271,8 @@ class Interests extends React.Component {
 							/>;
 						}
 						} 
-					/>
-					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+					/> */}
+					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop : 20, marginBottom : 10 }}> 
 						Select your interests 
 					</Text>
 					<FlatList 
@@ -285,16 +285,16 @@ class Interests extends React.Component {
 					/>
 					{/* <FastImage source={{ uri: this.state.collegeSelection.media }} /> */}
 					
-					<LinearGradient style={{ flex: 1, height: 370, margin: 5, borderRadius: 10}} colors={['#FF4A3F', '#FF6A15']}>
+					<LinearGradient style={{ flex: 1, height: 370, margin: 10, borderRadius: 10}} colors={['#FF4A3F', '#FF6A15']}>
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, padding: 15, color: 'white' }}>
-							Thank you for installing Campus Story, this app collects anonymous app usage data to improve user experience and stability of the app
+							Thank you for installing Campus Story! {'\n'}This app collects app usage data to improve your user experience and for the stability of the app.
 						</Text>
-						<Image source={require('../media/LogoWhite.png')} style={{ width: 150, height: 150, resizeMode: 'contain', alignSelf: 'center' }} />
+						<Image source={require('../media/LogoWhite.png')} style={{ width: 120, height: 120, resizeMode: 'contain', alignSelf: 'center' }} />
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 20, padding: 15, color: 'white' }}>
 							We hope to be your companion and bring you useful information.
 						</Text>
-						<TouchableOpacity onPress={this.handleNextScreen} style={{  alignSelf: 'center', backgroundColor: 'blue', padding: 10, borderRadius: 5 }}>
-							<Text style={{ color: '#fff', fontSize: 20, fontFamily: 'Roboto' }}> continue </Text>
+						<TouchableOpacity onPress={this.handleNextScreen} style={{  alignSelf: 'center', backgroundColor: '#fff', padding: 10, borderRadius: 5}}>
+							<Text style={{ color: '#000', fontSize: 20, fontFamily: 'Roboto'}}> Continue </Text>
 						</TouchableOpacity>
 					</LinearGradient>
 					
