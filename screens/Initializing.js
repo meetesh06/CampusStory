@@ -43,13 +43,13 @@ class App extends React.Component {
         });
 
         try {
-        //   const status = await AsyncStorage.getItem(SET_UP_STATUS);
-        //   if (status === "true") {
-        //     goHome();
-        //   } else {
-        //     this.setState({ loading: false });
-        //   }
-        this.setState({ loading: false });
+          const status = await AsyncStorage.getItem(SET_UP_STATUS);
+          if (status === "true") {
+            goHome();
+          } else {
+            this.setState({ loading: false });
+          }
+        // this.setState({ loading: false });
         } catch (err) {
           console.log('error: ', err)
           this.setState({ loading: false });

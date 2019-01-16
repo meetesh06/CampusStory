@@ -1,24 +1,161 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
+import { RefreshControl, TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
 import { goInitializing } from './helpers/Navigation';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import StoryIcon from '../components/StoryIcon';
 import ImageGradient from 'react-native-image-gradient';
 import { Navigation } from 'react-native-navigation'
+import axios from 'axios';
+import Realm from '../realm';
 
-const SET_UP_STATUS = Constants.SET_UP_STATUS;
+const TOKEN = Constants.TOKEN;
+
 import FastImage from 'react-native-fast-image'
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.handleLogout = this.handleLogout.bind(this);
+        // this.handleLogout = this.handleLogout.bind(this);
         this.handleEventDetail = this.handleEventDetail.bind(this);
         this.handleEventClick = this.handleEventClick.bind(this);
+        this._updateContent = this._updateContent.bind(this);
+        this.process_realm_obj = this.process_realm_obj.bind(this);
+        this._updateEventList = this._updateEventList.bind(this);
+    }
+
+    componentDidMount() {
+        const process_realm_obj = this.process_realm_obj;
+        Realm.getRealm((realm) => {
+            let Events = realm.objects('Events').sorted('timestamp');
+            process_realm_obj(Events, (result) => {
+                console.log(result);
+                this.setState({ event_list: result.reverse() });
+            });
+        });
+        this._updateContent();
+    }
+    
+    _updateEventList = async (last_updated) => {
+        const process_realm_obj = this.process_realm_obj;
+        axios.post('http://127.0.0.1:65534/events/user/get-event-list', { last_updated }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': await AsyncStorage.getItem(TOKEN)
+            }
+        }).then( response => {
+            console.log(response);
+            if(!response.data.error) {
+                response.data.data.forEach((el)=>{
+                    el.reach = JSON.stringify(el.reach);
+                    el.views = JSON.stringify(el.views);
+                    el.enrollees = JSON.stringify(el.enrollees);
+                    el.name = JSON.stringify(el.name);
+                    el.audience = JSON.stringify(el.audience);
+                    el.media = JSON.stringify(el.media);
+                    el.timestamp = new Date(el.timestamp);
+                    el.date = new Date(el.date);
+                    el.reg_end = new Date(el.reg_end);
+                    el.reg_start = new Date(el.reg_start);
+                });
+                let data = response.data.data;
+                if(data.length === 0) return this.setState({ refreshing: false });
+                
+                Realm.getRealm((realm) => {
+                    realm.write(() => {
+                        let i;
+                        for(i=0;i<data.length;i++) {
+                            try {
+                                realm.create('Events', data[i], true);
+                            } catch(e) {
+                                console.log(e);
+                            }
+                        }
+                    });
+                    let Events = realm.objects('Events').sorted('timestamp');
+                    process_realm_obj(Events, (result) => {
+                        console.log(result);
+                        this.setState({ event_list: result.reverse() });
+                    });
+                });
+            }
+        }).catch( err => console.log(err) 
+        ).finally(() => {
+            this.setState({ refreshing: false })
+        })
+        axios.post('http://127.0.0.1:65534/events/channels/get-activity-list', { last_updated }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': await AsyncStorage.getItem(TOKEN)
+            }
+        }).then( response => {
+            console.log(response);
+            if(!response.data.error) {
+                response.data.data.forEach((el)=>{
+                    el.reach = JSON.stringify(el.reach);
+                    el.views = JSON.stringify(el.views);
+                    el.enrollees = JSON.stringify(el.enrollees);
+                    el.name = JSON.stringify(el.name);
+                    el.audience = JSON.stringify(el.audience);
+                    el.media = JSON.stringify(el.media);
+                    el.timestamp = new Date(el.timestamp);
+                    el.date = new Date(el.date);
+                    el.reg_end = new Date(el.reg_end);
+                    el.reg_start = new Date(el.reg_start);
+                });
+                let data = response.data.data;
+                if(data.length === 0) return this.setState({ refreshing: false });
+                
+                Realm.getRealm((realm) => {
+                    realm.write(() => {
+                        let i;
+                        for(i=0;i<data.length;i++) {
+                            try {
+                                realm.create('Events', data[i], true);
+                            } catch(e) {
+                                console.log(e);
+                            }
+                        }
+                    });
+                    let Events = realm.objects('Events').sorted('timestamp');
+                    process_realm_obj(Events, (result) => {
+                        console.log(result);
+                        this.setState({ event_list: result.reverse() });
+                    });
+                });
+            }
+        }).catch( err => console.log(err) 
+        ).finally(() => {
+            this.setState({ refreshing: false })
+        })
+    }
+
+    _updateContent = async () => {
+        const _updateEventList = this._updateEventList;
+        this.setState({ refreshing: true });
+        let last_updated;
+        Realm.getRealm((realm) => {
+            let EventsOld = realm.objects('Events').sorted('timestamp');
+            try {
+                last_updated = EventsOld[EventsOld.length - 1].timestamp;
+            } catch(e) {
+                last_updated = 'NONE';
+            }
+            _updateEventList(last_updated);
+        });
+
         
     }
 
+    process_realm_obj = (RealmObject, callback) => {
+        var result = Object.keys(RealmObject).map(function(key) {
+          return {...RealmObject[key]};
+        });
+        callback(result);
+    }
+
     state = {
+        event_list: [],
+        refreshing: true,
         stories: [
             { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WILD-CATS-new.jpg", read: false },
             { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/air-falcons-new.jpg", read: true },
@@ -43,22 +180,23 @@ class Home extends React.Component {
               },
               options: {
                 topBar: {
-                    visible: false
+                    // visible: true,
+                    // drawBehind: true
                 }
               }
             }
           });
     }
 
-    handleLogout = async () => {
-        try {
-            await AsyncStorage.removeItem(SET_UP_STATUS);
-            goInitializing();
-            console.log('go initializing');
-        } catch(e) {
-            console.log(e);
-        }
-    }
+    // handleLogout = async () => {
+    //     try {
+    //         await AsyncStorage.removeItem(SET_UP_STATUS);
+    //         goInitializing();
+    //         console.log('go initializing');
+    //     } catch(e) {
+    //         console.log(e);
+    //     }
+    // }
 
     handleEventClick = (item) => {
         this.handleEventDetail(item.title);
@@ -82,8 +220,16 @@ class Home extends React.Component {
                 }}>
                     <Image style={{ margin: 5, alignSelf: 'center', width: 50, height: 50 }} source={require('../media/app-bar/logo.png')}></Image>
                 </View>
-                <ScrollView style={{ paddingTop: 10 }}>
-					<FlatList 
+                <ScrollView 
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.refreshing}
+                          onRefresh={this._updateContent}
+                        />
+                    }
+                    // style={{ paddingTop: 10 }}
+                >
+					{/* <FlatList 
 						horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item, index) => index+""}
@@ -91,7 +237,58 @@ class Home extends React.Component {
 						renderItem={({item}) => 
                             <StoryIcon pressed={this.handleEventClick} width={100} height={80} item={item} />
                         } 
-					/>
+                    /> */}
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: '#f0f0f0',
+                            padding: 10,
+                            margin: 5,
+                            borderRadius: 10,
+                            flexDirection: 'row'
+                            // marginBottom: 10,
+                            // textAlign: 'left'
+                        }}
+                    >
+                        <FastImage 
+                            style={{
+                                width: 150,
+                                // backgroundColor: 'red',
+                                // borderRadius: 10,
+                                // alignItems: 'stretch',
+                                height: 80,
+                            }}
+                            
+                            source={require('../media/app-bar/logo.png')}
+                            resizeMode={FastImage.resizeMode.contain}
+                        />
+                        <View
+                            style={{
+                                flex: 1,
+                                padding: 10,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    textAlign: 'center',
+                                    fontFamily: 'Roboto-Thin'
+                                }}
+                            >
+                                Stories from your subscribed channels will appear here.
+                            </Text>
+                            <Text
+                                style={{
+                                    textAlign: 'center',
+                                    fontFamily: 'Roboto-Light',
+                                    marginTop: 10,
+                                    fontSize: 12,
+                                    color: '#55f'
+                                }}
+                            >
+                                Discover new channels
+                            </Text>
+                        </View>
+                        
+                    </TouchableOpacity>
                     {/* <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
                         <EventCard pressed={this.handleEventClick} width={250} height={200} item={this.state.eventsToday[0]} />
                     </LinearGradient> */}
@@ -136,7 +333,7 @@ class Home extends React.Component {
 						horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item, index) => index+""}
-						data={this.state.eventsToday} 
+						data={this.state.event_list} 
 						renderItem={({item}) => 
                             <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
                         } 
@@ -148,7 +345,7 @@ class Home extends React.Component {
 						horizontal={true}
 						showsHorizontalScrollIndicator={false}
                         keyExtractor={(item, index) => index+""}
-                        data={this.state.eventsToday} 
+                        data={this.state.event_list} 
 						renderItem={({item}) => 
                             <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
                         } 

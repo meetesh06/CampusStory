@@ -3,6 +3,7 @@ package com.campusstory;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.realm.react.RealmReactPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -53,6 +54,7 @@ public class MainApplication extends NavigationApplication {
             new VectorIconsPackage(),
             new RNFirebasePackage(),
             new RNFirebaseMessagingPackage(),
+            new RealmReactPackage(),
             new RNFirebaseNotificationsPackage()
         );
     }

@@ -49,14 +49,14 @@ class EventCard extends React.Component {
                         >
                             <FastImage
                                 style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
-                                source={{ uri: this.props.item.image }}
+                                source={{ uri: "https://mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
                         <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#0b0b0b', '#00000000']}>
                         </LinearGradient>
                         </TouchableOpacity>
                         <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 10, color: '#fff' }}>
-                            {this.props.item.creator}
+                            {this.props.item.college}
                         </Text>
                         <Text style={{ fontFamily: 'Roboto', fontSize: 16, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
                             {this.props.item.title}

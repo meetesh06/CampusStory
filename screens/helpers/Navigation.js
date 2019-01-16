@@ -38,7 +38,7 @@ export const goInitializing = () => Navigation.setRoot({
 
 export const goHome = async () => {
   const homeIcon = await Icon.getImageSource('home', 30);
-  const areaChartIcon = await Icon.getImageSource('linechart', 30);
+  const discoverIcon = await Icon.getImageSource('search1', 30);
   const profileIcon = await Icon.getImageSource('profile', 30);
   return Navigation.setRoot({
     root: {
@@ -80,7 +80,7 @@ export const goHome = async () => {
                   text: 'Discover',
                   fontSize: 10,
                   selectedFontSize: 12,
-                  icon: homeIcon,
+                  icon: discoverIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
                   selectedIconColor: '#555'
@@ -100,7 +100,7 @@ export const goHome = async () => {
                   text: 'Profile',
                   fontSize: 10,
                   selectedFontSize: 12,
-                  icon: homeIcon,
+                  icon: profileIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
                   selectedIconColor: '#555'

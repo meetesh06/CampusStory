@@ -167,7 +167,7 @@ class Interests extends React.Component {
 		  .finally( () => {
 			// if(this.mounted)
 				this.setState({ refreshing: false });
-		  } )``
+		  } )
 
 		// axios.post("https://www.mycampusdock.com/users/get-college-list", formData, {
 		axios.post("https://www.mycampusdock.com/users/get-college-list", formData, {
