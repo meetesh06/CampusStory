@@ -31,6 +31,24 @@ const Events = {
     media: 'string'
   }
 };
+const Channels = {
+  name: 'Channels',
+  primaryKey: '_id',
+  properties: {
+    _id: 'string',
+    priority: 'string',
+    name: 'string',
+    media: 'string',
+    followers: 'string',
+    description: 'string',
+    creator: 'string',
+    channel_already: 'string',
+    category_found: 'string',
+    category: 'string',
+    recommended: 'string',
+    subscribed: 'string'
+  }
+};
 
 const Activity = {
   name: 'Activity',
@@ -59,7 +77,7 @@ const Activity = {
 export default {
   getRealm: (callback) => { 
     if(realmdb === null) {
-      return Realm.open({schema: [Events, Activity], deleteRealmIfMigrationNeeded: true })
+      return Realm.open({schema: [Events, Activity, Channels], deleteRealmIfMigrationNeeded: true })
         .then(realm => {
           realmdb = realm;
           callback(realmdb);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, Text } from 'react-native';
 // import AnimatedImageButton from './Button';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image'
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -11,6 +11,8 @@ class ChannelCard extends React.Component {
         pressed: false
     }
     render() {
+        console.log(this.props.item);
+        console.log(JSON.parse(this.props.item.media)[0]);
         return(
             <View elevation={5} 
                 style = {{ 
@@ -54,30 +56,23 @@ class ChannelCard extends React.Component {
                         >
                             <FastImage
                                 style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
-                                source={{ uri: this.props.item.image }}
+                                source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
-                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#0b0b0b', !this.state.pressed ? '#00000000' : '#000' ]}>
+                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#00000055' ]}>
                         </LinearGradient>
                         </TouchableOpacity>
                         <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 10, color: '#fff' }}>
-                            {this.props.item.creator}
+                            {this.props.item.category}
                         </Text>
                         <Text style={{ fontFamily: 'Roboto', fontSize: 16, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
-                            {this.props.item.title}
+                            {this.props.item.name}
                         </Text>
                         <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 50, color: '#fff' }}>
                             {this.props.item.location}
                         </Text>
+                        <Icon name='playcircleo' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
                         
-                        {
-                            this.state.pressed &&
-                            <Icon name='radio-button-checked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
-                        }
-                        {
-                            !this.state.pressed &&
-                            <Icon name='radio-button-unchecked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
-                        }
             </View>
         );
     }

@@ -82,51 +82,51 @@ class Home extends React.Component {
         ).finally(() => {
             this.setState({ refreshing: false })
         })
-        axios.post('http://127.0.0.1:65534/events/channels/get-activity-list', { last_updated }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': await AsyncStorage.getItem(TOKEN)
-            }
-        }).then( response => {
-            console.log(response);
-            if(!response.data.error) {
-                response.data.data.forEach((el)=>{
-                    el.reach = JSON.stringify(el.reach);
-                    el.views = JSON.stringify(el.views);
-                    el.enrollees = JSON.stringify(el.enrollees);
-                    el.name = JSON.stringify(el.name);
-                    el.audience = JSON.stringify(el.audience);
-                    el.media = JSON.stringify(el.media);
-                    el.timestamp = new Date(el.timestamp);
-                    el.date = new Date(el.date);
-                    el.reg_end = new Date(el.reg_end);
-                    el.reg_start = new Date(el.reg_start);
-                });
-                let data = response.data.data;
-                if(data.length === 0) return this.setState({ refreshing: false });
+        // axios.post('http://127.0.0.1:65534/events/channels/get-activity-list', { last_updated }, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'x-access-token': await AsyncStorage.getItem(TOKEN)
+        //     }
+        // }).then( response => {
+        //     console.log(response);
+        //     if(!response.data.error) {
+        //         response.data.data.forEach((el)=>{
+        //             el.reach = JSON.stringify(el.reach);
+        //             el.views = JSON.stringify(el.views);
+        //             el.enrollees = JSON.stringify(el.enrollees);
+        //             el.name = JSON.stringify(el.name);
+        //             el.audience = JSON.stringify(el.audience);
+        //             el.media = JSON.stringify(el.media);
+        //             el.timestamp = new Date(el.timestamp);
+        //             el.date = new Date(el.date);
+        //             el.reg_end = new Date(el.reg_end);
+        //             el.reg_start = new Date(el.reg_start);
+        //         });
+        //         let data = response.data.data;
+        //         if(data.length === 0) return this.setState({ refreshing: false });
                 
-                Realm.getRealm((realm) => {
-                    realm.write(() => {
-                        let i;
-                        for(i=0;i<data.length;i++) {
-                            try {
-                                realm.create('Events', data[i], true);
-                            } catch(e) {
-                                console.log(e);
-                            }
-                        }
-                    });
-                    let Events = realm.objects('Events').sorted('timestamp');
-                    process_realm_obj(Events, (result) => {
-                        console.log(result);
-                        this.setState({ event_list: result.reverse() });
-                    });
-                });
-            }
-        }).catch( err => console.log(err) 
-        ).finally(() => {
-            this.setState({ refreshing: false })
-        })
+        //         Realm.getRealm((realm) => {
+        //             realm.write(() => {
+        //                 let i;
+        //                 for(i=0;i<data.length;i++) {
+        //                     try {
+        //                         realm.create('Events', data[i], true);
+        //                     } catch(e) {
+        //                         console.log(e);
+        //                     }
+        //                 }
+        //             });
+        //             let Events = realm.objects('Events').sorted('timestamp');
+        //             process_realm_obj(Events, (result) => {
+        //                 console.log(result);
+        //                 this.setState({ event_list: result.reverse() });
+        //             });
+        //         });
+        //     }
+        // }).catch( err => console.log(err) 
+        // ).finally(() => {
+        //     this.setState({ refreshing: false })
+        // })
     }
 
     _updateContent = async () => {
