@@ -8,6 +8,8 @@ import ImageGradient from 'react-native-image-gradient';
 import { Navigation } from 'react-native-navigation'
 import axios from 'axios';
 import Realm from '../realm';
+import firebase from 'react-native-firebase';
+import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
 const TOKEN = Constants.TOKEN;
 
@@ -16,17 +18,41 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         // this.handleLogout = this.handleLogout.bind(this);
-        this.handleEventDetail = this.handleEventDetail.bind(this);
-        this.handleEventClick = this.handleEventClick.bind(this);
+        this.handleEventPress = this.handleEventPress.bind(this);
+        this.handleStoryPress = this.handleStoryPress.bind(this);
         this._updateContent = this._updateContent.bind(this);
         this.process_realm_obj = this.process_realm_obj.bind(this);
         this._updateEventList = this._updateEventList.bind(this);
     }
 
     componentDidMount() {
+        this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
+            // Process your notification as required
+            console.log(notification);
+        });
+        this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+            // Process your notification as required
+            console.log(notification);
+        });
+
         const process_realm_obj = this.process_realm_obj;
         Realm.getRealm((realm) => {
             let Events = realm.objects('Events').sorted('timestamp');
+            let Subs = realm.objects('Firebase').filtered('channel="true"');
+
+            process_realm_obj(Subs, (result) => {
+                console.log(result);
+                let final = [];
+                result.forEach( (value) => {
+                    let current = realm.objects('Channels').filtered(`_id="${value._id}"`);
+                    final.push(current[0]);
+                })
+                process_realm_obj(final, (channels) => {
+                    this.setState({ channels })
+                });
+                // this.setState({ event_list: result.reverse() });
+            });
+            
             process_realm_obj(Events, (result) => {
                 console.log(result);
                 this.setState({ event_list: result.reverse() });
@@ -37,7 +63,8 @@ class Home extends React.Component {
     
     _updateEventList = async (last_updated) => {
         const process_realm_obj = this.process_realm_obj;
-        axios.post('http://127.0.0.1:65534/events/user/get-event-list', { last_updated }, {
+        // axios.post('http://127.0.0.1:65534/events/user/get-event-list', { last_updated }, {
+        axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated }, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
@@ -130,6 +157,7 @@ class Home extends React.Component {
     }
 
     _updateContent = async () => {
+        const process_realm_obj = this.process_realm_obj;
         const _updateEventList = this._updateEventList;
         this.setState({ refreshing: true });
         let last_updated;
@@ -141,6 +169,22 @@ class Home extends React.Component {
                 last_updated = 'NONE';
             }
             _updateEventList(last_updated);
+
+            let Subs = realm.objects('Firebase').filtered('channel="true"');
+
+            process_realm_obj(Subs, (result) => {
+                console.log(result);
+                let final = [];
+                result.forEach( (value) => {
+                    let current = realm.objects('Channels').filtered(`_id="${value._id}"`);
+                    final.push(current[0]);
+                })
+                process_realm_obj(final, (channels) => {
+                    console.log(channels);
+                    this.setState({ channels })
+                });
+                // this.setState({ event_list: result.reverse() });
+            });
         });
 
         
@@ -156,11 +200,8 @@ class Home extends React.Component {
     state = {
         event_list: [],
         refreshing: true,
-        stories: [
-            { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WILD-CATS-new.jpg", read: false },
-            { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/air-falcons-new.jpg", read: true },
-            { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/WATER-SHARKS-new.jpg", read: false },
-            { image: "https://manavrachna.edu.in/wp-content/uploads/2017/07/FOREST-RHINOS-new.jpg", read: false },
+        channels: [
+
         ],
         eventsToday: [
             { creator: 'Wild Cats', location: 'Manav Rachna', title: 'Music Festival 2018', image: "https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25" },
@@ -171,36 +212,43 @@ class Home extends React.Component {
         eventsChannels: [],
     }
 
-    handleEventDetail = (id) => {
+    handleEventPress = (item) => {
         Navigation.push(this.props.componentId, {
             component: {
               name: 'Event Detail Screen',
               passProps: {
-                id
+                id: item.title
               },
               options: {
                 topBar: {
-                    // visible: true,
-                    // drawBehind: true
+                    visible: true,
+                    drawBehind: false
+                },
+                bottomTabs: {
+                    visible: false,
+                    drawBehind: true,
+                    animate: true
                 }
               }
             }
           });
+        
     }
-
-    // handleLogout = async () => {
-    //     try {
-    //         await AsyncStorage.removeItem(SET_UP_STATUS);
-    //         goInitializing();
-    //         console.log('go initializing');
-    //     } catch(e) {
-    //         console.log(e);
-    //     }
-    // }
-
-    handleEventClick = (item) => {
-        this.handleEventDetail(item.title);
-        console.log(item.image);
+    
+    handleStoryPress = (item) => {
+        Navigation.showOverlay({
+            component: {
+              name: 'Story Screen',
+              passProps: {
+                  _id: item._id
+              },
+              options: {
+                overlay: {
+                  interceptTouchOutside: true
+                }
+              }
+            }
+        });
     }
     render() {
         return(
@@ -229,66 +277,75 @@ class Home extends React.Component {
                     }
                     // style={{ paddingTop: 10 }}
                 >
-					{/* <FlatList 
-						horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index+""}
-						data={this.state.stories} 
-						renderItem={({item}) => 
-                            <StoryIcon pressed={this.handleEventClick} width={100} height={80} item={item} />
-                        } 
-                    /> */}
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: '#f0f0f0',
-                            padding: 10,
-                            margin: 5,
-                            borderRadius: 10,
-                            flexDirection: 'row'
-                            // marginBottom: 10,
-                            // textAlign: 'left'
-                        }}
-                    >
-                        <FastImage 
-                            style={{
-                                width: 150,
-                                // backgroundColor: 'red',
-                                // borderRadius: 10,
-                                // alignItems: 'stretch',
-                                height: 80,
-                            }}
-                            
-                            source={require('../media/app-bar/logo.png')}
-                            resizeMode={FastImage.resizeMode.contain}
+					{
+                        this.state.channels.length !== 0 &&
+                        <FlatList 
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={(item, index) => index+""}
+                            data={this.state.channels} 
+                            extraData={this.state.channels}
+                            renderItem={({item}) => 
+                                <StoryIcon onPress={this.handleStoryPress} width={100} height={80} item={item} />
+                            } 
                         />
-                        <View
+                    }
+
+                    {
+                        this.state.channels.length === 0 &&
+
+                        <TouchableOpacity
                             style={{
-                                flex: 1,
+                                backgroundColor: '#e0e0e0',
                                 padding: 10,
+                                margin: 5,
+                                borderRadius: 10,
+                                flexDirection: 'row'
+                                // marginBottom: 10,
+                                // textAlign: 'left'
                             }}
                         >
-                            <Text
+                            <FastImage 
                                 style={{
-                                    textAlign: 'center',
-                                    fontFamily: 'Roboto-Thin'
+                                    width: 150,
+                                    // backgroundColor: 'red',
+                                    // borderRadius: 10,
+                                    // alignItems: 'stretch',
+                                    height: 80,
+                                }}
+                                
+                                source={require('../media/app-bar/logo.png')}
+                                resizeMode={FastImage.resizeMode.contain}
+                            />
+                            <View
+                                style={{
+                                    flex: 1,
+                                    padding: 10,
                                 }}
                             >
-                                Stories from your subscribed channels will appear here.
-                            </Text>
-                            <Text
-                                style={{
-                                    textAlign: 'center',
-                                    fontFamily: 'Roboto-Light',
-                                    marginTop: 10,
-                                    fontSize: 12,
-                                    color: '#55f'
-                                }}
-                            >
-                                Discover new channels
-                            </Text>
-                        </View>
-                        
-                    </TouchableOpacity>
+                                <Text
+                                    style={{
+                                        textAlign: 'center',
+                                        fontFamily: 'Roboto-Thin'
+                                    }}
+                                >
+                                    Stories from your subscribed channels will appear here.
+                                </Text>
+                                <Text
+                                    style={{
+                                        textAlign: 'center',
+                                        fontFamily: 'Roboto-Light',
+                                        marginTop: 10,
+                                        fontSize: 12,
+                                        color: '#55f'
+                                    }}
+                                >
+                                    Discover new channels
+                                </Text>
+                            </View>
+                            
+                        </TouchableOpacity>
+                    }
                     {/* <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
                         <EventCard pressed={this.handleEventClick} width={250} height={200} item={this.state.eventsToday[0]} />
                     </LinearGradient> */}
@@ -335,7 +392,7 @@ class Home extends React.Component {
                         keyExtractor={(item, index) => index+""}
 						data={this.state.event_list} 
 						renderItem={({item}) => 
-                            <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
+                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
                         } 
 					/>
                     <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
@@ -347,7 +404,7 @@ class Home extends React.Component {
                         keyExtractor={(item, index) => index+""}
                         data={this.state.event_list} 
 						renderItem={({item}) => 
-                            <EventCard pressed={this.handleEventClick} width={200} height={150} item={item} />
+                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
                         } 
 					/>
                     

@@ -9,14 +9,13 @@ class CategoryCard extends React.Component {
     render() {
         return(
                 <TouchableOpacity onPress={ () => {
-                        this.props.onChecked();
+                        this.props.onPress();
                     }}>
-                    <View style={{ overflow: 'hidden', width: this.props.width, height: this.props.height, backgroundColor: '#c0c0c0', margin: 10, borderRadius: 10, padding: 5 }}>
+                    <View style={{ overflow: 'hidden', width: this.props.width, height: this.props.height, margin: 10, borderRadius: 10, padding: 5 }}>
                         <FastImage
                             style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
                             source={{ uri: this.props.image }}
                             resizeMode={FastImage.resizeMode.cover}
-                            // resizeMode='cover'
                         />
                         
                     </View>

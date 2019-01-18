@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import firebase from 'react-native-firebase';
 import CustomModal from '../components/CustomModal';
+import Realm from '../realm';
 
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 const COLLEGE = Constants.COLLEGE;
@@ -55,6 +56,7 @@ class Interests extends React.Component {
 		let interestsProcessed = Object.keys(interests).map(function(key) {
 			return key;
 		});
+		let temp = [...interestsProcessed];
 		console.log(interestsProcessed, college, college === "");
 		
 		if( interestsProcessed.length < 2 ) {
@@ -85,7 +87,7 @@ class Interests extends React.Component {
 				if(!result.error) {
 						try {
 							console.log(result);
-							this.subsribeFB(interestsProcessed, college, ()=>{
+							this.subsribeFB(temp, college, ()=>{
 								updateLocalState(college, interestsProcessed, result.data);
 							});
 						} catch (error) {
@@ -112,11 +114,25 @@ class Interests extends React.Component {
 	}
 
 	subsribeFB = (array, clg, callback) =>{
-		firebase.messaging().subscribeToTopic("global");
-		for(var i=0; i<array.length; i++){
-			firebase.messaging().subscribeToTopic(array[i]);
-		}
-		firebase.messaging().subscribeToTopic(clg);
+		Realm.getRealm((realm) => {
+            realm.write(() => {
+                if(!this.state.notify) {
+                    try {
+                        realm.create('Firebase', { _id: "global", notify: "true", channel: "false" }, true);
+                        firebase.messaging().subscribeToTopic("global");
+                        for(var i=0; i<array.length; i++){
+							realm.create('Firebase', { _id: array[i], notify: "true", channel: "false" }, true);
+							firebase.messaging().subscribeToTopic(array[i]);
+						}
+						realm.create('Firebase', { _id: clg, notify: "true", channel: "false" }, true);
+						firebase.messaging().subscribeToTopic(clg);
+                    } catch(e) {
+                        console.log(e);
+                    }
+				}
+			});
+		});
+		
 		callback();
 	}
 

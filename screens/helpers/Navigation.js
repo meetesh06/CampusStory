@@ -73,24 +73,32 @@ export const goHome = async () => {
             }
           },
           {
-            component: {
-              name: 'Discover Screen',
+            stack: {
+              id: "Discover Stack",
               options: {
+                topBar: {
+                  visible: false,
+                  drawBehind: true
+                  
+                },
                 bottomTab: {
-                  text: 'Discover',
                   fontSize: 10,
                   selectedFontSize: 12,
+                  text: 'Discover',
                   icon: discoverIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
                   selectedIconColor: '#555'
-                },
-                topBar: {
-                  visible: false,
-                  drawBehind: true
                 }
-              }
-            },
+              },
+              children: [
+                {
+                  component: {
+                    name: 'Discover Screen'
+                  }
+                }
+              ]
+            }
           },
           {
             component: {

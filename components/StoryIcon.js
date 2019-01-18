@@ -8,8 +8,11 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 class AdvertCard extends React.Component {
     render() {
+        console.log(this.props.item);
         return(
-            <TouchableOpacity elevation={5} 
+            <TouchableOpacity 
+                onPress={() => this.props.onPress(this.props.item)}
+                elevation={5} 
                 style = {{ 
                     width: this.props.width, 
                     height: this.props.height, 
@@ -41,16 +44,11 @@ class AdvertCard extends React.Component {
                     },
                 }}
             > */}
-                        <TouchableOpacity 
-                            activeOpacity={0.6}
-                            onPress={ () => {
-                                this.props.pressed(this.props.item);
-                            }}
-                        >
+
                             <View style={{ justifyContent: 'center', width: this.props.width, height: this.props.height, borderRadius: 100, position: 'absolute' }}>
                                 <FastImage
                                     style={{ width: this.props.width, height: this.props.height, borderRadius: 10 }}
-                                    source={{ uri: this.props.item.image }}
+                                    source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                                     resizeMode={FastImage.resizeMode.cover}
                                 />
                             </View>
@@ -60,7 +58,6 @@ class AdvertCard extends React.Component {
                             
                             <Icon size={20} style={{ position: 'absolute', right: 5, top: 5, color: this.props.item.read ? "#909090" : '#fff' }} name="playcircleo" />
                             
-                        </TouchableOpacity>
                         {/* {
                             this.state.pressed &&
                             <Icon name='radio-button-checked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>

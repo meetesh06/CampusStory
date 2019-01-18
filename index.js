@@ -6,6 +6,8 @@ import Home from './screens/Home';
 import Discover from './screens/Discover';
 import Profile from './screens/Profile';
 import EventDetail from './screens/EventDetail';
+import ChannelDetailScreen from './screens/ChannelDetailScreen';
+import StoryScreen from './screens/StoryScreen';
 
 Navigation.registerComponent(`Initializing Screen`, () => Initializing);
 Navigation.registerComponent(`Interests Selection Screen`, () => Interests);
@@ -13,6 +15,8 @@ Navigation.registerComponent(`Home Screen`, () => Home);
 Navigation.registerComponent(`Discover Screen`, () => Discover);
 Navigation.registerComponent(`Profile Screen`, () => Profile);
 Navigation.registerComponent(`Event Detail Screen`, () => EventDetail);
+Navigation.registerComponent(`Channel Detail Screen`, () => ChannelDetailScreen);
+Navigation.registerComponent(`Story Screen`, () => StoryScreen);
 
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({

@@ -46,9 +46,20 @@ const Channels = {
     category_found: 'string',
     category: 'string',
     recommended: 'string',
-    subscribed: 'string'
+    subscribed: 'string',
+    college: 'string'
   }
 };
+
+const Firebase = {
+  name: 'Firebase',
+  primaryKey: '_id',
+  properties: {
+    _id:  'string',
+    notify: 'string',
+    channel: 'string'
+  }
+}
 
 const Activity = {
   name: 'Activity',
@@ -77,7 +88,7 @@ const Activity = {
 export default {
   getRealm: (callback) => { 
     if(realmdb === null) {
-      return Realm.open({schema: [Events, Activity, Channels], deleteRealmIfMigrationNeeded: true })
+      return Realm.open({schema: [Firebase, Events, Activity, Channels], deleteRealmIfMigrationNeeded: true })
         .then(realm => {
           realmdb = realm;
           callback(realmdb);

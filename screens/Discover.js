@@ -6,6 +6,7 @@ import axios from 'axios';
 import Realm from '../realm';
 import ChannelCard from '../components/ChannelCard';
 import CategoryCard from '../components/CategoryCard';
+import { Navigation } from 'react-native-navigation';
 
 const TOKEN = Constants.TOKEN;
 
@@ -61,7 +62,8 @@ class Home extends React.Component {
         formData.append('count', 15);
         let error = false;
         // wait until done
-        await axios.post('http://127.0.0.1:65534/channels/top', formData, {
+        // await axios.post('http://127.0.0.1:65534/channels/top', formData, {
+        await axios.post('https://www.mycampusdock.com/channels/top', formData, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token
@@ -125,9 +127,28 @@ class Home extends React.Component {
         // let last_updated;
     }
 
-    handleChannelClick = (item) => {
-        // this.handleEventDetail(item.title);
-        console.log(item);
+    handleChannelClick = (id, name) => {
+        Navigation.push(this.props.componentId, {
+            component: {
+              name: 'Channel Detail Screen',
+              passProps: {
+                id
+              },
+              options: {
+                bottomTabs: {
+                    animate: true,
+                    drawBehind: true,
+                    visible: false
+                },
+                topBar: {
+                    title: {
+                        text: name
+                    },
+                    visible: true
+                }
+              }
+            }
+          });
     }
 
     handleUpdateData = (category) => {
@@ -136,10 +157,10 @@ class Home extends React.Component {
         const process_realm_obj = this.process_realm_obj;
         const _updateRecommendedList = this._updateRecommendedList;
         Realm.getRealm((realm) => {
-            let allBooks = realm.objects('Channels');
-            realm.write(() => {
-                realm.delete(allBooks); // Deletes all books
-            });
+            // let allBooks = realm.objects('Channels');
+            // realm.write(() => {
+            //     realm.delete(allBooks); // Deletes all books
+            // });
 
             let elements_recommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);
             
@@ -199,7 +220,7 @@ class Home extends React.Component {
                             extraData={this.state.categorySelected}
                             data={this.state.categories} 
                             renderItem={({item}) => 
-                                <CategoryCard width={100} height={100} onChecked={() => this.handleUpdateData(item.value)} image={"https://www.mycampusdock.com/"+item.media} /> 
+                                <CategoryCard width={100} height={100} onPress={() => this.handleUpdateData(item.value)} image={"https://www.mycampusdock.com/"+item.alt} /> 
                             } 
                         />
 
@@ -222,7 +243,17 @@ class Home extends React.Component {
                         }
                         {
                             !this.state.loading &&
-                            <Text style={{ flex: 1, marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                            <Text 
+                                style={{ 
+                                    flex: 1, 
+                                    marginTop: 10, 
+                                    textAlign: 'center', 
+                                    fontFamily: 'Roboto', 
+                                    fontSize: 25, 
+                                    marginLeft: 10,
+                                    textTransform: 'capitalize'
+                                }}
+                            > 
                                 {this.state.categorySelected}
                             </Text>
                         }
@@ -236,7 +267,7 @@ class Home extends React.Component {
                             keyExtractor={(item, index) => index+""}
                             data={this.state.channel_list}
                             renderItem={({item}) => 
-                                <ChannelCard pressed={this.handleChannelClick} width={200} height={150} item={item} />
+                                <ChannelCard onPress={this.handleChannelClick} width={200} height={150} item={item} />
                             } 
                         />
 
