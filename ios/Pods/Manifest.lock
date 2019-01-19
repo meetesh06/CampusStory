@@ -1,6 +1,7 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.5)
+  - DVAssetLoaderDelegate (0.3.2)
   - Firebase/Core (5.15.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.4.0)
@@ -99,6 +100,13 @@ PODS:
     - React
     - SDWebImage/Core
     - SDWebImage/GIF
+  - react-native-video/Video (4.3.1):
+    - React
+  - react-native-video/VideoCaching (4.3.1):
+    - DVAssetLoaderDelegate (~> 0.3.1)
+    - React
+    - react-native-video/Video
+    - SPTPersistentCache (~> 1.1.0)
   - React/Core (0.57.8):
     - yoga (= 0.57.8.React)
   - React/CxxBridge (0.57.8):
@@ -139,6 +147,7 @@ PODS:
   - SDWebImage/WebP (4.4.3):
     - libwebp (~> 0.5)
     - SDWebImage/Core
+  - SPTPersistentCache (1.1.0)
   - yoga (0.57.8.React)
 
 DEPENDENCIES:
@@ -146,6 +155,7 @@ DEPENDENCIES:
   - Firebase/Messaging (~> 5.15.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
+  - react-native-video/VideoCaching (from `../node_modules/react-native-video/react-native-video.podspec`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
@@ -160,6 +170,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - DoubleConversion
+    - DVAssetLoaderDelegate
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -174,6 +185,7 @@ SPEC REPOS:
     - nanopb
     - Protobuf
     - SDWebImage
+    - SPTPersistentCache
 
 EXTERNAL SOURCES:
   Folly:
@@ -182,12 +194,15 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   react-native-fast-image:
     :path: "../node_modules/react-native-fast-image"
+  react-native-video:
+    :path: "../node_modules/react-native-video/react-native-video.podspec"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  DVAssetLoaderDelegate: 38a24530292bf77900fdfdf635434f7f9b49486d
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAnalyticsInterop: e5f21be9af6548372e2f0815834ff909bff395a2
@@ -204,9 +219,11 @@ SPEC CHECKSUMS:
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fast-image: cba3d9bf9c2cf8ddb643d887a686c53a5dd90a2c
+  react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
+  SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 80ba9071defad1b076a361e52432d52fb2042520
+PODFILE CHECKSUM: 2cc2651ed4f6729b8a80ed65f047ddaf04d71a1b
 
 COCOAPODS: 1.5.3
