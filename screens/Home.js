@@ -279,14 +279,15 @@ class Home extends React.Component {
                 >
 					{
                         this.state.channels.length !== 0 &&
-                        <FlatList 
+                        
+                       <FlatList 
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
                             keyExtractor={(item, index) => index+""}
-                            data={this.state.channels} 
+                            data={this.state.channels}
                             extraData={this.state.channels}
                             renderItem={({item}) => 
-                                <StoryIcon onPress={this.handleStoryPress} width={100} height={80} item={item} />
+                                <StoryIcon onPress={this.handleStoryPress} width={96} height={64} item={item} />
                             } 
                         />
                     }
@@ -396,7 +397,20 @@ class Home extends React.Component {
                         } 
 					/>
                     <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-						Some other things 
+						From Music
+					</Text>
+					<FlatList 
+						horizontal={true}
+						showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
+                        data={this.state.event_list} 
+						renderItem={({item}) => 
+                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
+                        } 
+					/>
+
+<Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+						{'From Art & Craft'}
 					</Text>
 					<FlatList 
 						horizontal={true}

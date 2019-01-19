@@ -39,7 +39,7 @@ export const goInitializing = () => Navigation.setRoot({
 export const goHome = async () => {
   const homeIcon = await Icon.getImageSource('home', 30);
   const discoverIcon = await Icon.getImageSource('search1', 30);
-  const profileIcon = await Icon.getImageSource('profile', 30);
+  const profileIcon = await Icon.getImageSource('user', 30);
   return Navigation.setRoot({
     root: {
       bottomTabs: {

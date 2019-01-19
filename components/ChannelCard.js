@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, Text } from 'react-native';
-// import AnimatedImageButton from './Button';
 import Icon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image'
 import LinearGradient from 'react-native-linear-gradient';
@@ -32,7 +31,7 @@ class ChannelCard extends React.Component {
                             source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                             resizeMode={FastImage.resizeMode.cover}
                         />
-                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#00000055' ]}>
+                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.7, flex: 1 }} colors={['#rgb(20, 20, 20)', '#rgb(40, 40, 40)' ]}>
                         </LinearGradient>
                         
                         <Text style={{ fontFamily: 'Roboto-Light', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 10, color: '#fff' }}>
@@ -41,7 +40,7 @@ class ChannelCard extends React.Component {
                         <Text style={{ fontFamily: 'Roboto', fontSize: 16, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
                             {this.props.item.name}
                         </Text>
-                        <Icon name='playcircleo' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
+                        {/* <Icon name='playcircleo' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/> */}
                         
             </TouchableOpacity>
         );

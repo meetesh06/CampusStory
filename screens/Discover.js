@@ -1,12 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, RefreshControl, ScrollView, View, Text, Platform, Image, FlatList } from 'react-native';
-// import jwt_decode from 'jwt-decode';
+import { ActivityIndicator, AsyncStorage, TextInput, TouchableOpacity, RefreshControl, ScrollView, View, Text, Platform, Image, FlatList } from 'react-native';
 import Constants from '../constants';
 import axios from 'axios';
 import Realm from '../realm';
 import ChannelCard from '../components/ChannelCard';
 import CategoryCard from '../components/CategoryCard';
 import { Navigation } from 'react-native-navigation';
+import IconEvil from 'react-native-vector-icons/EvilIcons';
 
 const TOKEN = Constants.TOKEN;
 
@@ -61,8 +61,6 @@ class Home extends React.Component {
         formData.append('channels_list', JSON.stringify(channels_list));
         formData.append('count', 15);
         let error = false;
-        // wait until done
-        // await axios.post('http://127.0.0.1:65534/channels/top', formData, {
         await axios.post('https://www.mycampusdock.com/channels/top', formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -124,7 +122,6 @@ class Home extends React.Component {
             })
             .catch( (err) => console.log(err) )
         this.setState({ refreshing: false });
-        // let last_updated;
     }
 
     handleChannelClick = (id, name) => {
@@ -157,14 +154,7 @@ class Home extends React.Component {
         const process_realm_obj = this.process_realm_obj;
         const _updateRecommendedList = this._updateRecommendedList;
         Realm.getRealm((realm) => {
-            // let allBooks = realm.objects('Channels');
-            // realm.write(() => {
-            //     realm.delete(allBooks); // Deletes all books
-            // });
-
-            let elements_recommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);
-            
-            
+            let elements_recommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);            
             process_realm_obj_recommended(elements_recommended, (result) => {
                 _updateRecommendedList(result, category, () => {
                     console.log('updating done');
@@ -183,7 +173,7 @@ class Home extends React.Component {
                 <View elevation={5} 
                     style = {{ 
                         backgroundColor : '#fff', 
-                        minHeight : Platform.OS === 'android' ? 70 : 90, 
+                        //minHeight : Platform.OS === 'android' ? 70 : 90, 
                         paddingTop : Platform.OS === 'android'? 8 : 30, 
                         shadowColor: "#000000",
                         shadowOpacity: 0.1,
@@ -193,7 +183,25 @@ class Home extends React.Component {
                             width: 2
                         }
                 }}>
-                    <Image style={{ margin: 5, alignSelf: 'center', width: 50, height: 50 }} source={require('../media/app-bar/logo.png')}></Image>
+                <View style={{backgroundColor : '#fff'}}>
+                        <View style ={{
+                            alignItems : 'center',
+                            flexDirection : 'row',
+                            marginLeft : 10,
+                            marginRight : 10, 
+                            marginTop : 10,
+                            borderRadius : 20, 
+                            margin : 5,
+                            backgroundColor : '#rgb(248, 248, 248)'
+                            }}>
+                            <TouchableOpacity><IconEvil name='search' size={25} color = '#c5c5c5'  style={{marginLeft : 10}}/></TouchableOpacity>
+                            <TextInput
+                                style={{ fontSize : 16, padding : 3, marginLeft : 3, marginRight : 10, margin : 5, flex : 1,}}
+                                placeholder = 'Search'
+                                onChangeText = {(text) => console.log(text)}
+                            />
+                        </View>  
+                    </View>
                 </View>
                 <ScrollView 
                     refreshControl={
@@ -220,7 +228,7 @@ class Home extends React.Component {
                             extraData={this.state.categorySelected}
                             data={this.state.categories} 
                             renderItem={({item}) => 
-                                <CategoryCard width={100} height={100} onPress={() => this.handleUpdateData(item.value)} image={"https://www.mycampusdock.com/"+item.alt} /> 
+                                <CategoryCard width={64} height={64} name = {item.value} selected = {this.state.categorySelected === item.value} onPress={() => this.handleUpdateData(item.value)} image={"https://www.mycampusdock.com/"+item.alt} /> 
                             } 
                         />
 
@@ -241,7 +249,7 @@ class Home extends React.Component {
                                 flex: 1
                             }} size="small" color="#444" />
                         }
-                        {
+                        {/* {
                             !this.state.loading &&
                             <Text 
                                 style={{ 
@@ -256,21 +264,22 @@ class Home extends React.Component {
                             > 
                                 {this.state.categorySelected}
                             </Text>
-                        }
-
+                        } */}
                     </View>
                     {
                         !this.state.loading &&
-                        <FlatList 
-                            horizontal={false}
-                            showsHorizontalScrollIndicator={false}
-                            keyExtractor={(item, index) => index+""}
-                            data={this.state.channel_list}
-                            renderItem={({item}) => 
-                                <ChannelCard onPress={this.handleChannelClick} width={200} height={150} item={item} />
-                            } 
-                        />
-
+                        <View>
+                            <Text style={{fontFamily : 'Roboto', fontSize : 18, margin : 5, marginLeft : 10, marginRight : 10, marginBottom : 0}}>Top Channels</Text>
+                            <FlatList 
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item, index) => index+""}
+                                data={this.state.channel_list}
+                                renderItem={({item}) => 
+                                    <ChannelCard onPress={this.handleChannelClick} width={136} height={96} item={item} />
+                                } 
+                            />
+                        </View>
                     }
                 </ScrollView>
             </View>
