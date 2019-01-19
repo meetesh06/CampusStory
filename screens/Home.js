@@ -5,7 +5,7 @@ import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import StoryIcon from '../components/StoryIcon';
 import ImageGradient from 'react-native-image-gradient';
-import { Navigation } from 'react-native-navigation'
+import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
 import Realm from '../realm';
 import firebase from 'react-native-firebase';
