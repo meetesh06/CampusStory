@@ -22,7 +22,7 @@ class Home extends React.Component {
         this.handleStoryPress = this.handleStoryPress.bind(this);
         this._updateContent = this._updateContent.bind(this);
         this.process_realm_obj = this.process_realm_obj.bind(this);
-        this._updateEventList = this._updateEventList.bind(this);
+        this._updateLists = this._updateLists.bind(this);
     }
 
     componentDidMount() {
@@ -34,34 +34,10 @@ class Home extends React.Component {
             // Process your notification as required
             console.log(notification);
         });
-
-        const process_realm_obj = this.process_realm_obj;
-        Realm.getRealm((realm) => {
-            let Events = realm.objects('Events').sorted('timestamp');
-            let Subs = realm.objects('Firebase').filtered('channel="true"');
-
-            process_realm_obj(Subs, (result) => {
-                console.log(result);
-                let final = [];
-                result.forEach( (value) => {
-                    let current = realm.objects('Channels').filtered(`_id="${value._id}"`);
-                    final.push(current[0]);
-                })
-                process_realm_obj(final, (channels) => {
-                    this.setState({ channels })
-                });
-                // this.setState({ event_list: result.reverse() });
-            });
-            
-            process_realm_obj(Events, (result) => {
-                console.log(result);
-                this.setState({ event_list: result.reverse() });
-            });
-        });
         this._updateContent();
     }
     
-    _updateEventList = async (last_updated) => {
+    _updateLists = async (last_updated, channels_list) => {
         const process_realm_obj = this.process_realm_obj;
         // axios.post('http://127.0.0.1:65534/events/user/get-event-list', { last_updated }, {
         axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated }, {
@@ -106,85 +82,114 @@ class Home extends React.Component {
                 });
             }
         }).catch( err => console.log(err) 
-        ).finally(() => {
-            this.setState({ refreshing: false })
-        })
-        // axios.post('http://127.0.0.1:65534/events/channels/get-activity-list', { last_updated }, {
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'x-access-token': await AsyncStorage.getItem(TOKEN)
-        //     }
-        // }).then( response => {
-        //     console.log(response);
-        //     if(!response.data.error) {
-        //         response.data.data.forEach((el)=>{
-        //             el.reach = JSON.stringify(el.reach);
-        //             el.views = JSON.stringify(el.views);
-        //             el.enrollees = JSON.stringify(el.enrollees);
-        //             el.name = JSON.stringify(el.name);
-        //             el.audience = JSON.stringify(el.audience);
-        //             el.media = JSON.stringify(el.media);
-        //             el.timestamp = new Date(el.timestamp);
-        //             el.date = new Date(el.date);
-        //             el.reg_end = new Date(el.reg_end);
-        //             el.reg_start = new Date(el.reg_start);
-        //         });
-        //         let data = response.data.data;
-        //         if(data.length === 0) return this.setState({ refreshing: false });
-                
-        //         Realm.getRealm((realm) => {
-        //             realm.write(() => {
-        //                 let i;
-        //                 for(i=0;i<data.length;i++) {
-        //                     try {
-        //                         realm.create('Events', data[i], true);
-        //                     } catch(e) {
-        //                         console.log(e);
-        //                     }
-        //                 }
-        //             });
-        //             let Events = realm.objects('Events').sorted('timestamp');
-        //             process_realm_obj(Events, (result) => {
-        //                 console.log(result);
-        //                 this.setState({ event_list: result.reverse() });
-        //             });
-        //         });
-        //     }
-        // }).catch( err => console.log(err) 
-        // ).finally(() => {
-        //     this.setState({ refreshing: false })
-        // })
+        )
+
+        let formData = new FormData();
+        formData.append("channels_list", JSON.stringify(channels_list));
+
+        axios.post('http://127.0.0.1:65534/channels/fetch-activity-list', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-access-token': await AsyncStorage.getItem(TOKEN)
+            }
+        }).then( response => {
+            response = response.data;
+            console.log(response);
+            if(!response.error) {
+                Realm.getRealm((realm) => {
+                    for (var key in response.data) {
+                        if (response.data.hasOwnProperty(key)) {
+                            // key -> data
+                            let data = response.data[key].data;
+                            console.log(data);
+                            if(data.length > 0) {
+                                data.forEach( (el) => {
+                                    el.reach = JSON.stringify(el.reach);
+                                    el.views = JSON.stringify(el.views);
+                                    el.audience = JSON.stringify(el.audience);
+                                    el.timestamp = new Date(el.timestamp);
+
+                                    el.poll_type = el.poll_type === undefined ? "" : el.poll_type;
+                                    el.options = JSON.stringify(el.options === undefined ? "" : el.options);
+                                    
+                                    el.answered = el.answered === undefined ? "" : el.answered;
+                                    
+                                    if(el.type === "post-video")
+                                        el.media = el.media;
+                                    else
+                                        el.media = JSON.stringify(el.media === undefined ? "" : el.media);
+                                    
+                                    el.name = JSON.stringify(el.name);
+
+                                    el.read = "false";
+                                });
+                                realm.write(() => {
+                                    let i;
+                                    
+                                    for(i=0;i<data.length;i++) {
+                                        try {
+                                            realm.create('Activity', data[i], true);
+                                        } catch(e) {
+                                            console.log(e);
+                                        }
+                                    }
+                                
+                                    let current = realm.objects('Channels').filtered(`_id="${key}"`);
+                                    realm.create('Channels', { _id: current[0]._id, updates: 'true' }, true);
+                                });
+                            }
+                            // console.log(key + " -> " + response.data[key]);
+                        }
+                    }
+                });
+            }
+        }).catch( err => console.log(err) )
     }
 
     _updateContent = async () => {
         const process_realm_obj = this.process_realm_obj;
-        const _updateEventList = this._updateEventList;
+        const _updateLists = this._updateLists;
         this.setState({ refreshing: true });
         let last_updated;
         Realm.getRealm((realm) => {
-            let EventsOld = realm.objects('Events').sorted('timestamp');
+            let Events = realm.objects('Events').sorted('timestamp', true);
             try {
-                last_updated = EventsOld[EventsOld.length - 1].timestamp;
+                last_updated = Events[0].timestamp;
             } catch(e) {
                 last_updated = 'NONE';
             }
-            _updateEventList(last_updated);
-
+            process_realm_obj(Events, (result) => {    
+                this.setState({ event_list: result.reverse() });
+            });
             let Subs = realm.objects('Firebase').filtered('channel="true"');
+            let subList = {};
 
             process_realm_obj(Subs, (result) => {
                 console.log(result);
                 let final = [];
+                
                 result.forEach( (value) => {
                     let current = realm.objects('Channels').filtered(`_id="${value._id}"`);
+                    let activity = realm.objects('Activity').filtered(`channel="${value._id}"`).sorted('timestamp', true);
+                    let timestamp = 'NIL';
+
+                    if(activity.length > 0) {
+                        timestamp = activity[0].timestamp;
+                    }
+                    
+                    subList[value._id] = timestamp;
+                    
                     final.push(current[0]);
                 })
                 process_realm_obj(final, (channels) => {
                     console.log(channels);
+                    console.log(subList);
                     this.setState({ channels })
                 });
-                // this.setState({ event_list: result.reverse() });
             });
+
+            _updateLists(last_updated, subList);
+            this.setState({ refreshing: false })
         });
 
         

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
+import { BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
 import axios from 'axios';
 import Constants from '../constants';
 import Swiper from 'react-native-animated-swiper';
@@ -7,6 +7,7 @@ import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import { Navigation } from 'react-native-navigation';
+import Realm from '../realm';
 
 const TOKEN = Constants.TOKEN;
 const WIDTH = Dimensions.get('window').width;
@@ -15,62 +16,149 @@ const HEIGHT = Dimensions.get('window').height;
 class StoryScreen extends React.Component {
     constructor(props) {
         super(props);
-        const getDirectionAndColor = ({ moveX, moveY, dx, dy}) => {
-            return dy > 50;
-        }
+        this.position = new Animated.ValueXY();
+        this.opacity = new Animated.Value(1);
+        this.height = new Animated.Value(HEIGHT);
+        this.width = new Animated.Value(WIDTH);
+        this.radius = new Animated.Value(0);
+        this.updateRead = this.updateRead.bind(true);
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        this.process_realm_obj = this.process_realm_obj.bind(this);
+        this.toUpdate = [];
         this._panResponder = PanResponder.create({
-            onMoveShouldSetPanResponder:(evt, gestureState) => !!getDirectionAndColor(gestureState),
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+
+            onPanResponderGrant: (evt, gestureState) => {
+            // The gesture has started. Show visual feedback so the user knows
+            // what is happening!
+
+            // gestureState.d{x,y} will be set to zero now
+            },
             onPanResponderMove: (evt, gestureState) => {
-                const drag = getDirectionAndColor(gestureState);
-                if(drag) {
-                    // Animated.timing(
-                    //     this.state.fadeAnim,
-                    //     {
-                    //       toValue: 0,
-                    //       duration: 150,
-                    //     }
-                    // ).start();
-                    Navigation.dismissOverlay(this.props.componentId)
+                // Alert.alert( 10 * gestureState.dy / HEIGHT + "");
+                this.opacity.setValue(1 - gestureState.dy / HEIGHT)
+                this.height.setValue(HEIGHT - HEIGHT * (-gestureState.dy) / HEIGHT)
+                this.radius.setValue( 100 * gestureState.dy / HEIGHT );
+            },
+            onPanResponderTerminationRequest: (evt, gestureState) => true,
+            onPanResponderRelease: (evt, gestureState) => {
+                // Alert.alert(gestureState.dy / HEIGHT * 100 + "");
+                if(gestureState.dy < 0) gestureState.dy = - gestureState.dy;
+                if( gestureState.dy / HEIGHT * 100  > 30) {
+                    // Navigation.dismissOverlay(this.props.componentId); 
+                    Animated.timing(
+                        this.height,
+                        {
+                          toValue: 0,
+                          easing: Easing.cubic,
+                          duration: 300
+                        }
+                    ).start(() => {
+                        // console.log('closed');
+                        Navigation.dismissOverlay(this.props.componentId); 
+                    });
+                } else {
+                    this.opacity.setValue(1);
+                    this.radius.setValue(0);
+                    Animated.spring(
+                        this.height,
+                        {
+                          toValue: HEIGHT,
+                          friction: 5
+                        }
+                    ).start();
                 }
             },
-          });
+            onPanResponderTerminate: (evt, gestureState) => {
+            // Another component has become the responder, so this gesture
+            // should be cancelled
+            },
+            onShouldBlockNativeResponder: (evt, gestureState) => {
+            // Returns whether this component should block native components from becoming the JS
+            // responder. Returns true by default. Is currently only supported on android.
+            return true;
+            },
+        });
     }
     state = {
         stories: [],
         fadeAnim: new Animated.Value(1),
-        current: 0
+        current: 0,
+        loading: true
     }
-    async componentDidMount() {
-        
-        const context = this;
-        axios.post('https://www.mycampusdock.com/channels/get-activity-list', { channel_id: this.props._id ,last_updated: 'NIL' }, {
-        // axios.post('http://127.0.0.1:65534/channels/get-activity-list', { channel_id: this.props._id ,last_updated: 'NIL' }, {
+    updateRead = () => {
+        let current = this.state.stories[this.state.current];
+        if(current.read) return; 
+        this.toUpdate.push(current._id);
+        Realm.getRealm((realm) => {
+            realm.write(() => {
+                realm.create('Activity', { _id: current._id, read: 'true' }, true);
+            });
+        });
+    }
+    process_realm_obj = (RealmObject, callback) => {
+        var result = Object.keys(RealmObject).map(function(key) {
+          return {...RealmObject[key]};
+        });
+        callback(result);
+    }
+    // android back button handling
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+    async componentWillUnmount() {
+        console.log(this.toUpdate);
+        let formData = new FormData();
+        formData.append("activity_list", JSON.stringify(this.toUpdate));
+
+        axios.post('http://127.0.0.1:65534/channels/update-read', formData, {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
             }
         }).then( response => {
-            response = response.data;
-            console.log(response);
-            if(!response.error) {
-                if(response.data.length === 0) Navigation.dismissOverlay(this.props.componentId);
-                context.setState({ stories: response.data });
-            }
-            
+            console.log(response);    
         }).catch( err => console.log(err) );
+
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+    handleBackButtonClick() {
+        Navigation.dismissOverlay(this.props.componentId); 
+        return true;
+    }
+
+    async componentDidMount() {
+        const process_realm_obj = this.process_realm_obj;
+        Realm.getRealm((realm) => {
+            let Final = realm.objects('Activity').filtered(`channel="${this.props._id}"`).sorted('timestamp', true);
+            process_realm_obj(Final, (result) => {
+                
+                this.setState({ stories: result, loading: false }, () => this.updateRead());
+            });
+        });   
     }
 
     render() {
-        // console.log(this.state.stories);
+        // console.log(this.state.stories[this.state.current]);
         return(
             <Animated.View
-                style={{
-                    flex: 1,
-                    opacity: this.state.fadeAnim,
-                    backgroundColor: '#000000aa'
-                }}
-                {...this._panResponder.panHandlers}
+                style={[this.position.getLayout(), {
+                    width: this.width,
+                    height: this.height,
+                    borderRadius: this.radius,
+                    overflow: 'hidden',
+                    justifyContent: 'center',
+                    opacity: this.opacity,
+                    backgroundColor: '#000000'
+                }]}
             >
+                {
+                    this.state.loading &&
+                    <ActivityIndicator size="small" color="#fff" />
+                }
                 {
                     this.state.stories.length > 0 &&
                     this.state.stories[this.state.current].type === "post" &&
@@ -79,19 +167,20 @@ class StoryScreen extends React.Component {
                 {
                     this.state.stories.length > 0 &&
                     this.state.stories[this.state.current].type === "post-image" &&
-                    <PostImage key={this.state.stories[this.state.current]._id} message={this.state.stories[this.state.current].message} image={ this.state.stories[this.state.current].media[0] } />
+                    <PostImage key={this.state.stories[this.state.current]._id} message={this.state.stories[this.state.current].message} image={ JSON.parse(this.state.stories[this.state.current].media)[0] } />
                 }
                 {
                     this.state.stories.length > 0 &&
                     this.state.stories[this.state.current].type === "post-video" &&
                     <PostVideo key={this.state.stories[this.state.current]._id} message={this.state.stories[this.state.current].message} video={ this.state.stories[this.state.current].media } />
                 }
+
                 <View
                     style={{
                         flex: 1,
                         height: HEIGHT,
                         width: WIDTH,
-                        bottom: 0,
+                        top: 0,
                         left: 0,
                         right: 0,
                         flexDirection: 'row',
@@ -107,45 +196,31 @@ class StoryScreen extends React.Component {
                         }
                         style={{
                             flex: 1,
-                            // backgroundColor: 'red'
                         }}
                     >
                         
                     </TouchableOpacity>
+                    <View
+                        collapsable={false}
+                        style={{
+                            width: WIDTH/2,
+                        }}
+                        {...this._panResponder.panHandlers}
+                    >
+                    </View>
                     <TouchableOpacity
                         onPress={
                             () => {
                                 if(this.state.current === this.state.stories.length - 1) return;
-                                this.setState({ current: this.state.current + 1 })
+                                this.setState({ current: this.state.current + 1 }, () => this.updateRead() )
                             }
                         }
                         style={{
                             flex: 1,
-                            // backgroundColor: 'green'
                         }}
                     >
-                        
                     </TouchableOpacity>
-
                 </View>
-                
-                {/* <Swiper
-                    dots
-                    dotsColor="rgba(97, 218, 251, 0.25)"
-                    dotsColorActive="rgba(97, 218, 251, 1)"
-                    style={styles.slides}>
-                    {this.state.stories.map( (val) => {
-                        if(val.type === "post") {
-                            return <Post key={val._id} message={val.message} />
-                        } else if(val.type === "post-image") {
-                            return <PostImage key={val._id} message={val.message} image={ val.media[0] } />
-                        } else if(val.type === "post-video") {
-                            console.log(val.media);
-                            return <PostVideo key={val._id} message={val.message} video={ val.media } />
-                        }
-                    })}
-                </Swiper> */}
-
             </Animated.View>
         );
     }

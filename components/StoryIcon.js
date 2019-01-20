@@ -36,12 +36,12 @@ class AdvertCard extends React.Component {
                 />
             </View>
             {
-                this.props.item.read &&
+                this.props.item.updates === "true" &&
                 <LinearGradient style={{ borderRadius: 10, opacity: 0.6, flex: 1, position: 'absolute', width: this.props.width, height: this.props.height,}} colors={['#505050', '#000']}/>
             }
 
             {
-                this.props.item.read &&
+                this.props.item.updates === "true" &&
                 <Icon size={20} style={{ position: 'absolute', right: '40%', top: '40%', color: this.props.item.read ? "#909090" : '#fff' }} name="playcircleo" />
             }
             </TouchableOpacity>

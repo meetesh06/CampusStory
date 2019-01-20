@@ -47,7 +47,8 @@ const Channels = {
     category: 'string',
     recommended: 'string',
     subscribed: 'string',
-    college: 'string'
+    college: 'string',
+    updates: 'string'
   }
 };
 
@@ -82,6 +83,8 @@ const Activity = {
     answered: 'string',
     // post-image, post-video specific
     media:  'string',
+    // stuff
+    read:  'string'
   }
 };
 

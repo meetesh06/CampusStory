@@ -76,6 +76,8 @@ class Home extends React.Component {
                     el.category_found = JSON.stringify(el.category_found);
                     el.recommended = JSON.stringify(true);
                     el.subscribed = JSON.stringify(false);
+                    el.subscribed = JSON.stringify(false);
+                    el.updates = JSON.stringify(false);
                 });
                 let data = response.data.data;
                 console.log(data);
@@ -154,10 +156,11 @@ class Home extends React.Component {
         const process_realm_obj = this.process_realm_obj;
         const _updateRecommendedList = this._updateRecommendedList;
         Realm.getRealm((realm) => {
+            // get the previously recommended list to prevent redundant data response from server
             let elements_recommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);            
             process_realm_obj_recommended(elements_recommended, (result) => {
                 _updateRecommendedList(result, category, () => {
-                    console.log('updating done');
+                    // console.log('updating done');
                     let elements = realm.objects('Channels').filtered(`category="${category}"`);
                     process_realm_obj(elements, (final) => {
                         this.setState({ channel_list: final });

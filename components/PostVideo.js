@@ -14,7 +14,7 @@ class PostImage extends React.Component {
                     // playInBackground={false}
                     // paused={true}
                     style={{
-                        // backgroundColor: 'red',
+                        backgroundColor: '#333',
                         // flex: 1,
                         width: WIDTH,
                         height: 300,
