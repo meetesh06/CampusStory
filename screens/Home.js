@@ -23,6 +23,7 @@ class Home extends React.Component {
         this._updateContent = this._updateContent.bind(this);
         this.process_realm_obj = this.process_realm_obj.bind(this);
         this._updateLists = this._updateLists.bind(this);
+        
     }
 
     componentDidMount() {
@@ -61,7 +62,7 @@ class Home extends React.Component {
                     el.reg_start = new Date(el.reg_start);
                 });
                 let data = response.data.data;
-                if(data.length === 0) return this.setState({ refreshing: false });
+                if(data.length === 0) return;
                 
                 Realm.getRealm((realm) => {
                     realm.write(() => {
@@ -87,7 +88,7 @@ class Home extends React.Component {
         let formData = new FormData();
         formData.append("channels_list", JSON.stringify(channels_list));
 
-        axios.post('http://127.0.0.1:65534/channels/fetch-activity-list', formData, {
+        axios.post('https://www.mycampusdock.com/channels/fetch-activity-list', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
@@ -134,12 +135,26 @@ class Home extends React.Component {
                                         }
                                     }
                                 
-                                    let current = realm.objects('Channels').filtered(`_id="${key}"`);
-                                    realm.create('Channels', { _id: current[0]._id, updates: 'true' }, true);
+                                    // let current = realm.objects('Channels').filtered(`_id="${key}"`);
+                                    realm.create('Channels', { _id: key, updates: 'true' }, true);
+                                    
                                 });
+                                
                             }
                             // console.log(key + " -> " + response.data[key]);
                         }
+                        let Subs = realm.objects('Firebase').filtered('channel="true"');
+                        process_realm_obj(Subs, (result) => {
+                            let final = [];
+                            
+                            result.forEach( (value) => {
+                                let current = realm.objects('Channels').filtered(`_id="${value._id}"`);
+                                final.push(current[0]);
+                            })
+                            process_realm_obj(final, (channels) => {
+                                this.setState({ channels })
+                            });
+                        });
                     }
                 });
             }
@@ -148,6 +163,7 @@ class Home extends React.Component {
 
     _updateContent = async () => {
         const process_realm_obj = this.process_realm_obj;
+        
         const _updateLists = this._updateLists;
         this.setState({ refreshing: true });
         let last_updated;
@@ -240,7 +256,12 @@ class Home extends React.Component {
         
     }
     
-    handleStoryPress = (item) => {
+    handleStoryPress = (item, index) => {
+        console.log(index);
+        console.log(this.state.channels[index]);
+        let old = [ ...this.state.channels ];
+        
+        
         Navigation.showOverlay({
             component: {
               name: 'Story Screen',
@@ -254,6 +275,10 @@ class Home extends React.Component {
               }
             }
         });
+        if(old[index].updates === "true"){
+            old[index].updates = "false";
+            this.setState({ channels: old })
+        }
     }
     render() {
         return(
@@ -291,8 +316,8 @@ class Home extends React.Component {
                             keyExtractor={(item, index) => index+""}
                             data={this.state.channels}
                             extraData={this.state.channels}
-                            renderItem={({item}) => 
-                                <StoryIcon onPress={this.handleStoryPress} width={96} height={64} item={item} />
+                            renderItem={({item, index}) => 
+                                <StoryIcon onPress={(item) => this.handleStoryPress(item, index)} width={96} height={64} item={item} />
                             } 
                         />
                     }

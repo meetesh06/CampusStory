@@ -91,7 +91,7 @@ class StoryScreen extends React.Component {
     }
     updateRead = () => {
         let current = this.state.stories[this.state.current];
-        if(current.read) return; 
+        if(current === undefined) return; 
         this.toUpdate.push(current._id);
         Realm.getRealm((realm) => {
             realm.write(() => {
@@ -134,6 +134,12 @@ class StoryScreen extends React.Component {
         const process_realm_obj = this.process_realm_obj;
         Realm.getRealm((realm) => {
             let Final = realm.objects('Activity').filtered(`channel="${this.props._id}"`).sorted('timestamp', true);
+            
+            // let current = realm.objects('Channels').filtered(`_id="${this.props._id}"`);
+            realm.write(() => {
+                realm.create('Channels', { _id: this.props._id, updates: 'false' }, true);
+            });
+            
             process_realm_obj(Final, (result) => {
                 
                 this.setState({ stories: result, loading: false }, () => this.updateRead());

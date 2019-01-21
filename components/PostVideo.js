@@ -19,7 +19,7 @@ class PostImage extends React.Component {
                         width: WIDTH,
                         height: 300,
                         margin: 5,
-                        borderRadius: 10
+                        // borderRadius: 10
                     }} 
                 />
                 {/* <Video 
