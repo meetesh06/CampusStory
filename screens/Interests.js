@@ -86,10 +86,10 @@ class Interests extends React.Component {
 				result = result.data;
 				if(!result.error) {
 						try {
-							console.log(result);
 							this.subsribeFB(temp, college, ()=>{
 								updateLocalState(college, interestsProcessed, result.data);
 							});
+							console.log(result);
 						} catch (error) {
 							console.log(error);
 							Alert.alert(

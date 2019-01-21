@@ -28,11 +28,15 @@ class AdvertCard extends React.Component {
             }}>
 
             
-            <View style={{padding : 1, backgroundColor : '#a5a5a5', borderRadius : 10}}>
+            <View style={{backgroundColor : '#a5a5a5', borderRadius : 10}}>
                 <FastImage
                     style={{ width : this.props.width, height : this.props.height, borderRadius: 10, backgroundColor : '#000',}}
-                    source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
+                    source={{ 
+                        uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0],
+                        priority: FastImage.priority.high, 
+                    }}
                     resizeMode={FastImage.resizeMode.cover}
+                    
                 />
             </View>
             {

@@ -7,6 +7,9 @@ import ChannelCard from '../components/ChannelCard';
 import CategoryCard from '../components/CategoryCard';
 import { Navigation } from 'react-native-navigation';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
+import PostThumbnail from '../components/PostThumbnail';
+import PostImageThumbnail from '../components/PostImageThumbnail';
+import PostVideoThumbnail from '../components/PostVideoThumbnail';
 
 const TOKEN = Constants.TOKEN;
 
@@ -99,8 +102,24 @@ class Home extends React.Component {
             }
         }).catch( err => { error = true; console.log(err) }
         )
-
         this.setState({ loading: false }, () => callback(error))
+        this.getTrendingContent();
+    }
+
+    getTrendingContent = async ()=> {
+        const token = await AsyncStorage.getItem(TOKEN);
+        const formData = new FormData();
+        formData.append('category', this.state.categorySelected);
+        await axios.post('https://www.mycampusdock.com/channels/fetch-popular-activity', formData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': token
+            }
+        }).then(response => {
+            console.log('trending', response);
+            const items = response.data.data;
+            this.setState({trending : items});
+        });
     }
     
     _updateContent = async () => {
@@ -170,6 +189,14 @@ class Home extends React.Component {
         });
     }
 
+    getItemView = (item) =>{
+        switch(item.type){
+            case 'post' : return <PostThumbnail key = {item._id} message = {item.message} style={{width : 100, height : 150, }}/>
+            case 'post-image' : return <PostImageThumbnail image = {item.media[0]} />
+            case 'post-video' : return <PostVideoThumbnail video = {item.media} />
+        }
+    }
+
     render() {
         return(
             <View style={{ flex: 1 }}>
@@ -237,6 +264,7 @@ class Home extends React.Component {
 
                     </View>
                     
+                    
                     <View
                         style={{
                             flexDirection: 'row'
@@ -280,6 +308,24 @@ class Home extends React.Component {
                                 data={this.state.channel_list}
                                 renderItem={({item}) => 
                                     <ChannelCard onPress={this.handleChannelClick} width={136} height={96} item={item} />
+                                } 
+                            />
+                        </View>
+                    }
+
+                    {
+                        !this.state.loading &&
+                        <View>
+                            <FlatList 
+                                style={{
+                                    padding: 10
+                                }}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={ (item, index) => index+"" }
+                                extraData={this.state.categorySelected}
+                                numColumns = {3}
+                                data={this.state.trending} 
+                                renderItem={({item}) => this.getItemView(item)
                                 } 
                             />
                         </View>

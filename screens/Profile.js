@@ -3,6 +3,7 @@ import { AsyncStorage, View, Text, Button } from 'react-native';
 import Constants from '../constants';
 import { goInitializing } from './helpers/Navigation';
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
+import Realm from '../realm';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -11,13 +12,13 @@ class Profile extends React.Component {
     }
 
     handleLogout = async () => {
-        try {
-            await AsyncStorage.removeItem(SET_UP_STATUS);
-            goInitializing();
-            console.log('go initializing');
-        } catch(e) {
-            console.log(e);
-        }
+        Realm.getRealm((realm)=>{
+            realm.write(async () => {
+              realm.deleteAll();
+              await AsyncStorage.clear();
+              goInitializing();
+            });
+        });
     }
     render() {
         return(
