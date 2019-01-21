@@ -114,7 +114,7 @@ class StoryScreen extends React.Component {
         let formData = new FormData();
         formData.append("activity_list", JSON.stringify(this.toUpdate));
 
-        axios.post('http://127.0.0.1:65534/channels/update-read', formData, {
+        axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)

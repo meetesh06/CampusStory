@@ -23,10 +23,9 @@ class Home extends React.Component {
         this._updateContent = this._updateContent.bind(this);
         this.process_realm_obj = this.process_realm_obj.bind(this);
         this._updateLists = this._updateLists.bind(this);
-        
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
             // Process your notification as required
             console.log(notification);
@@ -36,6 +35,7 @@ class Home extends React.Component {
             console.log(notification);
         });
         this._updateContent();
+        await firebase.messaging().requestPermission();
     }
     
     _updateLists = async (last_updated, channels_list) => {
@@ -234,16 +234,21 @@ class Home extends React.Component {
     }
 
     handleEventPress = (item) => {
+        console.log(item)
         Navigation.push(this.props.componentId, {
             component: {
               name: 'Event Detail Screen',
               passProps: {
+                item,
                 id: item.title
               },
               options: {
                 topBar: {
                     visible: true,
-                    drawBehind: false
+                    drawBehind: false,
+                    title: {
+                        text: item.title,
+                    },
                 },
                 bottomTabs: {
                     visible: false,
