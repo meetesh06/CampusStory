@@ -7,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 class EventCard extends React.Component {
     render() {
+        console.log(this.props.item);
         return(
             <TouchableOpacity 
                 activeOpacity={0.6}

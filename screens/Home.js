@@ -47,7 +47,6 @@ class Home extends React.Component {
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
             }
         }).then( response => {
-            console.log(response);
             if(!response.data.error) {
                 response.data.data.forEach((el)=>{
                     el.reach = JSON.stringify(el.reach);
@@ -57,6 +56,7 @@ class Home extends React.Component {
                     el.audience = JSON.stringify(el.audience);
                     el.media = JSON.stringify(el.media);
                     el.timestamp = new Date(el.timestamp);
+                    el.time = new Date(el.time);
                     el.date = new Date(el.date);
                     el.reg_end = new Date(el.reg_end);
                     el.reg_start = new Date(el.reg_start);
