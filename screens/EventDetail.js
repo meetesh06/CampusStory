@@ -3,17 +3,20 @@ import { TouchableOpacity, Dimensions, View, Text, ScrollView } from 'react-nati
 import Realm from '../realm';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Icon1 from 'react-native-vector-icons/Entypo';
 
 const WIDTH = Dimensions.get('window').width;
 
 class EventDetail extends React.Component {
     constructor(props) {
         super(props);
-        this.item = props.item;
+        // this.item = props.item;
         this.process_realm_obj = this.process_realm_obj.bind(this);
+        this.getMonthName = this.getMonthName.bind(this);
+        this.formatAMPM = this.formatAMPM.bind(this);
     }
     state = {
-        item: null,
+        item: this.props.item,
         subscribed: false,
         notify: false
     }
@@ -43,8 +46,51 @@ class EventDetail extends React.Component {
         callback(result);
     }
 
+    getMonthName = (num) => {
+        switch(num) {
+            case 1:
+                return "JAN"
+            case 2:
+                return "FEB"    
+            case 3:
+                return "MAR"
+            case 4:
+                return "APR"
+            case 5:
+                return "MAY"
+            case 6:
+                return "JUN"
+            case 7:
+                return "JUL"
+            case 8:
+                return "AUG"
+            case 9:
+                return "SEP"
+            case 10:
+                return "OCT"
+            case 11:
+                return "NOV"
+            case 12:
+                return "DEC"
+            default: 
+                return "FUCK"
+            
+        }
+    }
+
+    formatAMPM = (date) => {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
+      }
+
     render() {
-        const item = this.item;
+        const { item } = this.state;
         console.log(item);
         return(
             <View
@@ -74,49 +120,334 @@ class EventDetail extends React.Component {
                         resizeMode={FastImage.resizeMode.cover}
                     />
                     </View>
-                    <Text
-                        style={{
-                            marginTop: 10,
-                            fontFamily: 'Roboto-Light',
-                            fontSize: 15,
-                            padding: 10,
-                            backgroundColor: '#e0e0e0',
-                            margin: 10,
-                            borderRadius: 10,
-                            minHeight: 50,
-                            overflow: 'hidden',
-                            textAlign: 'center',
-                            color: '#333'
-                        }}
-                    >
-                        {item !== null && item.description}
-                    </Text>
                     <View
                         style={{
-                            marginTop: 20,
+                            // margin: 5,
+                            flex: 1,
+                            marginTop: 5,
+                            marginLeft: 5,
+                            padding: 5,
                             flexDirection: 'row'
                         }}
                     >
-                        <Icon 
+                        <View
                             style={{
-                                marginLeft: 10,
-                                color: '#333'
-                            }}
-                            size={30} 
-                            name="smileo" 
-                        />
-                        <Text
-                            style={{ 
-                                textAlign: 'center',
-                                textAlignVertical: 'auto',
-                                fontSize: 15,
-                                marginLeft: 10,
-                                alignSelf: 'center',
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
                             }}
                         >
-                            {item !== null && item.followers} Following
+                            <Text
+                                style={{
+                                    fontFamily: 'Roboto',
+                                    fontSize: 15,
+                                    color: '#fa3e3e',
+                                    textAlign: 'center',
+                                    fontWeight: '900'
+                                }}
+                            >
+                                
+                                { this.getMonthName(item.date.getMonth() + 1) }
+                            </Text>
+                            <Text
+                                style={{
+                                    textAlign: 'center',
+                                    fontSize: 25,
+                                    color: '#333',
+                                }}
+                            >
+                                {/* { JSON.stringify( item.date ) } */}
+                                { JSON.stringify( item.date.getDate() ) }
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 20,
+                                    color: '#222',
+                                }}
+                            >
+                                { item.title }
+                            </Text>
+                            <TouchableOpacity
+                                style={{
+                                    marginTop: 5
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontFamily: 'Roboto-Thin'
+                                    }}
+                                >
+                                    
+                                    {"Hosted By " }
+                                    <Text
+                                        style={{
+                                            color: 'blue',
+                                            fontFamily: 'Roboto'
+                                        }}
+                                    >
+                                        { item.channel_name }
+                                    </Text>
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            marginLeft: 5,
+                            flex: 1,
+                            
+                            padding: 5,
+                            flexDirection: 'row'
+                        }}
+                    >
+                        <View
+                            style={{
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
+                            }}
+                        >
+                            <Icon1 style={{ color: '#fa3e3e', }} size={30} name="location-pin" />
+                        </View>
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    // color: '#222',
+                                }}
+                            >
+                                { this.formatAMPM(item.date) }
+                            </Text>
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    color: '#222',
+                                }}
+                            >
+                                { item.location }
+                            </Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flex: 1,
+                            marginLeft: 5,
+                            padding: 5,
+                            flexDirection: 'row'
+                        }}
+                    >
+                        <View
+                            style={{
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
+                            }}
+                        >
+                            <Icon style={{ color: '#444', }} size={30} name="smileo" />
+                        </View>
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    // color: '#222',
+                                }}
+                            >
+                                People Going
+                            </Text>
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    color: '#222',
+                                }}
+                            >
+                                { item.enrollees }
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style={{
+                            paddingTop: 10,
+                            marginTop: 10,
+                            paddingBottom: 20,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            backgroundColor: '#f0f0f0',
+                            margin: 10,
+                            borderRadius: 10,
+                            minHeight: 100,
+                            
+                        }}
+                    >
+                        <Text
+                            style={{
+                                textAlign: 'center',
+                                paddingBottom: 10,
+                                fontSize: 15,
+                                fontFamily: 'Roboto'
+                            }}
+                        >
+                            DESCIRPTION
+                        </Text>
+                        <Text
+                            textBreakStrategy="highQuality"
+                            style={{
+                                fontFamily: 'Roboto-Light',
+                                fontSize: 15,
+                                overflow: 'hidden',
+                                textAlign: 'left',
+                                color: '#222'
+                            }}
+                        >   
+                            {item.description}
+                        </Text>
+
+                    </View>
+                    <View
+                        style={{
+                            paddingTop: 10,
+                            marginTop: 10,
+                            paddingBottom: 20,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            backgroundColor: '#f0f0f0',
+                            margin: 10,
+                            borderRadius: 10,
+                            minHeight: 100,
+                            
+                        }}
+                    >
+                        <Text
+                            style={{
+                                textAlign: 'center',
+                                paddingBottom: 10,
+                                fontSize: 15,
+                                fontFamily: 'Roboto'
+                            }}
+                        >
+                            CONTACT DETAILS
+                        </Text>
+                        <Text
+                            textBreakStrategy="highQuality"
+                            style={{
+                                fontFamily: 'Roboto-Light',
+                                fontSize: 15,
+                                overflow: 'hidden',
+                                textAlign: 'left',
+                                color: '#222'
+                            }}
+                        >   
+                            {item.contact_details}
+                        </Text>
+
+                    </View>
+                    <View
+                        style={{
+                            paddingTop: 10,
+                            marginTop: 10,
+                            paddingBottom: 20,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            backgroundColor: '#f0f0f0',
+                            margin: 10,
+                            borderRadius: 10,
+                            minHeight: 100,
+                            
+                        }}
+                    >
+                        <Text
+                            style={{
+                                textAlign: 'center',
+                                paddingBottom: 10,
+                                fontSize: 15,
+                                fontFamily: 'Roboto'
+                            }}
+                        >
+                            FAQ
+                        </Text>
+                        <Text
+                            textBreakStrategy="highQuality"
+                            style={{
+                                fontFamily: 'Roboto-Light',
+                                fontSize: 15,
+                                overflow: 'hidden',
+                                textAlign: 'left',
+                                color: '#222'
+                            }}
+                        >   
+                            {item.faq}
                         </Text>
                     </View>
+                    <View
+                        style={{
+                            marginBottom: 20,
+                            marginLeft: 10
+                        }}
+                    >
+
+                        <Text
+                            style={{
+                                fontSize: 15,
+                                fontFamily: 'Roboto-Light',
+                                
+                                // marginLeft: 10
+                            }}
+                        >
+                            Category : <Text
+                                style={{
+                                    fontWeight: '800',
+                                    color: '#222',
+                                    textTransform: 'uppercase',
+                                }}
+                            >
+                                {item.category}
+                            </Text>
+                        </Text>
+                        <Text
+                            style={{
+                                fontSize: 15,
+                                fontFamily: 'Roboto-Light',
+                                marginTop: 10
+                                // marginLeft: 10
+                            }}
+                        >
+                            Tags : <Text
+                                style={{
+                                    fontWeight: '800',
+                                    color: '#222',
+                                    textTransform: 'uppercase',
+                                }}
+                            >
+                                {item.tags}
+                            </Text>
+                        </Text>
+                    </View>
+                    
                 </ScrollView>
                 <View
                     style={{
@@ -132,6 +463,7 @@ class EventDetail extends React.Component {
                             flex: 1
                         }}
                     >
+                    
                         <Text
                             style={{
                                 color: '#fff',
