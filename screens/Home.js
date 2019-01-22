@@ -59,6 +59,8 @@ class Home extends React.Component {
                     el.date = new Date(el.date);
                     el.reg_end = new Date(el.reg_end);
                     el.reg_start = new Date(el.reg_start);
+                    el.interested = "false";
+                    el.going = "false";
                 });
                 let data = response.data.data;
                 if(data.length === 0) return;
@@ -334,6 +336,7 @@ class Home extends React.Component {
                                 backgroundColor: '#e0e0e0',
                                 padding: 10,
                                 margin: 5,
+                                marginTop: 10,
                                 borderRadius: 10,
                                 flexDirection: 'row'
                                 // marginBottom: 10,
@@ -361,7 +364,7 @@ class Home extends React.Component {
                                 <Text
                                     style={{
                                         textAlign: 'center',
-                                        fontFamily: 'Roboto-Thin'
+                                        fontFamily: 'Roboto'
                                     }}
                                 >
                                     Stories from your subscribed channels will appear here.
