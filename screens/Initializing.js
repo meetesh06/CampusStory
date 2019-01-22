@@ -60,6 +60,7 @@ class App extends React.Component {
     //     this.notificationDisplayedListener();
     //     this.notificationListener();
     // }
+    
     constructor(props) {
         super(props);
         this.continueNext = this.continueNext.bind(this);
