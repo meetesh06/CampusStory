@@ -57,7 +57,6 @@ class Interests extends React.Component {
 			return key;
 		});
 		let temp = [...interestsProcessed];
-		console.log(interestsProcessed, college, college === "");
 		
 		if( interestsProcessed.length < 2 ) {
 			Alert.alert(
@@ -89,7 +88,6 @@ class Interests extends React.Component {
 							this.subsribeFB(temp, college, ()=>{
 								updateLocalState(college, interestsProcessed, result.data);
 							});
-							console.log(result);
 						} catch (error) {
 							console.log(error);
 							Alert.alert(
@@ -174,7 +172,6 @@ class Interests extends React.Component {
 		  })
 		  .then( (result) => {
 			result = result.data;
-			console.log(result);
 			if(!result.error) {
 				this.setState({ categories: result.data });
 			}
@@ -194,9 +191,7 @@ class Interests extends React.Component {
 		  })
 		  .then( (result) => {
 			result = result.data;
-			console.log(result);
 			if(!result.error) {
-				console.log("college", result.data[0]);
 				this.setState({ collegeSelection: result.data[0], colleges: result.data });
 			}
 		  })

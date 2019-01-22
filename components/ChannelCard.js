@@ -27,7 +27,7 @@ class ChannelCard extends React.Component {
                     }
             }}>
                         <FastImage
-                            style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
+                            style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute', backgroundColor : '#000' }}
                             source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                             resizeMode={FastImage.resizeMode.cover}
                         />

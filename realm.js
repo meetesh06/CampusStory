@@ -15,6 +15,7 @@ const Events = {
     enrollees: 'string',
     timestamp: 'date',
     title: 'string',
+    ms : 'int',
     description: 'string',
     location: 'string',
     category: 'string',

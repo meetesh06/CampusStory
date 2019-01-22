@@ -62,7 +62,7 @@ class Home extends React.Component {
         const formData = new FormData();
         formData.append('category_list', JSON.stringify([category]));
         formData.append('channels_list', JSON.stringify(channels_list));
-        formData.append('count', 15);
+        formData.append('count', 10);
         let error = false;
         await axios.post('https://www.mycampusdock.com/channels/top', formData, {
             headers: {

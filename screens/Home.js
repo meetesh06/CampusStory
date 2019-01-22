@@ -1,14 +1,14 @@
 import React from 'react';
 import { RefreshControl, TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
-import { goInitializing } from './helpers/Navigation';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import StoryIcon from '../components/StoryIcon';
-import ImageGradient from 'react-native-image-gradient';
 import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
 import Realm from '../realm';
+import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
+import Spotlight from '../components/Spotlight';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
 const TOKEN = Constants.TOKEN;
@@ -27,15 +27,16 @@ class Home extends React.Component {
 
     async componentDidMount() {
         this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
-            // Process your notification as required
             console.log(notification);
         });
         this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
-            // Process your notification as required
             console.log(notification);
         });
         this._updateContent();
-        await firebase.messaging().requestPermission();
+        if(!firebase.messaging().hasPermission()){
+            await firebase.messaging().requestPermission();
+        }
+        
     }
     
     _updateLists = async (last_updated, channels_list) => {
@@ -56,7 +57,9 @@ class Home extends React.Component {
                     el.media = JSON.stringify(el.media);
                     el.timestamp = new Date(el.timestamp);
                     el.time = new Date(el.time);
+                    let ts = Date.parse(''+el.date);
                     el.date = new Date(el.date);
+                    el.ms = ts;
                     el.reg_end = new Date(el.reg_end);
                     el.reg_start = new Date(el.reg_start);
                     el.interested = "false";
@@ -78,7 +81,6 @@ class Home extends React.Component {
                     });
                     let Events = realm.objects('Events').sorted('timestamp');
                     process_realm_obj(Events, (result) => {
-                        console.log(result);
                         this.setState({ event_list: result.reverse() });
                     });
                 });
@@ -96,14 +98,12 @@ class Home extends React.Component {
             }
         }).then( response => {
             response = response.data;
-            console.log(response);
             if(!response.error) {
                 Realm.getRealm((realm) => {
                     for (var key in response.data) {
                         if (response.data.hasOwnProperty(key)) {
                             // key -> data
                             let data = response.data[key].data;
-                            console.log(data);
                             if(data.length > 0) {
                                 data.forEach( (el) => {
                                     el.reach = JSON.stringify(el.reach);
@@ -169,15 +169,23 @@ class Home extends React.Component {
         this.setState({ refreshing: true });
         let last_updated;
         Realm.getRealm((realm) => {
-            let Events = realm.objects('Events').sorted('timestamp', true);
+            let ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
+            let cs = Date.parse(new Date());
+            let latest_events = realm.objects('Events').filtered('interested = "false"').filtered('ms > ' + cs).sorted('date');
+            let week_events = realm.objects('Events').filtered('ms < ' + ts + ' AND ms > ' + cs).sorted('date');
             try {
                 last_updated = Events[0].timestamp;
             } catch(e) {
                 last_updated = 'NONE';
             }
-            process_realm_obj(Events, (result) => {    
-                this.setState({ event_list: result.reverse() });
-            });
+            process_realm_obj(latest_events, (result)=>{
+                this.setState({ event_list: result});
+            })
+
+            process_realm_obj(week_events, (result)=>{
+                this.setState({ week_event_list: result});
+            })
+
             let Subs = realm.objects('Firebase').filtered('channel="true"');
             let subList = {};
 
@@ -199,8 +207,6 @@ class Home extends React.Component {
                     final.push(current[0]);
                 })
                 process_realm_obj(final, (channels) => {
-                    console.log(channels);
-                    console.log(subList);
                     this.setState({ channels })
                 });
             });
@@ -263,8 +269,6 @@ class Home extends React.Component {
     }
     
     handleStoryPress = (item, index) => {
-        console.log(index);
-        console.log(this.state.channels[index]);
         let old = [ ...this.state.channels ];
         
         
@@ -384,43 +388,21 @@ class Home extends React.Component {
                             
                         </TouchableOpacity>
                     }
-                    {/* <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
-                        <EventCard pressed={this.handleEventClick} width={250} height={200} item={this.state.eventsToday[0]} />
-                    </LinearGradient> */}
-                    <ImageGradient
-                        mainStyle={{ height: 250, flexDirection: 'column' }}
-                        // gradientStyle={['#FF4A3F', '#FF6A15']}
-                        localImage={false}
-                        imageUrl={this.state.eventsToday[0].image}
-                        startPosition ={{x:0,y:0}}
-                        rgbcsvStart={'0,0,0'}
-                        rgbcsvEnd={'10,10,10'}
-                        opacityStart={0.9}
-                        opacityEnd={0.5}
-                    >
-                        <Text style={{ marginTop: 10, fontFamily: 'Roboto', color: 'white', fontSize: 25 }}>
-                            In the spotlight
-                        </Text>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <FastImage
-                                style={{ width: 150, height: 100, borderRadius: 10, margin: 10 }}
-                                source={{ uri: "https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25" }}
-                                resizeMode={FastImage.resizeMode.cover}
-                            />
-                            {/* <EventCard pressed={this.handleEventClick} width={150} height={100} item={{ image: 'https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25' }} /> */}
-                        </TouchableOpacity>
-                        <View style={{ flex: 1, paddingTop: 5}}>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 20, color: '#fff' }}>
-                                {this.state.eventsToday[0].title}
-                            </Text>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Thin', fontSize: 20, color: '#fff' }}>
-                                Manav Rachna
-                            </Text>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Thin', fontSize: 15, color: '#fff' }}>
-                                20-10-2018 9:30
-                            </Text>
-                        </View>
-                    </ImageGradient>
+                    <Swiper 
+                    showsButtons={false}
+                    autoplay
+                    loop
+                    showsPagination = {false}
+                    loadMinimal
+                    style={{height : 250}}
+                    autoplayTimeout = {5}>
+                        {
+                            this.state.week_event_list !== undefined && 
+                            this.state.week_event_list.map((item, index) =>{
+                                return <Spotlight item = {item} key = {item._id}/>
+                            })
+                        }
+                    </Swiper>
                     <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
 						All about today 
 					</Text>

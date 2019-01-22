@@ -2,7 +2,6 @@ import React from 'react';
 import { BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
 import axios from 'axios';
 import Constants from '../constants';
-import Swiper from 'react-native-animated-swiper';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
