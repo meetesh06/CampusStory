@@ -223,9 +223,10 @@ class Interests extends React.Component {
 					}
 				>
 
-					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop: 20, marginBottom : 10 }}> 
+					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop: 30,}}> 
 						Select your college
 					</Text>
+					<View style={{backgroundColor : '#c5c5c5', borderRadius : 10, height : 2, width : 100, marginTop : 4, marginBottom : 10, alignSelf : 'center'}}/>
 					<View
 						style={{
 							backgroundColor: '#e0e0e0', 
@@ -288,25 +289,26 @@ class Interests extends React.Component {
 						}
 						} 
 					/> */}
-					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop : 20, marginBottom : 10 }}> 
+					<Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop : 20, }}> 
 						Select your interests 
 					</Text>
+					<View style={{backgroundColor : '#c5c5c5', borderRadius : 10, height : 2, width : 120, marginTop : 4, marginBottom : 10, alignSelf : 'center'}}/>
 					<FlatList 
 						horizontal={true}
 						showsHorizontalScrollIndicator={false}
 						keyExtractor={ (item, index) => index+"" }
 						extraData={this.state.categories}
-						data={this.state.categories} 
-						renderItem={({item}) => <AdvertCard width={200} height={150} onChecked={() => this.handleInterestSelection(item.value)} image={"https://www.mycampusdock.com/"+item.media} /> } 
+						data={this.state.categories}
+						renderItem={({item}) => <AdvertCard width={164} height={128} onChecked={() => this.handleInterestSelection(item.value)} image={"https://www.mycampusdock.com/"+item.alt} text = {item.text}/> } 
 					/>
 					{/* <FastImage source={{ uri: this.state.collegeSelection.media }} /> */}
 					
-					<LinearGradient style={{ flex: 1, height: 370, margin: 10, borderRadius: 10}} colors={['#FF4A3F', '#FF6A15']}>
+					<LinearGradient style={{ flex: 1, padding: 10, margin : 10, borderRadius: 10, marginTop : 20}} colors={['#FF4A3F', '#FF6A15']}>
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, padding: 15, color: 'white' }}>
 							Thank you for installing Campus Story! {'\n'}This app collects app usage data to improve your user experience and for the stability of the app.
 						</Text>
-						<Image source={require('../media/LogoWhite.png')} style={{ width: 120, height: 120, resizeMode: 'contain', alignSelf: 'center' }} />
-						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 20, padding: 15, color: 'white' }}>
+						<Image source={require('../media/LogoWhite.png')} style={{ width: 96, height: 96, resizeMode: 'contain', alignSelf: 'center' }} />
+						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 18, padding: 15, color: 'white' }}>
 							We hope to be your companion and bring you useful information.
 						</Text>
 						<TouchableOpacity onPress={this.handleNextScreen} style={{  alignSelf: 'center', backgroundColor: '#fff', padding: 10, borderRadius: 5}}>
