@@ -30,6 +30,8 @@ const Events = {
     available_seats: 'string',
     audience: 'string',
     channel: 'string',
+    interested: 'string',
+    going: 'string',
     media: 'string'
   }
 };

@@ -1,11 +1,15 @@
 import React from 'react';
-import { TouchableOpacity, Dimensions, View, Text, ScrollView } from 'react-native';
+import { ActivityIndicator, AsyncStorage, TouchableOpacity, Dimensions, View, Text, ScrollView } from 'react-native';
 import Realm from '../realm';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Entypo';
+import axios from 'axios';
+import Constants from '../constants';
+import { Navigation } from 'react-native-navigation';
 
 const WIDTH = Dimensions.get('window').width;
+const TOKEN = Constants.TOKEN;
 
 class EventDetail extends React.Component {
     constructor(props) {
@@ -14,29 +18,39 @@ class EventDetail extends React.Component {
         this.process_realm_obj = this.process_realm_obj.bind(this);
         this.getMonthName = this.getMonthName.bind(this);
         this.formatAMPM = this.formatAMPM.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.success = this.success.bind(this);
+        this.handleGoing = this.handleGoing.bind(this);
     }
     state = {
         item: this.props.item,
-        subscribed: false,
+        going: false,
+        loading: false,
         notify: false
     }
 
-    componentDidMount() {
-        // const process_realm_obj = this.process_realm_obj;
-        // Realm.getRealm((realm) => {
-        //     let element = realm.objects('Firebase').filtered(`_id="${this.props.id}"`);
-        //     let item = realm.objects('Channels').filtered(`_id="${this.props.id}"`);
-        //     process_realm_obj(element, (result) => {
-        //         console.log(result);
-        //         if(result.length > 0) {
-        //             this.setState({ subscribed: true, notify: result[0].notify === "false" ? false : true  })
-        //         }
-        //     })
-        //     process_realm_obj(item, (result) => {
-        //         console.log(result[0]);
-        //         this.setState({ item: result[0] })
-        //     })
-        // });
+    async componentDidMount() {
+        const process_realm_obj = this.process_realm_obj;
+        axios.post('http://127.0.0.1:65534/events/user/fetch-event-data', { _id: this.props.item._id }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': await AsyncStorage.getItem(TOKEN)
+            }
+        }).then( response => {
+            response = response.data;
+            if(!response.error) {
+                Realm.getRealm((realm) => {
+                    realm.write(() => {
+                        realm.create('Events', { _id: this.props.item._id, views: response.data[0].views + "" }, true);
+                        realm.create('Events', { _id: this.props.item._id, enrollees: response.data[0].enrollees + "" }, true);
+                    });
+                    this.setState({ item: { ...this.props.item, views: response.data[0].views, enrollees: response.data[0].enrollees } })
+                });
+            }
+        }).catch( err => console.log(err) );
+
+        
+        
     }
 
     process_realm_obj = (RealmObject, callback) => {
@@ -87,7 +101,61 @@ class EventDetail extends React.Component {
         minutes = minutes < 10 ? '0'+minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
-      }
+    }
+
+    handleClick = async () => {
+        if(this.state.loading) return;
+        this.setState({ loading: true });
+        axios.post('http://127.0.0.1:65534/events/user/interested', { _id: this.props.item._id }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': await AsyncStorage.getItem(TOKEN)
+            }
+        }).then( response => {
+            console.log(response);
+            response = response.data;
+            if(!response.error) {
+                Realm.getRealm((realm) => {
+                    realm.write(() => {
+                        realm.create('Events', { _id: this.props.item._id, interested: "true" }, true);
+                        this.setState({ item: { ...this.state.item, interested: "true" } });
+                    });
+                });
+            }
+        }).catch( err => console.log(err) )
+        .finally(() => this.setState({ loading: false }));
+        
+    }
+    handleGoing = () => {
+        if(this.state.loading) return;
+        let going = "false";
+        Realm.getRealm((realm) => {
+            realm.write(() => {
+                let Final = realm.objects('Events').filtered(`_id="${this.props.item._id}"`);
+                going = Final[0].going;
+            });
+        });
+
+        Navigation.showOverlay({
+            component: {
+                name: 'Going Details',
+                passProps: {
+                    _id: this.props.item._id,
+                    going
+                },
+                options: {
+                    overlay: {
+                        interceptTouchOutside: true
+                    }
+                }
+            }
+        });
+    }
+
+    success = () => {
+        console.log("success");
+        this.setState({ item: { ...item, going: 'true' } })
+    }
 
     render() {
         const { item } = this.state;
@@ -276,7 +344,7 @@ class EventDetail extends React.Component {
                                     // color: '#222',
                                 }}
                             >
-                                People Going
+                                { item.enrollees } People Going
                             </Text>
                             <Text
                                 style={{
@@ -285,7 +353,7 @@ class EventDetail extends React.Component {
                                     color: '#222',
                                 }}
                             >
-                                { item.enrollees }
+                                { item.views } Views
                             </Text>
                         </View>
                     </View>
@@ -451,38 +519,69 @@ class EventDetail extends React.Component {
                 </ScrollView>
                 <View
                     style={{
-                        backgroundColor: this.state.subscribed ? '#c0c0c0' : 'blue' ,
                         flexDirection: 'row'
                     }}
                 >
-                    <TouchableOpacity
-                        onPress={this.handleSubscribe}
-                        style={{
-                            padding: 20,
-                            // backgroundColor: 'red',
-                            flex: 1
-                        }}
-                    >
-                    
-                        <Text
-                            style={{
-                                color: '#fff',
-                                fontSize: 20,
-                                fontFamily: 'Roboto',
-                                textAlign: 'center'
-                            }}
-                        >
-                            { !this.state.subscribed && "SUBSCRIBE"}
-                            { this.state.subscribed && "UNSUBSCRIBE"}
-                        </Text>
-                    </TouchableOpacity>
-                    {
-                        this.state.subscribed &&
+                    { item.interested === "false" &&
                         <TouchableOpacity
-                            onPress={this.handleNotify}
+                            onPress={this.handleClick}
                             style={{
                                 padding: 20,
-                                backgroundColor: this.state.notify ? '#c0c0c0' : '#0a9ad3',
+                                backgroundColor: 'blue',
+                                flex: 1
+                            }}
+                        >
+                            {
+                                this.state.loading &&
+                                <ActivityIndicator size="small" color="#fff" />
+                            }
+                            <Text
+                                style={{
+                                    color: '#fff',
+                                    fontSize: 20,
+                                    fontFamily: 'Roboto',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                
+                                {
+                                    !this.state.loading &&
+                                    "I'M INTERESTED"
+                                }
+                            </Text>
+                        </TouchableOpacity> }
+                    { item.interested === "true" && item.going === "false" &&
+                        <TouchableOpacity
+                            onPress={this.handleGoing}
+                            style={{
+                                padding: 20,
+                                backgroundColor: '#fa3e3e',
+                                flex: 1
+                            }}
+                        >
+                            {
+                                this.state.loading &&
+                                <ActivityIndicator size="small" color="#fff" />
+                            }
+                            <Text
+                                style={{
+                                    color: '#fff',
+                                    fontSize: 20,
+                                    fontFamily: 'Roboto',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                {
+                                    !this.state.loading &&
+                                    "SEND REGISTRATION ?"
+                                }
+                            </Text>
+                        </TouchableOpacity> }
+                    { item.interested === "true" && item.going === "true" &&
+                        <TouchableOpacity
+                            style={{
+                                padding: 20,
+                                backgroundColor: '#c0c0c0',
                                 flex: 1
                             }}
                         >
@@ -494,10 +593,10 @@ class EventDetail extends React.Component {
                                     textAlign: 'center'
                                 }}
                             >
-                                GET NOTIFIED
+                                GOING
                             </Text>
-                        </TouchableOpacity>
-                    }
+                        </TouchableOpacity> }
+                    
 
                 </View>
             </View>

@@ -8,6 +8,7 @@ import Profile from './screens/Profile';
 import EventDetail from './screens/EventDetail';
 import ChannelDetailScreen from './screens/ChannelDetailScreen';
 import StoryScreen from './screens/StoryScreen';
+import GoingDetails from './screens/GoingDetails';
 
 Navigation.registerComponent(`Initializing Screen`, () => Initializing);
 Navigation.registerComponent(`Interests Selection Screen`, () => Interests);
@@ -17,6 +18,7 @@ Navigation.registerComponent(`Profile Screen`, () => Profile);
 Navigation.registerComponent(`Event Detail Screen`, () => EventDetail);
 Navigation.registerComponent(`Channel Detail Screen`, () => ChannelDetailScreen);
 Navigation.registerComponent(`Story Screen`, () => StoryScreen);
+Navigation.registerComponent(`Going Details`, () => GoingDetails);
 
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
