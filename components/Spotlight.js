@@ -63,10 +63,10 @@ class Spotlight extends React.Component {
                     />
                     <LinearGradient style={{flex: 1, position: 'absolute', top : 0, width : '100%', height : 250}} colors={['#rgba(0, 0, 0, 0.3)', '#rgba(0,0,0,0.9)']}/>
                     <View style={{position : 'absolute', width : '100%', height : 250}}>
-                    <Text style={{ marginTop: 10, fontFamily: 'Roboto', color: 'white', fontSize: 25, textAlign : 'center' }}>
-                            In the spotlight
+                    <Text style={{ marginTop: 10, fontFamily: 'Roboto', color: 'white', fontSize: 22, textAlign : 'center', fontWeight : '300'}}>
+                            In the Spotlight
                         </Text>
-                        <TouchableOpacity activeOpacity={0.6} style={{alignSelf : 'center'}}>
+                        <TouchableOpacity activeOpacity={0.6} style={{alignSelf : 'center'}} onPress={()=>this.props.onPress(item)}>
                             <FastImage
                                 style={{ width: 150, height: 100, borderRadius: 10, margin: 10 }}
                                 source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(item.media)[0] }}
@@ -77,7 +77,7 @@ class Spotlight extends React.Component {
                             <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 20, color: '#fff' }}>
                                 {item.title}
                             </Text>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Thin', fontSize: 15, color: '#fff' }}>
+                            <Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, color: '#fff', fontWeight : '200' }}>
                                 {item.channel_name}
                             </Text>
                             <Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, color: '#fff', marginTop : 5, fontWeight : '300' }}>

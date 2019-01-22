@@ -317,9 +317,6 @@ class Home extends React.Component {
                         !this.state.loading &&
                         <View>
                             <FlatList 
-                                style={{
-                                    padding: 10
-                                }}
                                 showsHorizontalScrollIndicator={false}
                                 keyExtractor={ (item, index) => index+"" }
                                 extraData={this.state.categorySelected}

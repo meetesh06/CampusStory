@@ -12,7 +12,8 @@ class PostImageThumbnail extends React.Component {
                 <FastImage
                     style={{
                         width: '100%',
-                        height: '100%'
+                        height: '100%',
+                        margin : 5,
                     }}
                     resizeMode={FastImage.resizeMode.cover}
                     source={{ uri: 'https://www.mycampusdock.com/' + this.props.image }}

@@ -4,6 +4,7 @@ import Realm from '../realm';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Entypo';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Constants from '../constants';
 import { Navigation } from 'react-native-navigation';
@@ -106,7 +107,7 @@ class EventDetail extends React.Component {
     handleClick = async () => {
         if(this.state.loading) return;
         this.setState({ loading: true });
-        axios.post('http://127.0.0.1:65534/events/user/interested', { _id: this.props.item._id }, {
+        axios.post('https://mycampusdock.com/events/user/interested', { _id: this.props.item._id }, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
@@ -183,10 +184,13 @@ class EventDetail extends React.Component {
                     </View>
                     <View>
                     <FastImage
-                        style={{ width: WIDTH - 20, marginLeft: 10, marginTop: 5, height: 200, borderRadius: 10 }}
+                        style={{ width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10 }}
                         source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(item.media)[0] }}
                         resizeMode={FastImage.resizeMode.cover}
                     />
+                    <View style={{backgroundColor : '#rgba(0, 0, 0, 0.5)', position : 'absolute', top : 15, right : 15, borderRadius : 5}}>
+                        <Text style={{fontSize : 15, color : '#efefef', marginLeft : 10, marginRight : 10, margin : 5, textTransform : 'uppercase'}}>{item.category}</Text>
+                    </View>
                     </View>
                     <View
                         style={{
@@ -201,8 +205,10 @@ class EventDetail extends React.Component {
                         <View
                             style={{
                                 backgroundColor: '#f1f1f1',
-                                padding: 10,
                                 marginRight: 10,
+                                paddingRight : 10,
+                                paddingLeft : 10,
+                                padding : 5,
                                 borderRadius: 10
                             }}
                         >
@@ -215,13 +221,12 @@ class EventDetail extends React.Component {
                                     fontWeight: '900'
                                 }}
                             >
-                                
-                                { this.getMonthName(item.date.getMonth() + 1) }
+                            { this.getMonthName(item.date.getMonth() + 1) }
                             </Text>
                             <Text
                                 style={{
                                     textAlign: 'center',
-                                    fontSize: 25,
+                                    fontSize: 22,
                                     color: '#333',
                                 }}
                             >
@@ -229,6 +234,7 @@ class EventDetail extends React.Component {
                                 { JSON.stringify( item.date.getDate() ) }
                             </Text>
                         </View>
+
                         <View
                             style={{
                                 flex: 1,
@@ -255,10 +261,10 @@ class EventDetail extends React.Component {
                                     }}
                                 >
                                     
-                                    {"Hosted By " }
+                                    {"Hosted by " }
                                     <Text
                                         style={{
-                                            color: 'blue',
+                                            color: '#1111aa',
                                             fontFamily: 'Roboto'
                                         }}
                                     >
@@ -300,7 +306,7 @@ class EventDetail extends React.Component {
                                     // color: '#222',
                                 }}
                             >
-                                { this.formatAMPM(item.date) }
+                                { item.location }
                             </Text>
                             <Text
                                 style={{
@@ -309,7 +315,7 @@ class EventDetail extends React.Component {
                                     color: '#222',
                                 }}
                             >
-                                { item.location }
+                                { this.formatAMPM(item.date) }
                             </Text>
                         </View>
                     </View>
@@ -360,160 +366,109 @@ class EventDetail extends React.Component {
 
                     <View
                         style={{
-                            paddingTop: 10,
-                            marginTop: 10,
-                            paddingBottom: 20,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            backgroundColor: '#f0f0f0',
-                            margin: 10,
-                            borderRadius: 10,
-                            minHeight: 100,
-                            
+                            flex: 1,
+                            marginLeft: 5,
+                            padding: 5,
+                            flexDirection: 'row'
                         }}
                     >
-                        <Text
+                        <View
                             style={{
-                                textAlign: 'center',
-                                paddingBottom: 10,
-                                fontSize: 15,
-                                fontFamily: 'Roboto'
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
                             }}
                         >
-                            DESCIRPTION
-                        </Text>
-                        <Text
-                            textBreakStrategy="highQuality"
+                            <Icon1 style={{ color: '#444', }} size={30} name="text" />
+                        </View>
+                        <View
                             style={{
-                                fontFamily: 'Roboto-Light',
-                                fontSize: 15,
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                color: '#222'
-                            }}
-                        >   
-                            {item.description}
-                        </Text>
-
-                    </View>
-                    <View
-                        style={{
-                            paddingTop: 10,
-                            marginTop: 10,
-                            paddingBottom: 20,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            backgroundColor: '#f0f0f0',
-                            margin: 10,
-                            borderRadius: 10,
-                            minHeight: 100,
-                            
-                        }}
-                    >
-                        <Text
-                            style={{
-                                textAlign: 'center',
-                                paddingBottom: 10,
-                                fontSize: 15,
-                                fontFamily: 'Roboto'
+                                flex: 1,
+                                justifyContent: 'center',
                             }}
                         >
-                            CONTACT DETAILS
-                        </Text>
-                        <Text
-                            textBreakStrategy="highQuality"
-                            style={{
-                                fontFamily: 'Roboto-Light',
-                                fontSize: 15,
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                color: '#222'
-                            }}
-                        >   
-                            {item.contact_details}
-                        </Text>
-
-                    </View>
-                    <View
-                        style={{
-                            paddingTop: 10,
-                            marginTop: 10,
-                            paddingBottom: 20,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            backgroundColor: '#f0f0f0',
-                            margin: 10,
-                            borderRadius: 10,
-                            minHeight: 100,
-                            
-                        }}
-                    >
-                        <Text
-                            style={{
-                                textAlign: 'center',
-                                paddingBottom: 10,
-                                fontSize: 15,
-                                fontFamily: 'Roboto'
-                            }}
-                        >
-                            FAQ
-                        </Text>
-                        <Text
-                            textBreakStrategy="highQuality"
-                            style={{
-                                fontFamily: 'Roboto-Light',
-                                fontSize: 15,
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                color: '#222'
-                            }}
-                        >   
-                            {item.faq}
-                        </Text>
-                    </View>
-                    <View
-                        style={{
-                            marginBottom: 20,
-                            marginLeft: 10
-                        }}
-                    >
-
-                        <Text
-                            style={{
-                                fontSize: 15,
-                                fontFamily: 'Roboto-Light',
-                                
-                                // marginLeft: 10
-                            }}
-                        >
-                            Category : <Text
+                            <Text
                                 style={{
-                                    fontWeight: '800',
-                                    color: '#222',
-                                    textTransform: 'uppercase',
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    // color: '#222',
                                 }}
                             >
-                                {item.category}
+                                {item.description}
                             </Text>
-                        </Text>
-                        <Text
+                        </View>
+                    </View>
+
+                    <View
+                        style={{
+                            flex: 1,
+                            marginLeft: 5,
+                            padding: 5,
+                            flexDirection: 'row'
+                        }}
+                    >
+                        <View
                             style={{
-                                fontSize: 15,
-                                fontFamily: 'Roboto-Light',
-                                marginTop: 10
-                                // marginLeft: 10
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
                             }}
                         >
-                            Tags : <Text
+                            <IconIonicons style={{ color: '#444', }} size={30} name="md-contact" />
+                        </View>
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text
                                 style={{
-                                    fontWeight: '800',
-                                    color: '#222',
-                                    textTransform: 'uppercase',
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    // color: '#222',
                                 }}
                             >
-                                {item.tags}
+                                {item.contact_details}
                             </Text>
-                        </Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flex: 1,
+                            marginLeft: 5,
+                            padding: 5,
+                            flexDirection: 'row'
+                        }}
+                    >
+                        <View
+                            style={{
+                                backgroundColor: '#f1f1f1',
+                                padding: 10,
+                                marginRight: 10,
+                                borderRadius: 10
+                            }}
+                        >
+                            <Icon style={{ color: '#444', }} size={30} name="questioncircleo" />
+                        </View>
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    textAlign: 'left',
+                                    fontSize: 15,
+                                    // color: '#222',
+                                }}
+                            >
+                                {item.faq}
+                            </Text>
+                        </View>
                     </View>
                     
                 </ScrollView>

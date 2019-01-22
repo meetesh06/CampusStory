@@ -168,25 +168,6 @@ class ChannelDetailScreen extends React.Component {
                             flexDirection: 'row'
                         }}
                     >
-                        <Icon 
-                            style={{
-                                marginLeft: 10,
-                                color: '#333'
-                            }}
-                            size={30} 
-                            name="smileo" 
-                        />
-                        <Text
-                            style={{ 
-                                textAlign: 'center',
-                                textAlignVertical: 'auto',
-                                fontSize: 15,
-                                marginLeft: 10,
-                                alignSelf: 'center',
-                            }}
-                        >
-                            {item !== null && item.followers} Following
-                        </Text>
                     </View>
                 </ScrollView>
                 <View

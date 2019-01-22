@@ -399,36 +399,12 @@ class Home extends React.Component {
                         {
                             this.state.week_event_list !== undefined && 
                             this.state.week_event_list.map((item, index) =>{
-                                return <Spotlight item = {item} key = {item._id}/>
+                                return <Spotlight item = {item} key = {item._id} onPress = {this.handleEventPress} />
                             })
                         }
                     </Swiper>
-                    <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-						All about today 
-					</Text>
-					<FlatList 
-						horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index+""}
-						data={this.state.event_list} 
-						renderItem={({item}) => 
-                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
-                        } 
-					/>
-                    <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-						From Music
-					</Text>
-					<FlatList 
-						horizontal={true}
-						showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index+""}
-                        data={this.state.event_list} 
-						renderItem={({item}) => 
-                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
-                        } 
-					/>
 
-<Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                    {/* <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
 						{'From Art & Craft'}
 					</Text>
 					<FlatList 
@@ -439,7 +415,7 @@ class Home extends React.Component {
 						renderItem={({item}) => 
                             <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
                         } 
-					/>
+					/> */}
                     
                 </ScrollView>
                 
