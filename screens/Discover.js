@@ -191,7 +191,7 @@ class Home extends React.Component {
 
     getItemView = (item) =>{
         switch(item.type){
-            case 'post' : return <PostThumbnail key = {item._id} message = {item.message} style={{width : 100, height : 150, }}/>
+            case 'post' : return <PostThumbnail message = {item.message}/>
             case 'post-image' : return <PostImageThumbnail image = {item.media[0]} />
             case 'post-video' : return <PostVideoThumbnail video = {item.media} />
         }

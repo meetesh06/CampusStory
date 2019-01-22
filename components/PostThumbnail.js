@@ -7,7 +7,7 @@ const WIDTH = Dimensions.get('window').width;
 class PostThumbnail extends React.Component {
     render() {
         return(
-            <LinearGradient style={{ width : (WIDTH - 20) / 3, height : WIDTH / 3, justifyContent : 'center', alignItems : 'center'}} colors={['#0056e5', '#85f5ff']} >
+            <LinearGradient style={{ width : (WIDTH) / 3, height : WIDTH / 3, justifyContent : 'center', alignItems : 'center', margin : 1}} colors={['#0056e5', '#85f5ff']} >
                 <Text
                     style={{
                         fontSize: 12,
@@ -18,7 +18,7 @@ class PostThumbnail extends React.Component {
                     }}
                     numberOfLines = {4}
                     lineBreakMode = 'tail'
-                > {'Something More is always better than something else'} </Text>
+                > {this.props.message} </Text>
             </LinearGradient>
         );
     }

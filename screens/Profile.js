@@ -2,7 +2,7 @@ import React from 'react';
 import { AsyncStorage, View, Text, Button } from 'react-native';
 import Constants from '../constants';
 import { goInitializing } from './helpers/Navigation';
-const SET_UP_STATUS = Constants.SET_UP_STATUS;
+import FastImage from 'react-native-fast-image';
 import Realm from '../realm';
 
 class Profile extends React.Component {
@@ -20,11 +20,22 @@ class Profile extends React.Component {
             });
         });
     }
+
     render() {
         return(
-            <View style={{ flex: 1, paddingTop: 150 }}>
-                <Text>Discover Screen</Text>
-                <Button onPress={this.handleLogout} title="logout" />
+            <View>
+                <View style={{margin : 10, marginTop : 20, backgroundColor : '#456', justifyContent : 'center', alignItems : 'center'}}>
+                <FastImage
+                    style={{
+                        width: 120,
+                        height: 120,
+                        borderRadius : 60,
+                        tintColor : '#FF4A3F',
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                    source= {require('../media/LogoWhite.png')}
+                />
+                </View>
             </View>
         );
     }

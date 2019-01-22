@@ -40,7 +40,6 @@ class Home extends React.Component {
     
     _updateLists = async (last_updated, channels_list) => {
         const process_realm_obj = this.process_realm_obj;
-        // axios.post('http://127.0.0.1:65534/events/user/get-event-list', { last_updated }, {
         axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated }, {
             headers: {
                 'Content-Type': 'application/json',

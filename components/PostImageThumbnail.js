@@ -8,7 +8,7 @@ const WIDTH = Dimensions.get('window').width;
 class PostImageThumbnail extends React.Component {
     render() {
         return(
-            <View style={{ width : (WIDTH - 20) / 3, height : WIDTH / 3, alignItems: 'center', justifyContent: 'center' }} >
+            <View style={{ width : (WIDTH) / 3, height : WIDTH / 3, alignItems: 'center', justifyContent: 'center', margin : 1, backgroundColor : '#efefef' }} >
                 <FastImage
                     style={{
                         width: '100%',
