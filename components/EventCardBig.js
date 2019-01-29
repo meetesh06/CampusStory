@@ -1,11 +1,41 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, Text } from 'react-native';
-// import AnimatedImageButton from './Button';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image'
 import LinearGradient from 'react-native-linear-gradient';
 
-class EventCard extends React.Component {
+class EventCardBig extends React.Component {
+    getMonthName = (num) => {
+        switch(num) {
+            case 1:
+                return "JAN"
+            case 2:
+                return "FEB"    
+            case 3:
+                return "MAR"
+            case 4:
+                return "APR"
+            case 5:
+                return "MAY"
+            case 6:
+                return "JUN"
+            case 7:
+                return "JUL"
+            case 8:
+                return "AUG"
+            case 9:
+                return "SEP"
+            case 10:
+                return "OCT"
+            case 11:
+                return "NOV"
+            case 12:
+                return "DEC"
+            default: 
+                return "FUCK"
+
+        }
+    }
     render() {
         console.log(this.props.item);
         return(
@@ -30,51 +60,30 @@ class EventCard extends React.Component {
                         width: 2
                     }
             }}>
-                
-            {/* <View style={{ 
-                    overflow: 'hidden', 
-                    width: this.props.width, 
-                    height: this.props.height, 
-                    backgroundColor: '#c0c0c0', 
-                    margin: 10, 
-                    borderRadius: 10,
-                    shadowColor: "#000000",
-                    shadowOpacity: 1,
-                    shadowRadius: 10,
-                    shadowOffset: {
-                        height: 10,
-                        width: 10
-                    },
-                }}
-            > */}
                         <FastImage
                             style={{ width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
                             source={{ uri: "https://mycampusdock.com/" + JSON.parse(this.props.item.media)[0] }}
                             resizeMode={FastImage.resizeMode.cover}
                         />
-                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#0b0b0b', '#00000000']}>
+                        <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#00000055', '#0b0b0b']}>
                         </LinearGradient>
                         
                         <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 10, color: '#fff' }}>
                             {this.props.item.college}
                         </Text>
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 16, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 25, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
                             {this.props.item.title}
                         </Text>
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 50, color: '#fff' }}>
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 15, left: 10, right: 0, textAlign: 'left', position: 'absolute', bottom: 20, color: '#fff' }}>
                             {this.props.item.location}
                         </Text>
-                        {/* {
-                            this.state.pressed &&
-                            <Icon name='radio-button-checked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
-                        }
-                        {
-                            !this.state.pressed &&
-                            <Icon name='radio-button-unchecked' style={{ fontSize: 20, color: 'white', position: 'absolute', bottom: 5, right: 5 }}/>
-                        } */}
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 15, left: 10, right: 10, textAlign: 'left', position: 'absolute', bottom: 45, color: '#fff' }}>
+                            { this.getMonthName(this.props.item.date.getMonth() + 1) } { JSON.stringify( this.props.item.date.getDate() ) }
+                        </Text>
+
             </TouchableOpacity>
         );
     }
 }
 
-export default EventCard;
+export default EventCardBig;

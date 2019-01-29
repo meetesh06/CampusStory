@@ -1,7 +1,8 @@
 import React from 'react';
-import { RefreshControl, TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
+import { Dimensions, RefreshControl, TouchableOpacity, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text } from 'react-native';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
+import EventCardBig from '../components/EventCardBig';
 import StoryIcon from '../components/StoryIcon';
 import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
@@ -12,6 +13,8 @@ import Spotlight from '../components/Spotlight';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
 
 const TOKEN = Constants.TOKEN;
+const INTERESTS = Constants.INTERESTS;
+const WIDTH = Dimensions.get('window').width;
 
 import FastImage from 'react-native-fast-image'
 class Home extends React.Component {
@@ -25,14 +28,28 @@ class Home extends React.Component {
         this._updateLists = this._updateLists.bind(this);
     }
 
+    state = {
+        event_list: [],
+        refreshing: true,
+        interests: [],
+        channels: [
+
+        ],
+        eventsToday: [
+        ],
+        eventsChannels: []
+    }
+
     async componentDidMount() {
+        const interests = await AsyncStorage.getItem(INTERESTS);
+        this._updateContent();
+        this.setState({ interests: interests.split(',') })
         this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
             console.log(notification);
         });
         this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
             console.log(notification);
         });
-        this._updateContent();
         if(!firebase.messaging().hasPermission()){
             await firebase.messaging().requestPermission();
         }
@@ -79,10 +96,10 @@ class Home extends React.Component {
                             }
                         }
                     });
-                    let Events = realm.objects('Events').sorted('timestamp');
-                    process_realm_obj(Events, (result) => {
-                        this.setState({ event_list: result.reverse() });
-                    });
+                    // let Events = realm.objects('Events').sorted('date', true);
+                    // process_realm_obj(Events, (result) => {
+                    //     this.setState({ event_list: result });
+                    // });
                 });
             }
         }).catch( err => console.log(err) 
@@ -164,22 +181,34 @@ class Home extends React.Component {
 
     _updateContent = async () => {
         const process_realm_obj = this.process_realm_obj;
-        
+        let interests = await AsyncStorage.getItem(INTERESTS);
+        interests = interests.split(',');
         const _updateLists = this._updateLists;
         this.setState({ refreshing: true });
         let last_updated;
         Realm.getRealm((realm) => {
             let ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
             let cs = Date.parse(new Date());
-            let latest_events = realm.objects('Events').filtered('interested = "false"').filtered('ms > ' + cs).sorted('date');
-            let week_events = realm.objects('Events').filtered('ms < ' + ts + ' AND ms > ' + cs).sorted('date');
+            let Events = realm.objects('Events').sorted('timestamp', true);
+
+            interests.forEach( (value) => {
+                let current = Events.filtered('ms > ' + cs).filtered('going="false"').filtered('category="' + value +'"').sorted('date', true);
+                process_realm_obj(current, (result)=>{
+                    console.log(value, result);
+                    this.setState({ [value]: result});
+                })
+            })
+
+            
+            let latest_events = realm.objects('Events').filtered('going = "false"').filtered('ms > ' + cs).sorted('date', true);
+            let week_events = realm.objects('Events').filtered('going = "false"').filtered('ms < ' + ts + ' AND ms > ' + cs).sorted('date', true);
             try {
                 last_updated = Events[0].timestamp;
             } catch(e) {
                 last_updated = 'NONE';
             }
             process_realm_obj(latest_events, (result)=>{
-                this.setState({ event_list: result});
+                this.setState({ event_list: result });
             })
 
             process_realm_obj(week_events, (result)=>{
@@ -225,46 +254,36 @@ class Home extends React.Component {
         callback(result);
     }
 
-    state = {
-        event_list: [],
-        refreshing: true,
-        channels: [
-
-        ],
-        eventsToday: [
-            { creator: 'Wild Cats', location: 'Manav Rachna', title: 'Music Festival 2018', image: "https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/934590/300/200/m1/fpnw/wm0/music-festival-poster-7-.jpg?1453743028&s=fd59fe8609d4ee63a8f04a8c96b40f25" },
-            { creator: 'Water Sharks', location: 'Manav Rachna', title: 'Aritificial Intelligence', image: "https://www.burniegroup.com/wp-content/uploads/2018/03/960x0-1-300x200.jpg" },
-            { creator: 'Slim Shady', location: 'Manav Rachna', title: 'TED Talk - Sanjay Bhandalkar', image: "http://www.personalbrandingblog.com/wp-content/uploads/2016/05/3256398629_019f3444aa-300x200.jpg" },
-            { creator: 'Tupac Shakur', location: 'Manav Rachna', title: 'CSGO Lan Party', image: "https://hdwallpaperim.com/wp-content/uploads/2017/09/16/54422-Counter-Strike-Counter-Strike_Global_Offensive-300x200.jpg" },
-        ],
-        eventsChannels: [],
-    }
-
     handleEventPress = (item) => {
-        console.log(item)
-        Navigation.push(this.props.componentId, {
-            component: {
-              name: 'Event Detail Screen',
-              passProps: {
-                item,
-                id: item.title
-              },
-              options: {
-                topBar: {
-                    visible: true,
-                    drawBehind: false,
-                    title: {
-                        text: item.title,
-                    },
-                },
-                bottomTabs: {
-                    visible: false,
-                    drawBehind: true,
-                    animate: true
-                }
-              }
-            }
-          });
+        Realm.getRealm((realm) => {
+            let current = realm.objects('Events').filtered(`_id="${item._id}"`);
+            this.process_realm_obj(current, (result)=>{
+                Navigation.push(this.props.componentId, {
+                    component: {
+                      name: 'Event Detail Screen',
+                      passProps: {
+                        item: result[0],
+                        id: result[0].title
+                      },
+                      options: {
+                        topBar: {
+                            visible: true,
+                            drawBehind: false,
+                            title: {
+                                text: result[0].title,
+                            },
+                        },
+                        bottomTabs: {
+                            visible: false,
+                            drawBehind: true,
+                            animate: true
+                        }
+                      }
+                    }
+                  });
+            })
+        });
+        
         
     }
     
@@ -403,7 +422,33 @@ class Home extends React.Component {
                             })
                         }
                     </Swiper>
-
+                    {
+                        this.state.interests.map( (value, index) =>
+                            <View key={index}>
+                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                                    {value}
+                                </Text>
+                                <FlatList 
+                                    horizontal={true}
+                                    showsHorizontalScrollIndicator={false}
+                                    keyExtractor={(item, index) => index+""}
+                                    data={this.state[value]} 
+                                    renderItem={({item}) => 
+                                        <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />
+                                    } 
+                                />
+                            </View>
+                        )
+                    }
+                    <FlatList 
+                        horizontal={false}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
+                        data={this.state.event_list} 
+                        renderItem={({item}) => 
+                            <EventCardBig onPress={this.handleEventPress} width={WIDTH - 20} height={(WIDTH - 20) * 0.75} item={item} />
+                        } 
+                    />
                     {/* <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
 						{'From Art & Craft'}
 					</Text>

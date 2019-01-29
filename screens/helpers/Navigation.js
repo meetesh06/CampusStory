@@ -101,8 +101,8 @@ export const goHome = async () => {
             }
           },
           {
-            component: {
-              name: 'Profile Screen',
+            stack: {
+              id: "Profile Stack",
               options: {
                 bottomTab: {
                   text: 'Profile',
@@ -117,9 +117,16 @@ export const goHome = async () => {
                   visible: false,
                   drawBehind: true
                 }
-              }
-            },
-          },
+              },
+              children: [
+                {
+                  component: {
+                    name: 'Profile Screen'
+                  }
+                }
+              ]
+            }
+          }
         ],
       }
     }

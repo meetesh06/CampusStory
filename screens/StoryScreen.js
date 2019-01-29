@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
+import { Alert, BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
 import axios from 'axios';
 import Constants from '../constants';
 import Post from '../components/Post';
@@ -37,35 +37,34 @@ class StoryScreen extends React.Component {
             // gestureState.d{x,y} will be set to zero now
             },
             onPanResponderMove: (evt, gestureState) => {
-                // Alert.alert( 10 * gestureState.dy / HEIGHT + "");
-                this.opacity.setValue(1 - gestureState.dy / HEIGHT)
-                this.height.setValue(HEIGHT - HEIGHT * (-gestureState.dy) / HEIGHT)
-                this.radius.setValue( 100 * gestureState.dy / HEIGHT );
+                if( gestureState.vy > 0.4 ) {
+                    return Navigation.dismissOverlay(this.props.componentId);
+                }
+                if(gestureState.dy > 0) {
+                    this.opacity.setValue(1 - gestureState.dy / HEIGHT)
+                }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
             onPanResponderRelease: (evt, gestureState) => {
                 // Alert.alert(gestureState.dy / HEIGHT * 100 + "");
-                if(gestureState.dy < 0) gestureState.dy = - gestureState.dy;
+                
                 if( gestureState.dy / HEIGHT * 100  > 30) {
                     // Navigation.dismissOverlay(this.props.componentId); 
                     Animated.timing(
-                        this.height,
+                        this.opacity,
                         {
                           toValue: 0,
                           easing: Easing.cubic,
                           duration: 300
                         }
                     ).start(() => {
-                        // console.log('closed');
                         Navigation.dismissOverlay(this.props.componentId); 
                     });
                 } else {
-                    this.opacity.setValue(1);
-                    this.radius.setValue(0);
                     Animated.spring(
-                        this.height,
+                        this.opacity,
                         {
-                          toValue: HEIGHT,
+                          toValue: 1,
                           friction: 5
                         }
                     ).start();
@@ -140,7 +139,6 @@ class StoryScreen extends React.Component {
             });
             
             process_realm_obj(Final, (result) => {
-                
                 this.setState({ stories: result, loading: false }, () => this.updateRead());
             });
         });   
@@ -163,6 +161,12 @@ class StoryScreen extends React.Component {
                 {
                     this.state.loading &&
                     <ActivityIndicator size="small" color="#fff" />
+                }
+                {
+                    !this.state.loading && this.state.stories.length === 0 &&
+                    <View>
+                        <Text style={{ textAlign: 'center', color: '#fff' }}> Sorry there are no new stories yet! </Text>
+                    </View>
                 }
                 {
                     this.state.stories.length > 0 &&

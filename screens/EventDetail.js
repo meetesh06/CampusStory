@@ -31,8 +31,8 @@ class EventDetail extends React.Component {
     }
 
     async componentDidMount() {
-        const process_realm_obj = this.process_realm_obj;
-        axios.post('http://127.0.0.1:65534/events/user/fetch-event-data', { _id: this.props.item._id }, {
+        // const process_realm_obj = this.process_realm_obj;
+        axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id: this.props.item._id }, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
@@ -41,11 +41,29 @@ class EventDetail extends React.Component {
             response = response.data;
             if(!response.error) {
                 Realm.getRealm((realm) => {
+                    let el = response.data[0];
                     realm.write(() => {
-                        realm.create('Events', { _id: this.props.item._id, views: response.data[0].views + "" }, true);
-                        realm.create('Events', { _id: this.props.item._id, enrollees: response.data[0].enrollees + "" }, true);
+                        let current = realm.objects('Events').filtered(`_id="${this.props.item._id}"`);
+                        realm.delete(current);
+                        el.reach = JSON.stringify(el.reach);
+                        el.views = JSON.stringify(el.views);
+                        el.enrollees = JSON.stringify(el.enrollees);
+                        el.name = JSON.stringify(el.name);
+                        el.audience = JSON.stringify(el.audience);
+                        el.media = JSON.stringify(el.media);
+                        el.timestamp = new Date(el.timestamp);
+                        el.time = new Date(el.time);
+                        let ts = Date.parse(''+el.date);
+                        el.date = new Date(el.date);
+                        el.ms = ts;
+                        el.reg_end = new Date(el.reg_end);
+                        el.reg_start = new Date(el.reg_start);
+                        el.interested = "false";
+                        el.going = "false";
+                        realm.create('Events', el, true);
                     });
-                    this.setState({ item: { ...this.props.item, views: response.data[0].views, enrollees: response.data[0].enrollees } })
+                    console.log(el);
+                    this.setState({ item: el })
                 });
             }
         }).catch( err => console.log(err) );
@@ -107,7 +125,7 @@ class EventDetail extends React.Component {
     handleClick = async () => {
         if(this.state.loading) return;
         this.setState({ loading: true });
-        axios.post('https://mycampusdock.com/events/user/interested', { _id: this.props.item._id }, {
+        axios.post('https://www.mycampusdock.com/events/user/interested', { _id: this.props.item._id }, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
@@ -118,6 +136,7 @@ class EventDetail extends React.Component {
             if(!response.error) {
                 Realm.getRealm((realm) => {
                     realm.write(() => {
+                        console.log(this.props.item);
                         realm.create('Events', { _id: this.props.item._id, interested: "true" }, true);
                         this.setState({ item: { ...this.state.item, interested: "true" } });
                     });
@@ -164,7 +183,8 @@ class EventDetail extends React.Component {
         return(
             <View
                 style={{
-                    flex: 1
+                    flex: 1,
+                    backgroundColor: '#fff'
                 }}
             >
 
@@ -189,7 +209,7 @@ class EventDetail extends React.Component {
                         resizeMode={FastImage.resizeMode.cover}
                     />
                     <View style={{backgroundColor : '#rgba(0, 0, 0, 0.5)', position : 'absolute', top : 15, right : 15, borderRadius : 5}}>
-                        <Text style={{fontSize : 15, color : '#efefef', marginLeft : 10, marginRight : 10, margin : 5, textTransform : 'uppercase'}}>{item.category}</Text>
+                        <Text style={{ fontSize : 15, color : '#efefef', marginLeft : 10, marginRight : 10, margin: 5 }}>{item.category.toUpperCase()}</Text>
                     </View>
                     </View>
                     <View
@@ -490,20 +510,19 @@ class EventDetail extends React.Component {
                                 this.state.loading &&
                                 <ActivityIndicator size="small" color="#fff" />
                             }
-                            <Text
-                                style={{
-                                    color: '#fff',
-                                    fontSize: 20,
-                                    fontFamily: 'Roboto',
-                                    textAlign: 'center'
-                                }}
-                            >
-                                
-                                {
-                                    !this.state.loading &&
-                                    "I'M INTERESTED"
-                                }
-                            </Text>
+                            {
+                                !this.state.loading &&
+                                <Text
+                                    style={{
+                                        color: '#fff',
+                                        fontSize: 20,
+                                        fontFamily: 'Roboto',
+                                        textAlign: 'center'
+                                    }}
+                                >    
+                                    I'M INTERESTED
+                                </Text>
+                            }
                         </TouchableOpacity> }
                     { item.interested === "true" && item.going === "false" &&
                         <TouchableOpacity
