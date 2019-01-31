@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dimensions, ScrollView, RefreshControl, FlatList, AsyncStorage, View, Text, TouchableOpacity } from 'react-native';
-import Constants from '../constants';
 import { goInitializing } from './helpers/Navigation';
 import FastImage from 'react-native-fast-image';
 import Realm from '../realm';
@@ -9,6 +8,8 @@ import EventCardBig from '../components/EventCardBig';
 import LinearGradient from 'react-native-linear-gradient';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
+
+import InformationCard from '../components/InformationCard';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -23,6 +24,7 @@ class Profile extends React.Component {
     state = {
         interested: [],
         going: [],
+        count : 0,
         refreshing: false
     }
 
@@ -101,17 +103,25 @@ class Profile extends React.Component {
             >
                 
                     <LinearGradient style={{ overflow: 'hidden', justifyContent: 'center', alignItems: 'center', padding : 2 }} colors={['#FF4A3F', '#FF6A15']}>
-                        <FastImage
-                            style={{
-                                width: 84,
-                                height: 84,
-                                alignSelf: 'center',
-                                marginTop : 20,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                            source= {require('../media/LogoWhite.png')}
-                        />
-                        <Text
+                        <TouchableOpacity onPress ={()=>{
+                            this.setState({count : this.state.count + 1}, ()=>{
+                                if(this.state.count > 15){
+                                    this.handleLogout();
+                                }
+                            }) 
+                        }}>
+                            <FastImage
+                                style={{
+                                    width: 84,
+                                    height: 84,
+                                    alignSelf: 'center',
+                                    marginTop : 30,
+                                }}
+                                resizeMode={FastImage.resizeMode.contain}
+                                source= {require('../media/LogoWhite.png')}
+                            />
+                        </TouchableOpacity>
+                        {/* <Text
                             style={{
                                 fontFamily: 'Roboto',
                                 margin: 10,
@@ -119,8 +129,8 @@ class Profile extends React.Component {
                                 fontSize: 20
                             }}
                         >
-                            Hey There, How is your day going?
-                        </Text>
+                            Hey there, How is your day going?
+                        </Text> */}
                     </LinearGradient>
                 
 
@@ -140,7 +150,7 @@ class Profile extends React.Component {
                 >
                     {
                         this.state.interested.length > 0 &&
-                        <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                        <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 20, marginLeft: 10 }}> 
                             Interested Events
                         </Text>
                     }
@@ -150,82 +160,40 @@ class Profile extends React.Component {
                         keyExtractor={(item, index) => index+""}
                         data={this.state.interested} 
                         renderItem={({item}) => 
-                            <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />
+                            <EventCard onPress={this.handleEventPress} width={180} height={140} item={item} />
                         } 
                     />
                     {
                         this.state.going.length > 0 &&
-                        <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                        <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 20, marginLeft: 10 }}> 
                             Registered Events
                         </Text>
                     }
-                    {
-                        this.state.going.length === 0 &&
-                        <View>
-                            <Text
-                                style={{
-                                    marginTop: 10,
-                                    fontFamily: 'Roboto-Light',
-                                    textAlign: 'center'
-                                }}
-                            >
-                                This page shows all your registered events
-                            </Text>
-                            <View
-                                style={{
-                                    backgroundColor: '#333',
-                                    flex: 1,
-                                    margin: 10,
-                                    borderRadius: 10,
-                                    padding: 10,
-                                    height: 300,
-                                    justifyContent: 'center'
-                                }}
-                            >
-                                <Icon style={{ textAlign: 'center', padding: 10, color: '#c0c0c0' }} size={50} name="lock1" />
-                                <Text
-                                    style={{
-                                        marginTop: 10,
-                                        fontFamily: 'Roboto',
-                                        textAlign: 'center',
-                                        color: '#c0c0c0',
-                                    }}
-                                >
-                                    SECURITY DETAILS
-                                </Text>
-                                <Text
-                                    style={{
-                                        marginTop: 10,
-                                        fontFamily: 'Roboto-Thin',
-                                        textAlign: 'center',
-                                        color: '#c0c0c0'
-                                    }}
-                                >
-                                    All Data is stored locally
-                                </Text>
-                                <Text
-                                    style={{
-                                        marginTop: 10,
-                                        fontFamily: 'Roboto-Thin',
-                                        textAlign: 'center',
-                                        color: '#c0c0c0'
-                                    }}
-                                >
-                                    No personal details are shared with any third party without your permission
-                                </Text>
-                            </View>
-                        </View>
-                    }
+                    
                     <FlatList 
-                        horizontal={false}
+                        horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item, index) => index+""}
                         data={this.state.going} 
                         renderItem={({item}) => 
-                            <EventCardBig onPress={this.handleEventPress} width={WIDTH - 20} height={(WIDTH - 20) * 0.75} item={item} />
+                            <EventCard onPress={this.handleEventPress} width={180} height={(140)} item={item} />
                         } 
                     />
+
+                    <View>
+                        <Text
+                            style={{
+                                marginTop: 10,
+                                fontFamily: 'Roboto-Light',
+                                textAlign: 'center'
+                            }}
+                        >
+                            This page shows all your registered events
+                        </Text>
+                        <InformationCard icon = {<Icon name = 'lock1' size = {45} color = {'#111'} style={{margin : 10, alignSelf : 'center',}} />} title = 'Secured Data' content = 'All of your data shared on this platform will be safe and never shared with anyone without your permission.' style_card={{}}/>
+                    </View> 
                 </ScrollView>
+            
             </View>
         );
     }

@@ -68,17 +68,14 @@ class EventCardBig extends React.Component {
                         <LinearGradient style={{ position: 'absolute', width: this.props.width, height: this.props.height, opacity: 0.6, flex: 1 }} colors={['#000', '#00000055', '#0b0b0b']}>
                         </LinearGradient>
                         
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 10, color: '#fff' }}>
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 12, left: 15, right: 0, textAlign: 'left', position: 'absolute', top: 15, color: '#dfdfdf' }}>
                             {this.props.item.college}
                         </Text>
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 25, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 30, color: '#fff' }}>
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 22, left: 15, right: 0, textAlign: 'left', position: 'absolute', top: 40, color: '#efefef' }}>
                             {this.props.item.title}
                         </Text>
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 15, left: 10, right: 0, textAlign: 'left', position: 'absolute', bottom: 20, color: '#fff' }}>
-                            {this.props.item.location}
-                        </Text>
-                        <Text style={{ fontFamily: 'Roboto', fontSize: 15, left: 10, right: 10, textAlign: 'left', position: 'absolute', bottom: 45, color: '#fff' }}>
-                            { this.getMonthName(this.props.item.date.getMonth() + 1) } { JSON.stringify( this.props.item.date.getDate() ) }
+                        <Text style={{ fontFamily: 'Roboto', fontSize: 15, left: 15, right: 0, textAlign: 'left', position: 'absolute', bottom: 20, color: '#dfdfdf' }}>
+                            {this.props.item.location} {' • '} { this.getMonthName(this.props.item.date.getMonth() + 1) } { JSON.stringify( this.props.item.date.getDate() ) }
                         </Text>
 
             </TouchableOpacity>

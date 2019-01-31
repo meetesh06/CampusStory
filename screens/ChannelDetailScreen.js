@@ -129,7 +129,7 @@ class ChannelDetailScreen extends React.Component {
                         {
                             item !== null &&
                             <FastImage
-                                style={{ width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10 }}
+                                style={{ width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10, backgroundColor : '#000' }}
                                 source={{ uri: "https://www.mycampusdock.com/" + JSON.parse(item.media)[0] }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />

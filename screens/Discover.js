@@ -204,7 +204,7 @@ class Home extends React.Component {
                     style = {{ 
                         backgroundColor : '#fff', 
                         //minHeight : Platform.OS === 'android' ? 70 : 90, 
-                        paddingTop : Platform.OS === 'android'? 8 : 30, 
+                        paddingTop : Platform.OS === 'android'? 8 : 42, 
                         shadowColor: "#000000",
                         shadowOpacity: 0.1,
                         shadowRadius: 0.5,
@@ -213,7 +213,7 @@ class Home extends React.Component {
                             width: 2
                         }
                 }}>
-                <View style={{backgroundColor : '#fff'}}>
+                {/* <View style={{backgroundColor : '#fff'}}>
                         <View style ={{
                             alignItems : 'center',
                             flexDirection : 'row',
@@ -231,8 +231,8 @@ class Home extends React.Component {
                                 onChangeText = {(text) => console.log(text)}
                             />
                         </View>  
-                    </View>
-                </View>
+                    </View>*/}
+                </View> 
                 <ScrollView 
                     refreshControl={
                         <RefreshControl

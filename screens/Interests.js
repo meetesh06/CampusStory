@@ -7,10 +7,13 @@ import axios from 'axios';
 import { goHome } from './helpers/Navigation';
 import Constants from '../constants';
 import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
+import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
 import firebase from 'react-native-firebase';
 import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
+import InformationCard  from '../components/InformationCard';
 
 const SET_UP_STATUS = Constants.SET_UP_STATUS;
 const COLLEGE = Constants.COLLEGE;
@@ -298,7 +301,7 @@ class Interests extends React.Component {
 					/>
 					{/* <FastImage source={{ uri: this.state.collegeSelection.media }} /> */}
 					
-					<LinearGradient style={{ flex: 1, padding: 10, margin : 10, borderRadius: 10, marginTop : 20}} colors={['#FF4A3F', '#FF6A15']}>
+					{/* <LinearGradient style={{ flex: 1, padding: 10, margin : 10, borderRadius: 10, marginTop : 20}} colors={['#FF4A3F', '#FF6A15']}>
 						<Text style={{ textAlign: 'center', fontFamily: 'Roboto', fontSize: 15, padding: 15, color: 'white' }}>
 							Thank you for installing Campus Story! {'\n'}This app collects app usage data to improve your user experience and for the stability of the app.
 						</Text>
@@ -309,9 +312,17 @@ class Interests extends React.Component {
 						<TouchableOpacity onPress={this.handleNextScreen} style={{  alignSelf: 'center', backgroundColor: '#fff', padding: 10, borderRadius: 5}}>
 							<Text style={{ color: '#000', fontSize: 20, fontFamily: 'Roboto'}}> Continue </Text>
 						</TouchableOpacity>
-					</LinearGradient>
-					
+					</LinearGradient> */}
+
+					<InformationCard title = 'Thank You' content = {'Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information.'} icon = {<IconSimple name = 'emotsmile' size = {40} color = {'#111'} style = {{margin : 10, alignSelf : 'center'}} /> } />
 				</ScrollView>
+
+				<View style={{position : 'absolute', bottom : 30, alignSelf : 'center', elevation : 10, backgroundColor : '#dfdfef', padding : 5, borderRadius : 30}}>
+					<TouchableOpacity style={{backgroundColor : '#FF6A15', borderRadius : 40, justifyContent : 'center', alignItems : 'center', padding : 5}} onPress={this.handleNextScreen}>
+						<IconMaterial name = 'navigate-next' size = {45} color = "#fff"/>
+					</TouchableOpacity>
+				</View>
+				
 				<CustomModal newSelection={ (data) => {
 						this.setState({ showModal: false, collegeSelection: data })
 					}} 

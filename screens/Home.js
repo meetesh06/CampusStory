@@ -11,6 +11,7 @@ import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
 import Spotlight from '../components/Spotlight';
 import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
+import InformationCard from '../components/InformationCard';
 
 const TOKEN = Constants.TOKEN;
 const INTERESTS = Constants.INTERESTS;
@@ -30,7 +31,6 @@ class Home extends React.Component {
 
     state = {
         event_list: [],
-        refreshing: true,
         interests: [],
         channels: [
 
@@ -219,7 +219,6 @@ class Home extends React.Component {
             let subList = {};
 
             process_realm_obj(Subs, (result) => {
-                console.log(result);
                 let final = [];
                 
                 result.forEach( (value) => {
@@ -239,9 +238,8 @@ class Home extends React.Component {
                     this.setState({ channels })
                 });
             });
-
+            this.setState({ refreshing : false });
             _updateLists(last_updated, subList);
-            this.setState({ refreshing: false })
         });
 
         
@@ -353,8 +351,96 @@ class Home extends React.Component {
 
                     {
                         this.state.channels.length === 0 &&
+                        <InformationCard 
+                            title = 'Discover Channels' 
+                            content = 'You can watch stories from your subscribed channels here. Explore for more channels.' 
+                            icon = {<FastImage 
+                                style={{
+                                    width: 80,
+                                    height: 60,
+                                    alignSelf : 'center'
+                                }}
+                                source={require('../media/app-bar/logo.png')}
+                                resizeMode={FastImage.resizeMode.contain}
+                            />}
+                            style_card = {{backgroundColor : '#e0e0e0'}}
+                            style_title = {{color : '#444'}}
+                            style_content = {{color : '#444',}}
+                        />
+                    }
+                    <Swiper 
+                    showsButtons={false}
+                    autoplay = {true}
+                    loop
+                    showsPagination = {false}
+                    loadMinimal
+                    style={{height : 250}}
+                    autoplayTimeout = {5}>
+                        {
+                            this.state.week_event_list !== undefined && 
+                            this.state.week_event_list.map((item, index) =>{
+                                return <Spotlight item = {item} key = {item._id} onPress = {this.handleEventPress} />
+                            })
+                        }
+                    </Swiper>
+                    {
+                        this.state.interests.map( (value, index) =>
+                            <View key={index}>
+                            {
+                                
+                                <View>
+                                    <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+                                        {value}
+                                    </Text>
+                                    <FlatList 
+                                        horizontal={true}
+                                        showsHorizontalScrollIndicator={false}
+                                        keyExtractor={(item, index) => index+""}
+                                        data={this.state[value]} 
+                                        renderItem={({item}) => 
+                                            <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />
+                                        } 
+                                    />
+                                </View>
+                            }
 
-                        <TouchableOpacity
+                            </View>
+                        )
+                    }
+                    <FlatList 
+                        horizontal={false}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
+                        data={this.state.event_list} 
+                        renderItem={({item}) => 
+                            <EventCardBig onPress={this.handleEventPress} width={WIDTH - 20} height={(WIDTH - 20) * 0.75} item={item} />
+                        } 
+                    />
+                    {/* <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
+						{'From Art & Craft'}
+					</Text>
+					<FlatList 
+						horizontal={true}
+						showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item, index) => index+""}
+                        data={this.state.event_list} 
+						renderItem={({item}) => 
+                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
+                        } 
+					/> */}
+                    
+                </ScrollView>
+                
+            </View>
+        );
+    }
+
+}
+
+export default Home;
+
+/*
+    <TouchableOpacity
                             style={{
                                 backgroundColor: '#e0e0e0',
                                 padding: 10,
@@ -406,68 +492,4 @@ class Home extends React.Component {
                             </View>
                             
                         </TouchableOpacity>
-                    }
-                    <Swiper 
-                    showsButtons={false}
-                    autoplay
-                    loop
-                    showsPagination = {false}
-                    loadMinimal
-                    style={{height : 250}}
-                    autoplayTimeout = {5}>
-                        {
-                            this.state.week_event_list !== undefined && 
-                            this.state.week_event_list.map((item, index) =>{
-                                return <Spotlight item = {item} key = {item._id} onPress = {this.handleEventPress} />
-                            })
-                        }
-                    </Swiper>
-                    {
-                        this.state.interests.map( (value, index) =>
-                            <View key={index}>
-                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-                                    {value}
-                                </Text>
-                                <FlatList 
-                                    horizontal={true}
-                                    showsHorizontalScrollIndicator={false}
-                                    keyExtractor={(item, index) => index+""}
-                                    data={this.state[value]} 
-                                    renderItem={({item}) => 
-                                        <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />
-                                    } 
-                                />
-                            </View>
-                        )
-                    }
-                    <FlatList 
-                        horizontal={false}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index+""}
-                        data={this.state.event_list} 
-                        renderItem={({item}) => 
-                            <EventCardBig onPress={this.handleEventPress} width={WIDTH - 20} height={(WIDTH - 20) * 0.75} item={item} />
-                        } 
-                    />
-                    {/* <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10 }}> 
-						{'From Art & Craft'}
-					</Text>
-					<FlatList 
-						horizontal={true}
-						showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index+""}
-                        data={this.state.event_list} 
-						renderItem={({item}) => 
-                            <EventCard pressed={this.handleEventPress} width={200} height={150} item={item} />
-                        } 
-					/> */}
-                    
-                </ScrollView>
-                
-            </View>
-        );
-    }
-
-}
-
-export default Home;
+*/

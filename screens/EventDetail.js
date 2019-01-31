@@ -31,7 +31,6 @@ class EventDetail extends React.Component {
     }
 
     async componentDidMount() {
-        // const process_realm_obj = this.process_realm_obj;
         axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id: this.props.item._id }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -62,7 +61,6 @@ class EventDetail extends React.Component {
                         el.going = "false";
                         realm.create('Events', el, true);
                     });
-                    console.log(el);
                     this.setState({ item: el })
                 });
             }
@@ -131,12 +129,10 @@ class EventDetail extends React.Component {
                 'x-access-token': await AsyncStorage.getItem(TOKEN)
             }
         }).then( response => {
-            console.log(response);
             response = response.data;
             if(!response.error) {
                 Realm.getRealm((realm) => {
                     realm.write(() => {
-                        console.log(this.props.item);
                         realm.create('Events', { _id: this.props.item._id, interested: "true" }, true);
                         this.setState({ item: { ...this.state.item, interested: "true" } });
                     });
@@ -173,13 +169,11 @@ class EventDetail extends React.Component {
     }
 
     success = () => {
-        console.log("success");
         this.setState({ item: { ...item, going: 'true' } })
     }
 
     render() {
         const { item } = this.state;
-        console.log(item);
         return(
             <View
                 style={{
@@ -547,7 +541,7 @@ class EventDetail extends React.Component {
                             >
                                 {
                                     !this.state.loading &&
-                                    "SEND REGISTRATION ?"
+                                    "Want to Register Now?"
                                 }
                             </Text>
                         </TouchableOpacity> }

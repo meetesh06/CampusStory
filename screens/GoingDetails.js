@@ -54,9 +54,9 @@ class GoingDetails extends React.Component {
         var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
         var re1 = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/;
         
-        if(this.state.name.length < 3) return Alert.alert(" invalid name ");
-        if(!re.test( this.state.email.toLowerCase() )) return Alert.alert(" invalid email ");
-        if(!re1.test( this.state.phone.toLowerCase() )) return Alert.alert(" invalid phone ");
+        if(this.state.name.length < 3) return Alert.alert("Please put valid name.");
+        if(!re.test( this.state.email.toLowerCase() )) return Alert.alert("Please put valid email.");
+        if(!re1.test( this.state.phone.toLowerCase() )) return Alert.alert("Please put valid phone.");
         this.setState({ loading: true });
         axios.post('https://www.mycampusdock.com/events/user/enroll', { _id: this.props._id, name: this.state.name, email: this.state.email, phone: this.state.phone }, {
             headers: {
@@ -83,7 +83,7 @@ class GoingDetails extends React.Component {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: '#000000ee',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
                     justifyContent: 'center'
                 }}
             >
@@ -134,7 +134,7 @@ class GoingDetails extends React.Component {
                                 borderRadius: 10,
                                 backgroundColor: '#f0f0f0'
                             }}
-                            placeholder="name"
+                            placeholder="Your Name"
                             onChangeText={(name) => this.setState({name})}
                             value={this.state.name}
                         />
@@ -148,7 +148,7 @@ class GoingDetails extends React.Component {
                                 borderRadius: 10,
                                 backgroundColor: '#f0f0f0'
                             }}
-                            placeholder="email"
+                            placeholder="Your E-mail"
                             onChangeText={(email) => this.setState({email})}
                             value={this.state.email}
                         />
@@ -162,7 +162,7 @@ class GoingDetails extends React.Component {
                                 borderRadius: 10,
                                 backgroundColor: '#f0f0f0'
                             }}
-                            placeholder="phone"
+                            placeholder="Your Phone"
                             onChangeText={(phone) => this.setState({ phone })}
                             value={this.state.phone}
                         />
