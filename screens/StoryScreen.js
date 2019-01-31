@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
+import { Platform, Alert, BackHandler, ActivityIndicator, Easing, Dimensions, TouchableOpacity, Animated, PanResponder, AsyncStorage, View, Text } from 'react-native';
 import axios from 'axios';
 import Constants from '../constants';
 import Post from '../components/Post';
@@ -37,17 +37,19 @@ class StoryScreen extends React.Component {
             // gestureState.d{x,y} will be set to zero now
             },
             onPanResponderMove: (evt, gestureState) => {
-                if( gestureState.vy > 0.4 ) {
-                    return Navigation.dismissOverlay(this.props.componentId);
-                }
+                
                 if(gestureState.dy > 0) {
                     this.opacity.setValue(1 - gestureState.dy / HEIGHT)
+                }
+                if(Platform.OS === "android") {
+                    if( gestureState.vy > 0.4 ) {
+                        return Navigation.dismissOverlay(this.props.componentId);
+                    }
                 }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
             onPanResponderRelease: (evt, gestureState) => {
                 // Alert.alert(gestureState.dy / HEIGHT * 100 + "");
-                
                 if( gestureState.dy / HEIGHT * 100  > 30) {
                     // Navigation.dismissOverlay(this.props.componentId); 
                     Animated.timing(
@@ -69,10 +71,32 @@ class StoryScreen extends React.Component {
                         }
                     ).start();
                 }
+                
             },
             onPanResponderTerminate: (evt, gestureState) => {
             // Another component has become the responder, so this gesture
             // should be cancelled
+            if( gestureState.dy / HEIGHT * 100  > 30) {
+                // Navigation.dismissOverlay(this.props.componentId); 
+                Animated.timing(
+                    this.opacity,
+                    {
+                      toValue: 0,
+                      easing: Easing.cubic,
+                      duration: 300
+                    }
+                ).start(() => {
+                    Navigation.dismissOverlay(this.props.componentId); 
+                });
+            } else {
+                Animated.spring(
+                    this.opacity,
+                    {
+                      toValue: 1,
+                      friction: 5
+                    }
+                ).start();
+            }
             },
             onShouldBlockNativeResponder: (evt, gestureState) => {
             // Returns whether this component should block native components from becoming the JS

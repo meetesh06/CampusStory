@@ -37,7 +37,7 @@ class EventCardBig extends React.Component {
         }
     }
     render() {
-        console.log(this.props.item);
+        // console.log(this.props.item);
         return(
             <TouchableOpacity 
                 activeOpacity={0.6}
