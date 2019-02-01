@@ -2,7 +2,16 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 import {
-  Dimensions, RefreshControl, ScrollView, Image, Platform, FlatList, AsyncStorage, View, Text
+  TouchableOpacity,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  Image,
+  Platform,
+  FlatList,
+  AsyncStorage,
+  View,
+  Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
@@ -32,6 +41,7 @@ class Home extends React.Component {
     this.updateLists = this.updateLists.bind(this);
     this.fetchEventsFromRealm = this.fetchEventsFromRealm.bind(this);
     this.fetchChannelsFromRealm = this.fetchChannelsFromRealm.bind(this);
+    this.checkForChanges = this.checkForChanges.bind(this);
   }
 
     state = {
@@ -44,13 +54,20 @@ class Home extends React.Component {
       eventsToday: [
       ],
       eventsChannels: [],
-      refreshing: false
+      refreshing: false,
+      newUpdates: false
     }
 
     async componentDidMount() {
       const interests = await AsyncStorage.getItem(INTERESTS);
-      this.updateContent();
+      const { checkForChanges, fetchEventsFromRealm, fetchChannelsFromRealm } = this;
+      fetchEventsFromRealm();
+      fetchChannelsFromRealm();
+      checkForChanges();
       this.setState({ interests: interests.split(',') });
+      if (!firebase.messaging().hasPermission()) {
+        await firebase.messaging().requestPermission();
+      }
       this.notificationDisplayedListener = firebase
         .notifications().onNotificationDisplayed((notification) => {
           console.log(notification);
@@ -59,13 +76,16 @@ class Home extends React.Component {
         .notifications().onNotification((notification) => {
           console.log(notification);
         });
-      if (!firebase.messaging().hasPermission()) {
-        await firebase.messaging().requestPermission();
-      }
+      this.messageListener = firebase
+        .messaging().onMessage((message) => {
+          // eslint-disable-next-line no-underscore-dangle
+          if (message._data.type === 'post') {
+            this.setState({ newUpdates: true });
+          }
+        });
     }
 
     updateLists = async (lastUpdated, channelsList) => {
-      const { fetchEventsFromRealm, fetchChannelsFromRealm } = this;
       axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated: lastUpdated }, {
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +113,6 @@ class Home extends React.Component {
           const responseObject = response.data;
           const { data } = responseObject;
           if (data.length === 0) return;
-
           Realm.getRealm((realm) => {
             realm.write(() => {
               let i;
@@ -106,7 +125,7 @@ class Home extends React.Component {
               }
             });
           });
-          fetchEventsFromRealm();
+          this.setState({ newUpdates: true });
         }
       }).catch(err => console.log(err));
 
@@ -152,11 +171,12 @@ class Home extends React.Component {
                     //  make a logic to update the purecomponent based on shouldupdate
                     realm.create('Channels', { _id: key, updates: 'true' }, true);
                   });
+                  this.setState({ newUpdates: true });
                 }
               }
             );
           });
-          fetchChannelsFromRealm();
+          
         }
       }).catch(err => console.log(err));
     }
@@ -205,17 +225,11 @@ class Home extends React.Component {
       });
     }
 
-    updateContent = async () => {
-      this.setState({ refreshing: true });
+    checkForChanges = async () => {
       const {
         processRealmObj,
-        updateLists,
-        fetchEventsFromRealm,
-        fetchChannelsFromRealm
+        updateLists
       } = this;
-      await fetchEventsFromRealm();
-      await fetchChannelsFromRealm();
-      this.setState({ refreshing: false });
       let lastUpdated;
       const subList = {};
       Realm.getRealm((realm) => {
@@ -241,6 +255,19 @@ class Home extends React.Component {
         });
       });
       await updateLists(lastUpdated, subList);
+    }
+
+    updateContent = async () => {
+      this.setState({ refreshing: true });
+      const {
+        fetchEventsFromRealm,
+        fetchChannelsFromRealm,
+        checkForChanges
+      } = this;
+      await fetchEventsFromRealm();
+      await fetchChannelsFromRealm();
+      await checkForChanges();
+      this.setState({ refreshing: false, newUpdates: false });
     }
 
     processRealmObj = (RealmObject, callback) => {
@@ -446,7 +473,40 @@ class Home extends React.Component {
             />
 
           </ScrollView>
-
+          {
+            this.state.newUpdates && (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 10,
+                borderRadius: 75,
+                left: 0,
+                right: 0,
+                justifyContent: 'center'
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  alignSelf: 'center',
+                  padding: 10,
+                  borderRadius: 50,
+                  backgroundColor: '#4475c4',
+                }}
+                onPress={updateContent}
+              >
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: '#fff',
+                    textAlign: 'center'
+                  }}
+                >
+                  NEW UPDATES
+                </Text>
+              </TouchableOpacity>
+            </View>
+            )}
         </View>
       );
     }
