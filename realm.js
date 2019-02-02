@@ -1,6 +1,6 @@
 import Realm from 'realm';
 
-var realmdb = null;
+let realmdb = null;
 
 const Events = {
   name: 'Events',
@@ -15,7 +15,7 @@ const Events = {
     enrollees: 'string',
     timestamp: 'date',
     title: 'string',
-    ms : 'int',
+    ms: 'int',
     description: 'string',
     location: 'string',
     category: 'string',
@@ -61,17 +61,17 @@ const Firebase = {
   name: 'Firebase',
   primaryKey: '_id',
   properties: {
-    _id:  'string',
+    _id: 'string',
     notify: 'string',
     channel: 'string'
   }
-}
+};
 
 const Activity = {
   name: 'Activity',
   primaryKey: '_id',
   properties: {
-    _id:  'string',
+    _id: 'string',
     reach: 'string',
     views: 'string',
     type: 'string',
@@ -89,22 +89,25 @@ const Activity = {
     // poll data
     answered: 'string',
     // post-image, post-video specific
-    media:  'string',
+    media: 'string',
     // stuff
-    read:  'string'
+    read: 'string'
   }
 };
 
 export default {
-  getRealm: (callback) => { 
-    if(realmdb === null) {
-      return Realm.open({schema: [Firebase, Events, Activity, Channels], deleteRealmIfMigrationNeeded: true })
-        .then(realm => {
+  getRealm: (callback) => {
+    if (realmdb === null) {
+      return Realm.open({
+        schema: [Firebase, Events, Activity, Channels],
+        deleteRealmIfMigrationNeeded: true
+      })
+        .then((realm) => {
           realmdb = realm;
           callback(realmdb);
         });
-    } else {
-      callback(realmdb);
     }
+    callback(realmdb);
+    return true;
   }
 };

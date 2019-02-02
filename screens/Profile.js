@@ -115,7 +115,8 @@ class Profile extends React.Component {
                                     width: 84,
                                     height: 84,
                                     alignSelf: 'center',
-                                    marginTop : 30,
+                                    marginTop : 50,
+                                    marginBottom: 20
                                 }}
                                 resizeMode={FastImage.resizeMode.contain}
                                 source= {require('../media/LogoWhite.png')}

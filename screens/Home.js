@@ -269,12 +269,12 @@ class Home extends React.Component {
   }
 
   handleEventPress = (item) => {
-    const { componentId } = this.props;
+    // const { componentId } = this.props;
     const { _id } = item;
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
-        Navigation.push(componentId, {
+        Navigation.showModal({
           component: {
             name: 'Event Detail Screen',
             passProps: {
@@ -283,6 +283,7 @@ class Home extends React.Component {
             },
             options: {
               topBar: {
+                animate: true,
                 visible: true,
                 drawBehind: false,
                 title: {
@@ -333,29 +334,7 @@ class Home extends React.Component {
     const { updateContent } = this;
     return (
       <View style={{ flex: 1 }}>
-        <View
-          elevation={5}
-          style={{
-            backgroundColor: '#fff',
-            minHeight: Platform.OS === 'android' ? 70 : 90,
-            paddingTop: Platform.OS === 'android' ? 8 : 30,
-            shadowColor: '#000000',
-            shadowOpacity: 0.1,
-            shadowRadius: 0.5,
-            shadowOffset: {
-              height: 2,
-              width: 2
-            }
-          }}
-        >
-          <Image
-            style={{
-              margin: 5, alignSelf: 'center', width: 50, height: 50
-            }}
-            // eslint-disable-next-line global-require
-            source={require('../media/app-bar/logo.png')}
-          />
-        </View>
+        
         <ScrollView
           refreshControl={(
             <RefreshControl

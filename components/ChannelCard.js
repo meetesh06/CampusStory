@@ -26,7 +26,7 @@ const ChannelCard = (props) => {
         width,
         height,
         shadowColor: '#000',
-        margin: 10,
+        margin: 5,
         borderRadius: 10,
         shadowOpacity: 0.3,
         shadowRadius: 3,

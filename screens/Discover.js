@@ -18,7 +18,7 @@ import CategoryCard from '../components/CategoryCard';
 import PostThumbnail from '../components/PostThumbnail';
 import PostImageThumbnail from '../components/PostImageThumbnail';
 import PostVideoThumbnail from '../components/PostVideoThumbnail';
-import { processRealmObj, processRealmObjRecommended } from './helpers/functions';
+import { processRealmObj, processRealmObjRecommended, shuffleArray } from './helpers/functions';
 import { categories } from './helpers/values';
 
 const { TOKEN } = Constants;
@@ -30,6 +30,7 @@ class Home extends React.Component {
     this.updateRecommendedList = this.updateRecommendedList.bind(this);
     this.handleChannelClick = this.handleChannelClick.bind(this);
     this.handleUpdateData = this.handleUpdateData.bind(this);
+    this.getTrendingContent = this.getTrendingContent.bind(this);
   }
 
     state = {
@@ -41,10 +42,18 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-      this.updateContent();
+      Realm.getRealm((realm) => {
+        const elements = realm.objects('Channels').sorted('recommended', true);
+        processRealmObj(elements, (final) => {
+          shuffleArray(final, (channelList) => {
+            this.setState({ channelList, categorySelected: categories[0].value });
+          });
+        });
+      });
+      this.getTrendingContent();
     }
 
-    updateRecommendedList = async (channelsList, category, callback) => {
+    updateRecommendedList = async (channelsList, category) => {
       this.setState({
         loading: true,
         categorySelected: category
@@ -56,7 +65,6 @@ class Home extends React.Component {
       formData.append('category_list', JSON.stringify([category]));
       formData.append('channels_list', JSON.stringify(channelsList));
       formData.append('count', 10);
-      let error = false;
       await axios.post('https://www.mycampusdock.com/channels/top', formData, {
         headers: {
           'Content-Type': 'application/json',
@@ -91,8 +99,8 @@ class Home extends React.Component {
             });
           });
         }
-      }).catch((err) => { error = true; console.log(err); });
-      this.setState({ loading: false }, () => callback(error));
+      }).catch(err => (console.log(err)));
+      // this.setState({ loading: false });
       this.getTrendingContent();
     }
 
@@ -110,18 +118,19 @@ class Home extends React.Component {
       }).then((response) => {
         console.log('trending', response);
         const items = response.data.data;
-        this.setState({ trending: items });
+        this.setState({ trending: items, loading: false });
       });
     }
 
-    updateContent = async () => {
+    updateContent = () => {
       const { handleUpdateData } = this;
-      handleUpdateData(categories[0].value);
+      const { categorySelected } = this.state;
+      handleUpdateData(categorySelected);
     }
 
     handleChannelClick = (id, name) => {
-      const { componentId } = this.props;
-      Navigation.push(componentId, {
+      // const { componentId } = this.props;
+      Navigation.showModal({
         component: {
           name: 'Channel Detail Screen',
           passProps: {
@@ -149,15 +158,24 @@ class Home extends React.Component {
       if (loading) return;
       const { updateRecommendedList } = this;
       Realm.getRealm((realm) => {
+        let elements;
+        if (category === 'hottest') {
+          elements = realm.objects('Channels').sorted('recommended', true);
+          processRealmObj(elements, (final) => {
+            shuffleArray(final, (channelList) => {
+              this.setState({ channelList });
+            });
+          });
+        } else {
+          elements = realm.objects('Channels').filtered(`category="${category}"`);
+          processRealmObj(elements, (final) => {
+            this.setState({ channelList: final });
+          });
+        }
         // get the previously recommended list to prevent redundant data response from server
         const elementsRecommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);
         processRealmObjRecommended(elementsRecommended, (result) => {
-          updateRecommendedList(result, category, () => {
-            const elements = realm.objects('Channels').filtered(`category="${category}"`);
-            processRealmObj(elements, (final) => {
-              this.setState({ channelList: final });
-            });
-          });
+          updateRecommendedList(result, category);
         });
       });
     }
@@ -182,7 +200,7 @@ class Home extends React.Component {
       } = this.state;
       return (
         <View style={{ flex: 1 }}>
-          <View
+          {/* <View
             elevation={5}
             style={{
               backgroundColor: '#fff',
@@ -195,14 +213,14 @@ class Home extends React.Component {
                 width: 2
               }
             }}
-          />
+          /> */}
           <ScrollView
             refreshControl={(
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={updateContent}
               />
-)}
+            )}
           >
             <View
               style={{
@@ -229,7 +247,28 @@ class Home extends React.Component {
                 )}
               />
             </View>
-
+            <View>
+              <Text style={{
+                fontFamily: 'Roboto', fontSize: 18, margin: 5, marginLeft: 10, marginRight: 10, marginBottom: 0
+              }}
+              >
+                Top Channels
+              </Text>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => `${index}`}
+                data={channelList}
+                renderItem={({ item }) => (
+                  <ChannelCard
+                    onPress={handleChannelClick}
+                    width={136}
+                    height={96}
+                    item={item}
+                  />
+                )}
+              />
+            </View>
             <View
               style={{
                 flexDirection: 'row'
@@ -250,49 +289,17 @@ class Home extends React.Component {
                 )
               }
             </View>
-            {
-              !loading
-              && (
-              <View>
-                <Text style={{
-                  fontFamily: 'Roboto', fontSize: 18, margin: 5, marginLeft: 10, marginRight: 10, marginBottom: 0
-                }}
-                >
-                  Top Channels
-                </Text>
-                <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item, index) => `${index}`}
-                  data={channelList}
-                  renderItem={({ item }) => (
-                    <ChannelCard
-                      onPress={handleChannelClick}
-                      width={136}
-                      height={96}
-                      item={item}
-                    />
-                  )}
-                />
-              </View>
-              )
-          }
-            {
-              !loading
-              && (
-              <View>
-                <FlatList
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item, index) => `${index}`}
-                  extraData={categorySelected}
-                  numColumns={3}
-                  data={trending}
-                  renderItem={({ item }) => this.getItemView(item)
-                      }
-                />
-              </View>
-              )
-            }
+            <View>
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => `${index}`}
+                extraData={categorySelected}
+                numColumns={3}
+                data={trending}
+                renderItem={({ item }) => this.getItemView(item)
+                    }
+              />
+            </View>
           </ScrollView>
         </View>
       );

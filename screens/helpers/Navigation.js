@@ -1,44 +1,46 @@
-import { Navigation } from 'react-native-navigation'
+import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Icon1 from 'react-native-vector-icons/SimpleLineIcons';
+
 export const goToInterestsSelector = () => Navigation.setRoot({
-    root: {
-        stack: {
-          id: 'Interests Selection Screen',
-          children: [
-            {
-              component: {
-                name: 'Interests Selection Screen',
-              }
-            }
-        ],
+  root: {
+    stack: {
+      id: 'Interests Selection Screen',
+      children: [
+        {
+          component: {
+            name: 'Interests Selection Screen',
+          }
         }
-      }
+      ],
+    }
+  }
 });
 
 export const goInitializing = () => Navigation.setRoot({
-    root: {
-        stack: {
-          id: 'Initializing Screen',
-          children: [
-            {
-              component: {
-                name: 'Initializing Screen',
-                options: {
-                  topBar: {
-                    visible: false,
-                    drawBehind: true,
-                  }
-                }
+  root: {
+    stack: {
+      id: 'Initializing Screen',
+      children: [
+        {
+          component: {
+            name: 'Initializing Screen',
+            options: {
+              topBar: {
+                visible: false,
+                drawBehind: true,
               }
-            },
-        ],
-        }
-      }
+            }
+          }
+        },
+      ],
+    }
+  }
 });
 
 export const goHome = async () => {
   const homeIcon = await Icon.getImageSource('home', 30);
-  const discoverIcon = await Icon.getImageSource('search1', 30);
+  const discoverIcon = await Icon1.getImageSource('heart', 30);
   const profileIcon = await Icon.getImageSource('user', 30);
   return Navigation.setRoot({
     root: {
@@ -47,11 +49,33 @@ export const goHome = async () => {
         children: [
           {
             stack: {
-              id: "Home Stack",
+              id: 'Home Stack',
               options: {
                 topBar: {
                   visible: false,
-                  drawBehind: true
+                  animate: true,
+                  hideOnScroll: true,
+                  // buttonColor: 'black',
+                  drawBehind: true,
+                  
+                  // subtitle: {
+                  //   text: 'Title',
+                  //   fontSize: 14,
+                  //   color: 'red',
+                  //   fontFamily: 'Helvetica',
+                  //   alignment: 'center'
+                  // },
+                  // backButton: {
+                  //   // icon: require('icon.png'),
+                  //   visible: true
+                  // },                  
+                  // background: {
+                  //   color: '#00ff00',
+                  //   translucent: true,
+                  //   component: {
+                  //     name: 'homeTopBar'
+                  //   }
+                  // }
                 },
                 bottomTab: {
                   fontSize: 10,
@@ -66,7 +90,19 @@ export const goHome = async () => {
               children: [
                 {
                   component: {
-                    name: 'Home Screen'
+                    name: 'Home Screen',
+                    options: {
+                      topBar: {
+                        visible: true,
+                        animate: true,
+                        background: {
+                          color: '#FF6A15',
+                          component: {
+                            name: 'homeTopBar'
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               ]
@@ -74,12 +110,12 @@ export const goHome = async () => {
           },
           {
             stack: {
-              id: "Discover Stack",
+              id: 'Discover Stack',
               options: {
                 topBar: {
                   visible: false,
                   drawBehind: true
-                  
+
                 },
                 bottomTab: {
                   fontSize: 10,
@@ -94,7 +130,19 @@ export const goHome = async () => {
               children: [
                 {
                   component: {
-                    name: 'Discover Screen'
+                    name: 'Discover Screen',
+                    options: {
+                      topBar: {
+                        visible: true,
+                        animate: true,
+                        background: {
+                          color: '#FF6A15',
+                          component: {
+                            name: 'homeTopBar'
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               ]
@@ -102,7 +150,7 @@ export const goHome = async () => {
           },
           {
             stack: {
-              id: "Profile Stack",
+              id: 'Profile Stack',
               options: {
                 bottomTab: {
                   text: 'Profile',
@@ -131,9 +179,8 @@ export const goHome = async () => {
       }
     }
   });
-}
+};
 
-    
 
 // export const goHome = () => Navigation.setRoot({
 //   root: {
