@@ -54,16 +54,12 @@ class Profile extends React.Component {
   }
 
   handleEventPress = (item) => {
-    const {
-      componentId
-    } = this.props;
-    const {
-      _id
-    } = item;
+    // const { componentId } = this.props;
+    const { _id } = item;
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
-      this.process_realm_obj(current, (result) => {
-        Navigation.push(componentId, {
+      processRealmObj(current, (result) => {
+        Navigation.showModal({
           component: {
             name: 'Event Detail Screen',
             passProps: {
@@ -72,6 +68,7 @@ class Profile extends React.Component {
             },
             options: {
               topBar: {
+                animate: true,
                 visible: true,
                 drawBehind: false,
                 title: {
@@ -108,7 +105,7 @@ class Profile extends React.Component {
       refreshing
     } = this.state;
     const {
-      _updateContent
+      updateContent
     } = this;
     return (
       <View
@@ -152,7 +149,7 @@ class Profile extends React.Component {
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={_updateContent}
+              onRefresh={updateContent}
             />
           )}
         >
