@@ -41,6 +41,7 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
+      this.navigationEventListener = Navigation.events().bindComponent(this);
       Realm.getRealm((realm) => {
         const elements = realm.objects('Channels').sorted('recommended', true);
         processRealmObj(elements, (final) => {
@@ -49,7 +50,13 @@ class Home extends React.Component {
           });
         });
       });
-      this.getTrendingContent();
+    }
+
+    componentWillUnmount() {
+      // Not mandatory
+      if (this.navigationEventListener) {
+        this.navigationEventListener.remove();
+      }
     }
 
     updateRecommendedList = async (channelsList, category) => {
@@ -186,6 +193,10 @@ class Home extends React.Component {
         case 'post-video': return <PostVideoThumbnail video={item.media} />;
         default: return <Text>.</Text>;
       }
+    }
+
+    componentDidAppear() {
+      this.getTrendingContent();
     }
 
     render() {

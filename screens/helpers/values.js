@@ -80,11 +80,6 @@ export const categories = [
   }
 ];
 export const categoriesNoHottest = [
-  // {
-  //   title: 'Hottest',
-  //   value: 'hottest',
-  //   image: hottestImage
-  // },
   {
     title: 'Art',
     value: 'art',
@@ -137,4 +132,6 @@ export const categoriesNoHottest = [
   }
 ];
 
-export const dummy = [];
+export const categoryIcon = {
+  music: musicImageAlt
+};

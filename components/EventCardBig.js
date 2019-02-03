@@ -1,7 +1,17 @@
 import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import {
+  View, Platform, TouchableNativeFeedback, TouchableOpacity, Text
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import { Navigation } from 'react-native-navigation';
+import Icon from 'react-native-vector-icons/AntDesign';
+// let BaseComponent;
+// if (Platform.OS === 'android') {
+//   BaseComponent = TouchableOpacity;
+// } else {
+//   BaseComponent = TouchableOpacity;
+// }
 
 const getMonthName = (num) => {
   switch (num) {
@@ -46,11 +56,13 @@ const EventCardBig = (props) => {
     college,
     title,
     location,
+    views,
+    interested,
     date
   } = item;
   return (
     <TouchableOpacity
-      activeOpacity={0.6}
+      activeOpacity={0.8}
       onPress={() => {
         onPress(item);
       }}
@@ -59,10 +71,10 @@ const EventCardBig = (props) => {
         overflow: 'hidden',
         width,
         height,
-        backgroundColor: '#5f5f5f',
+        backgroundColor: '#111',
         shadowColor: '#000',
         margin: 10,
-        borderRadius: 10,
+        borderRadius: 15,
         shadowOpacity: 0.3,
         shadowRadius: 3,
         shadowOffset: {
@@ -86,10 +98,10 @@ const EventCardBig = (props) => {
           position: 'absolute',
           width,
           height,
-          opacity: 0.6,
+          opacity: 1,
           flex: 1
         }}
-        colors={['#000', '#00000055', '#0b0b0b']}
+        colors={['#11111166', '#000000cc']}
       />
       <Text
         style={{
@@ -139,6 +151,41 @@ const EventCardBig = (props) => {
         {' '}
         {JSON.stringify(date.getDate())}
       </Text>
+      <View
+        style={{
+          padding: 5,
+          borderRadius: 10,
+          position: 'absolute',
+          right: 15,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          top: 10
+        }}
+      >
+        <Icon size={15} name="eye" style={{ color: '#fff', alignSelf: 'center' }} />
+        <Text
+          style={{
+            fontFamily: 'Roboto',
+            fontSize: 18,
+            marginLeft: 5,
+            textAlign: 'left',
+            color: '#dfdfdf',
+          }}
+        >
+          {views}
+        </Text>
+      </View>
+      <Icon
+        size={20}
+        name={ interested === 'true' ? 'heart' : 'hearto'}
+        style={{
+          color: '#fff',
+          alignSelf: 'center',
+          position: 'absolute',
+          bottom: 15,
+          right: 15
+        }}
+      />
     </TouchableOpacity>
   );
 };

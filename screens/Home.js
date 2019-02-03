@@ -6,8 +6,6 @@ import {
   Dimensions,
   RefreshControl,
   ScrollView,
-  // Image,
-  // Platform,
   FlatList,
   AsyncStorage,
   View,
@@ -59,11 +57,10 @@ class Home extends React.Component {
   }
 
   async componentDidMount() {
+    this.navigationEventListener = Navigation.events().bindComponent(this);
     const interests = await AsyncStorage.getItem(INTERESTS);
-    console.log(interests);
     const {
       updateContent,
-      checkForChanges,
       handleStoryOpenNotification,
       handleEventOpenNotification,
       fetchEventsFromRealm,
@@ -71,7 +68,7 @@ class Home extends React.Component {
     } = this;
     fetchEventsFromRealm();
     fetchChannelsFromRealm();
-    checkForChanges();
+    // checkForChanges();
     this.setState({ interests: interests.split(',') });
     if (!firebase.messaging().hasPermission()) {
       await firebase.messaging().requestPermission();
@@ -349,6 +346,7 @@ class Home extends React.Component {
               id: result[0].title
             },
             options: {
+              modalPresentationStyle: 'overCurrentContext',
               topBar: {
                 animate: true,
                 visible: true,
@@ -361,7 +359,20 @@ class Home extends React.Component {
                 visible: false,
                 drawBehind: true,
                 animate: true
-              }
+              },
+              // customTransition: {
+              //   animations: [
+              //     {
+              //       type: 'sharedElement',
+              //       fromId: 'image1',
+              //       toId: 'image2',
+              //       startDelay: 0,
+              //       springVelocity: 0.2,
+              //       duration: 10
+              //     }
+              //   ],
+              //   duration: 0.8
+              // }
             }
           }
         });
@@ -402,6 +413,10 @@ class Home extends React.Component {
       old[index].updates = 'false';
       this.setState({ channels: old });
     }
+  }
+
+  componentDidAppear() {
+    this.checkForChanges();
   }
 
   render() {

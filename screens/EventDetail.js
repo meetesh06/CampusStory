@@ -37,8 +37,9 @@ class EventDetail extends React.Component {
   }
 
   async componentDidMount() {
-    const { item } = this.props;
-    const { _id } = item;
+    const { item } = this.state;
+    const { _id, interested, going } = item;
+    // const { interested, going } = this.state;
     axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -65,9 +66,9 @@ class EventDetail extends React.Component {
             el.ms = ts;
             el.reg_end = new Date(el.reg_end);
             el.reg_start = new Date(el.reg_start);
-            el.interested = 'false';
-            el.going = 'false';
-            // console.log(el);
+            el.interested = interested;
+            el.going = going;
+            console.log(el);
             try {
               realm.create('Events', el, true);
             } catch (e) {
@@ -96,8 +97,12 @@ class EventDetail extends React.Component {
       if (!responseObj.error) {
         Realm.getRealm((realm) => {
           realm.write(() => {
-            realm.create('Events', { _id, interested: 'true' }, true);
-            this.setState({ item: { ...item, interested: 'true' } });
+            try {
+              realm.create('Events', { _id, interested: 'true' }, true);
+              this.setState({ item: { ...item, interested: 'true' } });
+            } catch(e) {
+              console.log(e);
+            }
           });
         });
       }
@@ -189,10 +194,15 @@ class EventDetail extends React.Component {
                 // height: 350
               }}
             />
-            <View>
+            <View
+              style={{
+                backgroundColor: '#333',
+                padding: 10,
+              }}
+            >
               <FastImage
                 style={{
-                  width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10
+                  width: WIDTH - 20, height: (WIDTH - 20) * 0.75, borderRadius: 10
                 }}
                 source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
                 resizeMode={FastImage.resizeMode.cover}
