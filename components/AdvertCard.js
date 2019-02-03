@@ -17,7 +17,7 @@ class AdvertCard extends React.Component {
                     <View style={{ overflow: 'hidden', width: this.props.width, height: this.props.height, backgroundColor: this.state.pressed ? '#c0c0c0' : '#fff', margin: 10, borderRadius: 10, padding: 5 }}>
                         <FastImage
                             style={{ opacity: this.state.pressed ? 0.6 : 1, width: this.props.width, height: this.props.height, borderRadius: 10, position: 'absolute' }}
-                            source={{ uri: this.props.image }}
+                            source={this.props.image}
                             resizeMode={FastImage.resizeMode.contain}
                         />
                         {

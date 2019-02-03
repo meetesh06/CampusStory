@@ -107,6 +107,7 @@ class ChannelDetailScreen extends React.Component {
       return (
         <View
           style={{
+            backgroundColor: '#fff',
             flex: 1
           }}
         >

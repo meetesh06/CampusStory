@@ -333,21 +333,25 @@ class Home extends React.Component {
     } = this.state;
     const { updateContent } = this;
     return (
-      <View style={{ flex: 1 }}>
-        
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
         <ScrollView
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
               onRefresh={updateContent}
             />
-)}
+          )}
         >
           {
             channels.length !== 0
               && (
                 <FlatList
                   horizontal
+                  
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={(item, index) => `${index}`}
                   data={channels}

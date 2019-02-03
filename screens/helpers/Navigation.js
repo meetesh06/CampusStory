@@ -52,11 +52,9 @@ export const goHome = async () => {
               id: 'Home Stack',
               options: {
                 topBar: {
-                  visible: false,
-                  animate: true,
-                  hideOnScroll: true,
+                  
                   // buttonColor: 'black',
-                  drawBehind: true,
+                  // drawBehind: true,
                   
                   // subtitle: {
                   //   text: 'Title',
@@ -93,6 +91,7 @@ export const goHome = async () => {
                     name: 'Home Screen',
                     options: {
                       topBar: {
+                        // hideOnScroll: true,
                         visible: true,
                         animate: true,
                         background: {
@@ -113,8 +112,8 @@ export const goHome = async () => {
               id: 'Discover Stack',
               options: {
                 topBar: {
-                  visible: false,
-                  drawBehind: true
+                  // visible: false,
+                  // drawBehind: true
 
                 },
                 bottomTab: {

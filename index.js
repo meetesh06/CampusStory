@@ -1,7 +1,7 @@
 /** @format */
 import { Navigation } from 'react-native-navigation';
 import React from 'react';
-import { View, Image, Text } from 'react-native';
+import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Initializing from './screens/Initializing';
@@ -22,6 +22,7 @@ const homeTopBar = () => (
     colors={['#FF6A15', '#ff5b29']}>
     <FastImage
       style={{
+        marginTop: Platform.OS === 'android' ? 5 : 0,
         width: 150,
         height: 43,
         alignSelf: 'center',
