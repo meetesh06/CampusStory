@@ -6,8 +6,8 @@ import {
   Dimensions,
   RefreshControl,
   ScrollView,
-  Image,
-  Platform,
+  // Image,
+  // Platform,
   FlatList,
   AsyncStorage,
   View,
@@ -41,6 +41,7 @@ class Home extends React.Component {
     this.fetchEventsFromRealm = this.fetchEventsFromRealm.bind(this);
     this.fetchChannelsFromRealm = this.fetchChannelsFromRealm.bind(this);
     this.checkForChanges = this.checkForChanges.bind(this);
+    this.handleStoryOpenNotification = this.handleStoryOpenNotification.bind(this);
   }
 
   state = {
@@ -59,7 +60,15 @@ class Home extends React.Component {
 
   async componentDidMount() {
     const interests = await AsyncStorage.getItem(INTERESTS);
-    const { checkForChanges, fetchEventsFromRealm, fetchChannelsFromRealm } = this;
+    console.log(interests);
+    const {
+      updateContent,
+      checkForChanges,
+      handleStoryOpenNotification,
+      handleEventOpenNotification,
+      fetchEventsFromRealm,
+      fetchChannelsFromRealm
+    } = this;
     fetchEventsFromRealm();
     fetchChannelsFromRealm();
     checkForChanges();
@@ -82,6 +91,30 @@ class Home extends React.Component {
           this.setState({ newUpdates: true });
         }
       });
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+      // App was opened by a notification
+      // Get the action triggered by the notification being opened
+      // const { action } = notificationOpen;
+      // Get information about the notification that was opened
+      const { notification } = notificationOpen;
+      const { _data } = notification;
+      const data = JSON.parse(_data.content);
+      const { _id, type } = data;
+      // console.log(notification);
+      // Alert.alert(JSON.stringify(`${type} ${_id}`));
+      await updateContent();
+      switch (type) {
+        case 'post':
+        case 'poll':
+        case 'post-image':
+        case 'post-video':
+          handleStoryOpenNotification(data.channel);
+          break;
+        default:
+          handleEventOpenNotification(_id);
+      }
+    }
   }
 
   updateLists = async (lastUpdated, channelsList) => {
@@ -124,7 +157,8 @@ class Home extends React.Component {
             }
           });
         });
-        this.setState({ newUpdates: true });
+        if (this.props.first) this.fetchEventsFromRealm();
+        else this.setState({ newUpdates: true });
       }
     }).catch(err => console.log(err));
 
@@ -170,7 +204,8 @@ class Home extends React.Component {
                   //  make a logic to update the purecomponent based on shouldupdate
                   realm.create('Channels', { _id: key, updates: 'true' }, true);
                 });
-                this.setState({ newUpdates: true });
+                if (this.props.first) this.fetchChannelsFromRealm();
+                else this.setState({ newUpdates: true });
               }
             }
           );
@@ -268,6 +303,38 @@ class Home extends React.Component {
     this.setState({ refreshing: false, newUpdates: false });
   }
 
+  handleEventOpenNotification = (_id) => {
+    Realm.getRealm((realm) => {
+      const current = realm.objects('Events').filtered(`_id="${_id}"`);
+      processRealmObj(current, (result) => {
+        Navigation.showModal({
+          component: {
+            name: 'Event Detail Screen',
+            passProps: {
+              item: result[0],
+              id: result[0].title
+            },
+            options: {
+              topBar: {
+                animate: true,
+                visible: true,
+                drawBehind: false,
+                title: {
+                  text: result[0].title,
+                },
+              },
+              bottomTabs: {
+                visible: false,
+                drawBehind: true,
+                animate: true
+              }
+            }
+          }
+        });
+      });
+    });
+  }
+
   handleEventPress = (item) => {
     // const { componentId } = this.props;
     const { _id } = item;
@@ -299,6 +366,20 @@ class Home extends React.Component {
           }
         });
       });
+    });
+  }
+
+  handleStoryOpenNotification = (_id) => {
+    Navigation.showOverlay({
+      component: {
+        name: 'Story Screen',
+        passProps: { _id },
+        options: {
+          overlay: {
+            interceptTouchOutside: true
+          }
+        }
+      }
     });
   }
 
@@ -351,7 +432,6 @@ class Home extends React.Component {
               && (
                 <FlatList
                   horizontal
-                  
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={(item, index) => `${index}`}
                   data={channels}
@@ -469,6 +549,7 @@ class Home extends React.Component {
                 borderRadius: 50,
                 backgroundColor: '#4475c4',
               }}
+              disabled={refreshing}
               onPress={updateContent}
             >
               <Text

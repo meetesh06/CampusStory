@@ -7,13 +7,13 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import firebase from 'react-native-firebase';
 import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
+import { processRealmObj } from './helpers/functions';
 
 const WIDTH = Dimensions.get('window').width;
 
 class ChannelDetailScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.process_realm_obj = this.process_realm_obj.bind(this);
     this.handleSubscribe = this.handleSubscribe.bind(this);
     this.handleNotify = this.handleNotify.bind(this);
   }
@@ -25,17 +25,17 @@ class ChannelDetailScreen extends React.Component {
     }
 
     componentDidMount() {
-      const process_realm_obj = this.process_realm_obj;
+      const { id } = this.props;
       Realm.getRealm((realm) => {
-        const element = realm.objects('Firebase').filtered(`_id="${this.props.id}"`);
-        const item = realm.objects('Channels').filtered(`_id="${this.props.id}"`);
-        process_realm_obj(element, (result) => {
+        const element = realm.objects('Firebase').filtered(`_id="${id}"`);
+        const item = realm.objects('Channels').filtered(`_id="${id}"`);
+        processRealmObj(element, (result) => {
           console.log(result);
           if (result.length > 0) {
             this.setState({ subscribed: true, notify: result[0].notify !== 'false' });
           }
         });
-        process_realm_obj(item, (result) => {
+        processRealmObj(item, (result) => {
           console.log(result[0]);
           this.setState({ item: result[0] });
         });
@@ -43,23 +43,30 @@ class ChannelDetailScreen extends React.Component {
     }
 
     handleNotify = () => {
-      if (this.state.item === null) return;
+      const {
+        item,
+        notify
+      } = this.state;
+      const {
+        _id
+      } = item;
+      if (item === null) return;
       Realm.getRealm((realm) => {
         realm.write(() => {
-          if (!this.state.notify) {
+          if (!notify) {
             try {
-              realm.create('Firebase', { _id: this.state.item._id, notify: 'true', channel: 'true' }, true);
-              firebase.messaging().subscribeToTopic(this.state.item._id);
+              realm.create('Firebase', { _id, notify: 'true', channel: 'true' }, true);
+              firebase.messaging().subscribeToTopic(_id);
               this.setState({ notify: true });
             } catch (e) {
               console.log(e);
             }
           } else {
             try {
-              const element = realm.objects('Firebase').filtered(`_id="${this.state.item._id}"`);
+              const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
               realm.delete(element);
-              realm.create('Firebase', { _id: this.state.item._id, notify: 'false', channel: 'true' });
-              firebase.messaging().unsubscribeFromTopic(this.state.item._id);
+              realm.create('Firebase', { _id, notify: 'false', channel: 'true' });
+              firebase.messaging().unsubscribeFromTopic(_id);
               this.setState({ notify: false });
             } catch (e) {
               console.log(e);
@@ -70,21 +77,26 @@ class ChannelDetailScreen extends React.Component {
     }
 
     handleSubscribe = () => {
-      if (this.state.item === null) return;
+      const {
+        item,
+        subscribed
+      } = this.state;
+      const {
+        _id
+      } = item;
+      if (item === null) return;
       Realm.getRealm((realm) => {
         realm.write(() => {
-          if (!this.state.subscribed) {
+          if (!subscribed) {
             try {
-              realm.create('Firebase', { _id: this.state.item._id, notify: 'false', channel: 'true' });
-              // firebase.messaging().subscribeToTopic(this.state.item._id);
+              realm.create('Firebase', { _id, notify: 'false', channel: 'true' });
               this.setState({ subscribed: true });
             } catch (e) {
               console.log(e);
             }
           } else {
             try {
-              // firebase.messaging().unsubscribeFromTopic(this.state.item._id);
-              const element = realm.objects('Firebase').filtered(`_id="${this.state.item._id}"`);
+              const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
               realm.delete(element);
               this.setState({ subscribed: false, notify: false });
             } catch (e) {
@@ -95,15 +107,13 @@ class ChannelDetailScreen extends React.Component {
       });
     }
 
-    process_realm_obj = (RealmObject, callback) => {
-      const result = Object.keys(RealmObject).map(key => ({ ...RealmObject[key] }));
-      callback(result);
-    }
-
     render() {
-      const { item } = this.state;
+      const {
+        item,
+        subscribed,
+        notify
+      } = this.state;
       const { componentId } = this.props;
-      console.log(item);
       return (
         <View
           style={{
@@ -115,17 +125,14 @@ class ChannelDetailScreen extends React.Component {
           <ScrollView
             style={{
               flex: 1,
-              // backgroundColor: '#333'
             }}
           >
             <View
               style={{
                 textAlign: 'left',
-                // backgroundColor: 'red',
                 flexDirection: 'row',
                 paddingRight: 10,
                 paddingLeft: 10
-                // justifyContent: 'flex-end'
               }}
             >
               <TouchableOpacity
@@ -144,24 +151,22 @@ class ChannelDetailScreen extends React.Component {
             </View>
             <View
               style={{
-                backgroundColor: '#fff',
-                // flex: 1,
-                // height: 350
+                backgroundColor: '#fff'
               }}
             >
 
               {
-                            item !== null
-                            && (
-                            <FastImage
-                              style={{
-                                width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10, backgroundColor: '#000'
-                              }}
-                              source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                            )
-                        }
+                item !== null
+                && (
+                <FastImage
+                  style={{
+                    width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10, backgroundColor: '#000'
+                  }}
+                  source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+                )
+              }
             </View>
             <Text
               style={{
@@ -171,7 +176,7 @@ class ChannelDetailScreen extends React.Component {
                 fontFamily: 'Roboto-Light'
               }}
             >
-                        ABOUT US
+              ABOUT US
             </Text>
             <Text
               style={{
@@ -199,7 +204,7 @@ class ChannelDetailScreen extends React.Component {
           </ScrollView>
           <View
             style={{
-              backgroundColor: this.state.subscribed ? '#c0c0c0' : 'blue',
+              backgroundColor: subscribed ? '#c0c0c0' : 'blue',
               flexDirection: 'row'
             }}
           >
@@ -207,7 +212,6 @@ class ChannelDetailScreen extends React.Component {
               onPress={this.handleSubscribe}
               style={{
                 padding: 20,
-                // backgroundColor: 'red',
                 flex: 1
               }}
             >
@@ -219,18 +223,18 @@ class ChannelDetailScreen extends React.Component {
                   textAlign: 'center'
                 }}
               >
-                { !this.state.subscribed && 'SUBSCRIBE'}
-                { this.state.subscribed && 'UNSUBSCRIBE'}
+                { !subscribed && 'SUBSCRIBE'}
+                { subscribed && 'UNSUBSCRIBE'}
               </Text>
             </TouchableOpacity>
             {
-                        this.state.subscribed
+                        subscribed
                         && (
                         <TouchableOpacity
                           onPress={this.handleNotify}
                           style={{
                             padding: 20,
-                            backgroundColor: this.state.notify ? '#c0c0c0' : '#0a9ad3',
+                            backgroundColor: notify ? '#c0c0c0' : '#0a9ad3',
                             flex: 1
                           }}
                         >

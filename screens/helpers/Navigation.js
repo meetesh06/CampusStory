@@ -10,6 +10,13 @@ export const goToInterestsSelector = () => Navigation.setRoot({
         {
           component: {
             name: 'Interests Selection Screen',
+            options: {
+              topBar: {
+                title: {
+                  text: 'Basic Details'
+                }
+              }
+            }
           }
         }
       ],
@@ -38,7 +45,7 @@ export const goInitializing = () => Navigation.setRoot({
   }
 });
 
-export const goHome = async () => {
+export const goHome = async (first) => {
   const homeIcon = await Icon.getImageSource('home', 30);
   const discoverIcon = await Icon1.getImageSource('heart', 30);
   const profileIcon = await Icon.getImageSource('user', 30);
@@ -51,30 +58,6 @@ export const goHome = async () => {
             stack: {
               id: 'Home Stack',
               options: {
-                topBar: {
-                  
-                  // buttonColor: 'black',
-                  // drawBehind: true,
-                  
-                  // subtitle: {
-                  //   text: 'Title',
-                  //   fontSize: 14,
-                  //   color: 'red',
-                  //   fontFamily: 'Helvetica',
-                  //   alignment: 'center'
-                  // },
-                  // backButton: {
-                  //   // icon: require('icon.png'),
-                  //   visible: true
-                  // },                  
-                  // background: {
-                  //   color: '#00ff00',
-                  //   translucent: true,
-                  //   component: {
-                  //     name: 'homeTopBar'
-                  //   }
-                  // }
-                },
                 bottomTab: {
                   fontSize: 10,
                   selectedFontSize: 12,
@@ -89,6 +72,9 @@ export const goHome = async () => {
                 {
                   component: {
                     name: 'Home Screen',
+                    passProps: {
+                      first
+                    },
                     options: {
                       topBar: {
                         // hideOnScroll: true,
@@ -130,6 +116,9 @@ export const goHome = async () => {
                 {
                   component: {
                     name: 'Discover Screen',
+                    passProps: {
+                      first
+                    },
                     options: {
                       topBar: {
                         visible: true,
@@ -168,7 +157,10 @@ export const goHome = async () => {
               children: [
                 {
                   component: {
-                    name: 'Profile Screen'
+                    name: 'Profile Screen',
+                    passProps: {
+                      first
+                    }
                   }
                 }
               ]

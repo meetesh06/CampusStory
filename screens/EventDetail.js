@@ -46,7 +46,6 @@ class EventDetail extends React.Component {
       }
     }).then((response) => {
       const responseObj = response.data;
-      // response = response.data;
       if (!responseObj.error) {
         Realm.getRealm((realm) => {
           const el = responseObj.data[0];
@@ -68,7 +67,12 @@ class EventDetail extends React.Component {
             el.reg_start = new Date(el.reg_start);
             el.interested = 'false';
             el.going = 'false';
-            realm.create('Events', el, true);
+            // console.log(el);
+            try {
+              realm.create('Events', el, true);
+            } catch (e) {
+              console.log(e);
+            }
           });
           this.setState({ item: el });
         });

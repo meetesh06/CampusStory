@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ScrollView, View,
   Text,
-  Platform,
   FlatList
 } from 'react-native';
 import axios from 'axios';
