@@ -6,7 +6,7 @@ import Video from 'react-native-video';
 
 const WIDTH = Dimensions.get('window').width;
 
-class PostImage extends React.Component {
+class PostVideo extends React.Component {
     state = {
       loading: true,
       buffering: false
@@ -19,11 +19,17 @@ class PostImage extends React.Component {
       } = this.state;
       const {
         message,
-        video
+        video,
+        thumb
       } = this.props;
       return (
         <View style={{
-          backgroundColor: '#000', flex: 1, alignItems: 'center', justifyContent: 'center'
+          // backgroundColor: '#000',
+          backgroundColor: thumb ? undefined : '#000',
+          flex: 1,
+          // height: 400,
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
         >
           <Text />
@@ -34,7 +40,7 @@ class PostImage extends React.Component {
             // eslint-disable-next-line react/no-unused-state
             onBuffer={val => this.setState({ buffering: val.isBuffering })}
             style={{
-              backgroundColor: '#222',
+              backgroundColor: thumb ? undefined : '#222',
               width: WIDTH,
               height: 300,
               margin: 5,
@@ -62,4 +68,4 @@ class PostImage extends React.Component {
     }
 }
 
-export default PostImage;
+export default PostVideo;

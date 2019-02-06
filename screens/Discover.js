@@ -6,6 +6,7 @@ import {
   RefreshControl,
   ScrollView, View,
   Text,
+  TouchableOpacity,
   FlatList
 } from 'react-native';
 import axios from 'axios';
@@ -30,6 +31,8 @@ class Home extends React.Component {
     this.handleChannelClick = this.handleChannelClick.bind(this);
     this.handleUpdateData = this.handleUpdateData.bind(this);
     this.getTrendingContent = this.getTrendingContent.bind(this);
+    this.getItemView = this.getItemView.bind(this);
+    this.handlePreviewOverlay = this.handlePreviewOverlay.bind(this);
   }
 
     state = {
@@ -77,6 +80,7 @@ class Home extends React.Component {
           'x-access-token': token
         }
       }).then((response) => {
+        console.log(response);
         if (!response.data.error) {
           response.data.data.forEach((el) => {
             el.priority = JSON.stringify(el.priority);
@@ -186,11 +190,57 @@ class Home extends React.Component {
       });
     }
 
-    getItemView = (item) => {
+    handlePreviewOverlay = (item, type, index) => {
+      const { trending } = this.state;
+      const current = [...trending];
+      const final = [];
+      final.push(current[index]);
+      let i;
+      current.splice(index, 1);
+      current.unshift(item);
+      for (i = 1; i < current.length; i += 1) {
+        if (current[i].type === type) {
+          final.push(current[i]);
+        }
+      }
+      console.log(final);
+      Navigation.showOverlay({
+        component: {
+          passProps: {
+            stories: final,
+            type
+          },
+          name: 'Preview Overlay Screen',
+          options: {
+            overlay: {
+              interceptTouchOutside: false
+            }
+          }
+        }
+      });
+    }
+
+    getItemView = (item, index) => {
+      const {
+        handlePreviewOverlay
+      } = this;
       switch (item.type) {
-        case 'post': return <PostThumbnail message={item.message} />;
-        case 'post-image': return <PostImageThumbnail image={item.media[0]} />;
-        case 'post-video': return <PostVideoThumbnail video={item.media} />;
+        case 'post': return (
+          <TouchableOpacity onPress={() => handlePreviewOverlay(item, 'post', index)}>
+            <PostThumbnail message={item.message} />
+          </TouchableOpacity>
+        );
+        case 'post-image': return (
+          <TouchableOpacity onPress={() => handlePreviewOverlay(item, 'post-image', index)}>
+            <PostImageThumbnail image={item.media[0]} />
+          </TouchableOpacity>
+        );
+        case 'post-video': return (
+          <TouchableOpacity onPress={() => handlePreviewOverlay(item, 'post-video', index)}>
+            {/* <PostImageThumbnail image={item.media[0]} /> */}
+            <PostVideoThumbnail video={item.media} />
+          </TouchableOpacity>
+        );
         default: return <Text>.</Text>;
       }
     }
@@ -306,7 +356,7 @@ class Home extends React.Component {
                 extraData={categorySelected}
                 numColumns={3}
                 data={trending}
-                renderItem={({ item }) => this.getItemView(item)
+                renderItem={({ item, index }) => this.getItemView(item, index)
                     }
               />
             </View>

@@ -24,9 +24,9 @@ import Realm from '../realm';
 // import InformationCard from '../components/InformationCard';
 import { categoriesNoHottest } from './helpers/values';
 
-let one = [], two = [], i;
-for( i = 0; i < categoriesNoHottest.length ; i += 1 ) {
-  if(i < categoriesNoHottest.length / 2) {
+const one = []; const two = []; let i;
+for (i = 0; i < categoriesNoHottest.length; i += 1) {
+  if (i < categoriesNoHottest.length / 2) {
     one.push(categoriesNoHottest[i]);
   } else {
     two.push(categoriesNoHottest[i]);
@@ -149,7 +149,7 @@ class Interests extends React.Component {
           try {
             realm.create('Firebase', { _id: 'global', notify: 'true', channel: 'false' }, true);
             firebase.messaging().subscribeToTopic('global');
-            for (let i = 0; i < array.length; i += 1) {
+            for (i = 0; i < array.length; i += 1) {
               realm.create('Firebase', { _id: array[i], notify: 'true', channel: 'false' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
             }
@@ -166,10 +166,8 @@ class Interests extends React.Component {
 
   handleInterestSelection = (value) => {
     const {
-      interests,
-      refreshing
+      interests
     } = this.state;
-    if (refreshing) return;
     const current = { ...interests };
     // if (current.hasOwnProperty(value)) {
     if (Object.prototype.hasOwnProperty.call(current, value)) {

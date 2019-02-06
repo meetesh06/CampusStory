@@ -206,7 +206,7 @@ class StoryScreen extends React.Component {
         {
           stories.length > 0
           && stories[current].type === 'post'
-          && <Post key={stories[current]._id} message={stories[current].message} />
+          && <Post thumb={false} key={stories[current]._id} message={stories[current].message} />
         }
         {
           stories.length > 0

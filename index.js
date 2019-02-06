@@ -13,6 +13,9 @@ import EventDetail from './screens/EventDetail';
 import ChannelDetailScreen from './screens/ChannelDetailScreen';
 import StoryScreen from './screens/StoryScreen';
 import GoingDetails from './screens/GoingDetails';
+import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
+
+const whiteTopBarImage = require('./media/white-top-bar.png');
 
 const homeTopBar = () => (
   <LinearGradient
@@ -28,7 +31,7 @@ const homeTopBar = () => (
         alignSelf: 'center',
       }}
       resizeMode={FastImage.resizeMode.contain}
-      source={require('./media/white-top-bar.png')}
+      source={whiteTopBarImage}
     />
   </LinearGradient>
 );
@@ -43,6 +46,7 @@ Navigation.registerComponent('Channel Detail Screen', () => ChannelDetailScreen)
 Navigation.registerComponent('Story Screen', () => StoryScreen);
 Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
+Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
