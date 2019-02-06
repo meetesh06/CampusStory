@@ -48,11 +48,11 @@ class PreviewOverlayScreen extends React.Component {
         if (gestureState.dy > 0) {
           this.opacity.setValue(1 - gestureState.dy / HEIGHT);
         }
-        if (Platform.OS === 'android') {
-          if (gestureState.vy > 0.4) {
-            return Navigation.dismissOverlay(componentId);
-          }
-        }
+        // if (Platform.OS === 'android') {
+        //   if (gestureState.vy > 0.4) {
+        //     return Navigation.dismissOverlay(componentId);
+        //   }
+        // }
         return true;
       },
       onPanResponderTerminationRequest: () => true,

@@ -23,11 +23,11 @@ const halImageAlt = require('../../media/topics/hal-small.webp');
 const communityImageAlt = require('../../media/topics/community-small.webp');
 
 export const categories = [
-  {
-    title: 'Hottest',
-    value: 'hottest',
-    image: hottestImage
-  },
+  // {
+  //   title: 'Hottest',
+  //   value: 'hottest',
+  //   image: hottestImage
+  // },
   {
     title: 'Art',
     value: 'art',

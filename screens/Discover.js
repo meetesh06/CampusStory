@@ -107,6 +107,17 @@ class Home extends React.Component {
                 }
               }
             });
+            const {
+              categorySelected
+            } = this.state;
+            if (categorySelected === category) {
+              const elements = realm.objects('Channels').filtered(`category="${category}"`).sorted('recommended', true);
+              processRealmObj(elements, (final) => {
+                shuffleArray(final, (channelList) => {
+                  this.setState({ channelList });
+                });
+              });
+            }
           });
         }
       }).catch(err => (console.log(err)));
@@ -334,20 +345,27 @@ class Home extends React.Component {
                 flexDirection: 'row'
               }}
             >
-              {
-                loading
-                && (
-                <ActivityIndicator
-                  style={{
-                    alignSelf: 'center',
-                    marginTop: 10,
-                    flex: 1
-                  }}
-                  size="small"
-                  color="#444"
-                />
-                )
-              }
+              <View
+                style={{
+                  flex: 1,
+                  height: 30
+                }}
+              >
+                {
+                  loading
+                  && (
+                  <ActivityIndicator
+                    style={{
+                      alignSelf: 'center',
+                      flex: 1
+                    }}
+                    size="small"
+                    color="#444"
+                  />
+                  )
+                }
+
+              </View>
             </View>
             <View>
               <FlatList
