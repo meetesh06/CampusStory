@@ -387,7 +387,7 @@ class Home extends React.Component {
         passProps: { _id },
         options: {
           overlay: {
-            interceptTouchOutside: true
+            interceptTouchOutside: false
           }
         }
       }
@@ -404,7 +404,7 @@ class Home extends React.Component {
         passProps: { _id },
         options: {
           overlay: {
-            interceptTouchOutside: true
+            interceptTouchOutside: false
           }
         }
       }
