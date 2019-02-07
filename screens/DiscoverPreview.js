@@ -36,16 +36,16 @@ class DiscoverPreview extends React.Component {
     ).start();
   }
 
-  handleClose = () => {
-    const { componentId } = this.props;
-    Animated.timing(
-      this.position,
-      {
-        duration: 400,
-        toValue: 0,
-      }
-    ).start(() => Navigation.dismissOverlay(componentId));
-  }
+  // handleClose = () => {
+  //   const { componentId } = this.props;
+  //   Animated.timing(
+  //     this.position,
+  //     {
+  //       duration: 400,
+  //       toValue: 0,
+  //     }
+  //   ).start(() => Navigation.dismissOverlay(componentId));
+  // }
 
   getItemView = (item) => {
     switch (item.type) {
