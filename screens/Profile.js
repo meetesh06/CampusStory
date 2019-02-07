@@ -3,7 +3,7 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
-  AsyncStorage,
+  Platform,
   View,
   Text,
   // TouchableOpacity
@@ -37,7 +37,7 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    this.updateContent();
+    this.navigationEventListener = Navigation.events().bindComponent(this);
   }
 
   updateContent = () => {
@@ -97,6 +97,10 @@ class Profile extends React.Component {
   //   });
   // }
 
+  componentDidAppear() {
+    this.updateContent();
+  }
+
   render() {
     const {
       // count,
@@ -154,6 +158,15 @@ class Profile extends React.Component {
             />
           )}
         >
+          {
+            Platform.OS === 'android' && (
+              <View
+                style={{
+                  flex: 1,
+                  height: 50
+                }}
+              />
+            )}
           {
             interested.length > 0 && (
               <Text
