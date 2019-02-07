@@ -7,14 +7,13 @@ const WIDTH = Dimensions.get('window').width;
 const PostImage = (props) => {
   const {
     image,
-    message,
-    thumb
+    message
   } = props;
   return (
     <View
       style={{
         backgroundColor: '#000',
-        flex: thumb ? undefined : 1,
+        flex: 1,
         height: 250,
         alignItems: 'center',
         justifyContent: 'center'
@@ -31,9 +30,11 @@ const PostImage = (props) => {
       <Text
         style={{
           color: '#fff',
-          marginTop: 10,
+          marginTop: 15,
           fontFamily: 'Roboto',
-          fontSize: 14
+          fontSize: 14,
+          margin : 5,
+          textAlign : 'center',
         }}
       >
         {message}

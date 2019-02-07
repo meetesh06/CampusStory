@@ -114,7 +114,7 @@ class Profile extends React.Component {
         }}
       >
 
-        <LinearGradient
+        {/* <LinearGradient
           style={{
             overflow: 'hidden', justifyContent: 'center', alignItems: 'center', padding: 2
           }}
@@ -142,6 +142,7 @@ class Profile extends React.Component {
             />
           </TouchableOpacity>
         </LinearGradient>
+         */}
         <ScrollView
           style={{
             flex: 1

@@ -169,7 +169,7 @@ class PreviewOverlayScreen extends React.Component {
           overflow: 'hidden',
           justifyContent: 'center',
           opacity: this.opacity,
-          backgroundColor: '#000000dd'
+          backgroundColor: '#111'
         }]}
       >
         {

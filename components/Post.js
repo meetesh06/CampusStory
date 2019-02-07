@@ -18,8 +18,12 @@ const Post = (props) => {
       <Text
         style={{
           fontSize: 20,
+          marginLeft : 10,
+          marginRight : 10,
+          margin : 5,
           fontFamily: 'Roboto',
-          color: '#fff'
+          color: '#fff',
+          textAlign : 'center'
         }}
       >
         {message} 

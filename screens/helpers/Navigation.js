@@ -160,6 +160,18 @@ export const goHome = async (first) => {
                     name: 'Profile Screen',
                     passProps: {
                       first
+                    },
+                    options: {
+                      topBar: {
+                        visible: true,
+                        animate: true,
+                        background: {
+                          color: '#FF6A15',
+                          component: {
+                            name: 'homeTopBar'
+                          }
+                        }
+                      }
                     }
                   }
                 }

@@ -7,6 +7,7 @@ import {
   Dimensions,
   View,
   Text,
+  StatusBar,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -152,10 +153,11 @@ class EventDetail extends React.Component {
         <View
           style={{
             flex: 1,
-            backgroundColor: '#fff'
           }}
         >
-
+        
+        <StatusBar barStyle="light-content" hidden />
+        
 
           <ScrollView
             style={{
@@ -163,40 +165,10 @@ class EventDetail extends React.Component {
               // backgroundColor: '#333'
             }}
           >
+
             <View
               style={{
-                textAlign: 'left',
-                // backgroundColor: 'red',
-                flexDirection: 'row',
-                paddingRight: 10,
-                paddingLeft: 10
-                // justifyContent: 'flex-end'
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  // backgroundColor: 'red',
-                  textAlign: 'right',
-                  width: 35,
-                  height: 35
-                }}
-                onPress={() => Navigation.dismissModal(componentId)}
-              >
-                <Icon style={{ alignSelf: 'flex-end', color: '#a0a0a0' }} size={25} name="close" />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                backgroundColor: '#fff',
-                // flex: 1,
-                // height: 350
-              }}
-            />
-            <View
-              style={{
-                backgroundColor: '#333',
+                backgroundColor: '#efefef',
                 padding: 10,
               }}
             >
@@ -208,16 +180,32 @@ class EventDetail extends React.Component {
                 resizeMode={FastImage.resizeMode.cover}
               />
               <View style={{
-                backgroundColor: '#rgba(0, 0, 0, 0.5)', position: 'absolute', top: 15, right: 15, borderRadius: 5
+                position: 'absolute', top: 15, flexDirection : 'row', right: 15,
               }}
               >
+
+              <TouchableOpacity
+                style={{
+                  justifyContent: 'center',
+                  textAlign: 'right',
+                  width: 35,
+                  left : 10,
+                  height: 35,
+                  padding : 5
+                }}
+                onPress={() => Navigation.dismissModal(componentId)}
+              >
+                <Icon style={{ alignSelf: 'flex-end', color: '#000' }} size={25} name="close" />
+              </TouchableOpacity>
+              <View style={{flex : 1,}} />
+                <View style={{backgroundColor: 'rgba(0, 0, 0, 0.5)',  borderRadius: 5}}>
                 <Text style={{
-                  fontSize: 15, color: '#efefef', marginLeft: 10, marginRight: 10, margin: 5
+                  fontSize: 15, color: '#efefef',  marginLeft: 10, marginRight: 10, margin: 5
                 }}
                 >
                   {item.category.toUpperCase()}
-
                 </Text>
+                </View>
               </View>
             </View>
             <View
@@ -475,6 +463,9 @@ Views
                 flexDirection: 'row'
               }}
             >
+            {
+              item.faq.length > 0 && 
+              <View>
               <View
                 style={{
                   backgroundColor: '#f1f1f1',
@@ -501,6 +492,8 @@ Views
                   {item.faq}
                 </Text>
               </View>
+              </View>
+            }
             </View>
 
           </ScrollView>

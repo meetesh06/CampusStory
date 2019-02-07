@@ -56,6 +56,10 @@ class GoingDetails extends React.Component {
     ).start(() => Navigation.dismissOverlay(componentId));
   }
 
+  clear = () =>{
+    this.setState({name : '', email : '', phone : ''});
+  }
+
   handleSubmit = async () => {
     const {
       loading,
@@ -120,12 +124,12 @@ class GoingDetails extends React.Component {
           style={{
             textAlign: 'center',
             fontFamily: 'Roboto',
-            fontSize: 25,
+            fontSize: 22,
             margin: 5,
             color: '#fff'
           }}
         >
-                  Enter Details
+                  Enter Contact Details
         </Text>
         <Animated.View style={{
           width: WIDTH - 40,
@@ -188,7 +192,16 @@ class GoingDetails extends React.Component {
 
 
           </View>
-          <Button
+          <View style={{flexDirection : 'row',}}>
+            <TouchableOpacity style={{backgroundColor:'#c0c0c0', width : '50%'}} onPress={this.clear}> 
+              <Text style={{fontSize : 22, color : '#fff', textAlign : 'center', margin : 5}}>Clear</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{backgroundColor: going === 'true' ? '#c0c0c0' : 'blue',  width : '50%'}} onPress={this.handleSubmit}> 
+              <Text style={{fontSize : 22, color : '#fff', textAlign : 'center',margin : 5}}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+          {/* <Button
             style={{
               // flex: 1,
               padding: 40,
@@ -199,7 +212,7 @@ class GoingDetails extends React.Component {
             disabled={loading || going === 'true'}
             onPress={this.handleSubmit}
             title="SUBMIT"
-          />
+          /> */}
         </Animated.View>
 
         <TouchableOpacity

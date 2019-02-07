@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  TouchableOpacity, Dimensions, View, Text, ScrollView
+  TouchableOpacity,StatusBar, Dimensions, View, Text, ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -122,6 +122,8 @@ class ChannelDetailScreen extends React.Component {
           }}
         >
 
+      <StatusBar barStyle="dark-content" translucent />
+
           <ScrollView
             style={{
               flex: 1,
@@ -146,7 +148,7 @@ class ChannelDetailScreen extends React.Component {
                 }}
                 onPress={() => Navigation.dismissModal(componentId)}
               >
-                <Icon style={{ alignSelf: 'flex-end', color: '#a0a0a0' }} size={25} name="close" />
+                <Icon style={{ alignSelf: 'flex-start', color: '#a0a0a0' }} size={25} name="close" />
               </TouchableOpacity>
             </View>
             <View

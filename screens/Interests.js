@@ -14,14 +14,14 @@ import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
-// import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
+import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
 import firebase from 'react-native-firebase';
 import Constants from '../constants';
 import { goHome } from './helpers/Navigation';
 import AdvertCard from '../components/AdvertCard';
 import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
-// import InformationCard from '../components/InformationCard';
+import InformationCard from '../components/InformationCard';
 import { categoriesNoHottest } from './helpers/values';
 
 const one = []; const two = []; let i;
@@ -226,7 +226,7 @@ class Interests extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <ScrollView
-          style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10 }}
+          style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10,}}
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
@@ -235,7 +235,7 @@ class Interests extends React.Component {
           )}
         >
           <Text style={{
-            textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10
+            textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop : 10
           }}
           >
             Select your college
@@ -300,7 +300,7 @@ class Interests extends React.Component {
           />
           <FlatList
             style={{
-              backgroundColor: '#333',
+              backgroundColor: '#fff',
               paddingTop: 15,
               paddingBottom: 15,
             }}
@@ -320,7 +320,7 @@ class Interests extends React.Component {
           />
           <FlatList
             style={{
-              backgroundColor: '#333',
+              backgroundColor: '#fff',
               paddingTop: 15,
               paddingBottom: 15,
             }}
@@ -338,15 +338,15 @@ class Interests extends React.Component {
               />
             )}
           />
-          {/* <InformationCard
+          <InformationCard
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information."
-            icon={<IconSimple name="emotsmile" size={40} color="#111" style={{ margin: 10, alignSelf: 'center' }} />}
-          /> */}
+            icon={<IconSimple name="emotsmile" size={40} color="#111" style={{ margin: 10, alignSelf: 'center',}} />}
+          />
         </ScrollView>
 
         <View style={{
-          position: 'absolute', bottom: 30, alignSelf: 'center', elevation: 10, backgroundColor: '#dfdfef', padding: 5, borderRadius: 30
+          position: 'absolute', bottom: 30, alignSelf: 'center', elevation: 10, backgroundColor: '#dfefef', padding: 5, borderRadius: 30
         }}
         >
           <TouchableOpacity

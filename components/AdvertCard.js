@@ -52,15 +52,14 @@ class AdvertCard extends React.Component {
                 color: 'orange',
                 position: 'absolute',
                 bottom: 0,
-                right: 0
+                right : 0,
               }}
             />
             )
           }
         </View>
         <Text style={{
-          // color: '#555', fontSize: 18 - (0.4 * text.length), textAlign: 'center', alignSelf: 'center', textTransform: 'uppercase'
-          color: '#f0f0f0', textAlign: 'center', alignSelf: 'center', textTransform: 'uppercase'
+          color: '#111', textAlign: 'center', alignSelf: 'center', textTransform: 'uppercase', fontSize : 12
         }}
         >
           {text}

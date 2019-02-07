@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ScrollView,
   FlatList,
+  StatusBar,
   AsyncStorage,
   View,
   Text
@@ -434,6 +435,7 @@ class Home extends React.Component {
           flex: 1,
         }}
       >
+      <StatusBar barStyle="light-content" translucent />
         <ScrollView
           refreshControl={(
             <RefreshControl
@@ -480,7 +482,7 @@ class Home extends React.Component {
                             source={require('../media/app-bar/logo.png')}
                             resizeMode={FastImage.resizeMode.contain}
                           />
-)}
+                        )}
                         style_card={{ backgroundColor: '#e0e0e0' }}
                         style_title={{ color: '#444' }}
                         style_content={{ color: '#444', }}
@@ -490,7 +492,7 @@ class Home extends React.Component {
           <Swiper
             showsButtons={false}
             autoplay
-            loop
+            loop = {false}
             showsPagination={false}
             loadMinimal
             style={{ backgroundColor: '#333', height: 250 }}

@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   Platform,
+  StatusBar,
   BackHandler,
   ActivityIndicator,
   Easing,
@@ -21,6 +22,8 @@ import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import Realm from '../realm';
 import { processRealmObj } from './helpers/functions';
+import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const { TOKEN } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -111,6 +114,7 @@ class StoryScreen extends React.Component {
   state = {
     stories: [],
     current: 0,
+    channel : {media : '""'},
     loading: true
   }
 
@@ -120,14 +124,19 @@ class StoryScreen extends React.Component {
 
   async componentDidMount() {
     const { _id } = this.props;
+
     Realm.getRealm((realm) => {
       const Final = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
-      realm.write(() => {
-        realm.create('Channels', { _id, updates: 'false' }, true);
-      });
-      processRealmObj(Final, (result) => {
-        this.setState({ stories: result, loading: false }, () => this.updateRead());
-      });
+      const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
+      processRealmObj(channel, (channel_result) =>{
+        console.log('Channel', channel_result);
+        realm.write(() => {
+          realm.create('Channels', { _id, updates: 'false' }, true);
+        });
+        processRealmObj(Final, (result) => {
+          this.setState({ stories: result, loading: false, channel : channel_result[0] }, () => this.updateRead());
+        });
+      })
     });
   }
 
@@ -166,11 +175,15 @@ class StoryScreen extends React.Component {
   }
 
   handleBackButtonClick() {
+    this.close();
+    return true;
+  }
+
+  close = () =>{
     const {
       componentId
     } = this.props;
     Navigation.dismissOverlay(componentId);
-    return true;
   }
 
   render() {
@@ -191,6 +204,7 @@ class StoryScreen extends React.Component {
           backgroundColor: '#000000'
         }]}
       >
+      <StatusBar barStyle="light-content" hidden />
         {
           loading
           && <ActivityIndicator size="small" color="#fff" />
@@ -271,6 +285,29 @@ class StoryScreen extends React.Component {
               flex: 1,
             }}
           />
+        </View>
+
+        <View style={{position : 'absolute', top : 25, left : 10, flexDirection : 'row'}}>
+          <View style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', width : '100%'}}>
+            <FastImage
+              style={{
+                width : 36,
+                height : 36,
+                borderRadius: 20,
+                backgroundColor: '#000'
+              }}
+              source={{
+                uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}`,
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <Text style={{fontSize : 15, color : '#fff', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
+            <View style={{flex : 1}}/>
+            <TouchableOpacity onPress={()=>this.close()} style={{padding : 5}}>
+              <Icon style={{ color: '#fff', marginRight : 15}} size={25} name="close" />
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     );
