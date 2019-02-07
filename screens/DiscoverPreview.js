@@ -3,6 +3,7 @@ import React from 'react';
 import {
   Animated,
   View,
+  Text,
   Dimensions
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
@@ -19,7 +20,7 @@ class DiscoverPreview extends React.Component {
   constructor(props) {
     super(props);
     this.position = new Animated.Value(0);
-    this.handleClose = this.handleClose.bind(this);
+    // this.handleClose = this.handleClose.bind(this);
   }
 
   state = {
@@ -71,6 +72,14 @@ class DiscoverPreview extends React.Component {
           justifyContent: 'center'
         }}
       >
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#fff'
+          }}
+        >
+          {item.channel_name}
+        </Text>
         <Animated.View style={{
           width: WIDTH - 20,
           marginLeft: 10,

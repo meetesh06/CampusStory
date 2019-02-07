@@ -58,3 +58,30 @@ export function formatAMPM(date) {
   const strTime = `${hours}:${minutes} ${ampm}`;
   return strTime;
 }
+
+export function getCategoryName(category) {
+  switch (category) {
+    case 'art':
+      return 'Art';
+    case 'cal':
+      return 'Career and Literature';
+    case 'music':
+      return 'Music';
+    case 'sat':
+      return 'Science and Tech';
+    case 'sag':
+      return 'Sports and Gaming';
+    case 'dad':
+      return 'Dance and Drama';
+    case 'fashion':
+      return 'Fashion';
+    case 'photography':
+      return 'Photography';
+    case 'hal':
+      return 'Health and Lifestyle';
+    case 'community':
+      return 'Community';
+    default:
+      return '';
+  }
+}

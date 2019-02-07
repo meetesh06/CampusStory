@@ -19,7 +19,8 @@ class PostVideo extends React.Component {
       } = this.state;
       const {
         message,
-        video
+        video,
+        thumb
       } = this.props;
       return (
         <View style={{

@@ -22,22 +22,22 @@ const homeTopBar = () => (
   <LinearGradient
     style={{
       flex: 1,
-      flexDirection : 'row',
-      justifyContent : 'center',
-      alignItems : 'center'
-    }} 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}
     colors={['#FF6A15', '#ff5b29']}>
     <FastImage
       style={{
         marginTop: Platform.OS === 'android' ? 5 : 0,
         width: 36,
-        margin : 5,
+        margin: 5,
         height: 36,
       }}
       resizeMode={FastImage.resizeMode.contain}
       source={whiteTopBarImage}
     />
-    <Text style={{fontSize : 18, color : '#fff'}}>Campus Story</Text>
+    <Text style={{ alignSelf: 'center', fontSize: 18, color: '#fff' }}>Campus Story</Text>
   </LinearGradient>
 );
 

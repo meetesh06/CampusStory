@@ -23,6 +23,9 @@ import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
 import InformationCard from '../components/InformationCard';
 import { categoriesNoHottest } from './helpers/values';
+import {
+  getCategoryName
+} from './helpers/functions';
 
 const one = []; const two = []; let i;
 for (i = 0; i < categoriesNoHottest.length; i += 1) {
@@ -226,7 +229,7 @@ class Interests extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <ScrollView
-          style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10,}}
+          style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10 }}
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
@@ -342,6 +345,12 @@ class Interests extends React.Component {
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information."
             icon={<IconSimple name="emotsmile" size={40} color="#111" style={{ margin: 10, alignSelf: 'center',}} />}
+          />
+          <View
+            style={{
+              flex: 1,
+              height: 90
+            }}
           />
         </ScrollView>
 

@@ -1,6 +1,8 @@
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/SimpleLineIcons';
+import Icon2 from 'react-native-vector-icons/Entypo';
+import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const goToInterestsSelector = () => Navigation.setRoot({
   root: {
@@ -46,9 +48,9 @@ export const goInitializing = () => Navigation.setRoot({
 });
 
 export const goHome = async (first) => {
-  const homeIcon = await Icon.getImageSource('home', 30);
-  const discoverIcon = await Icon1.getImageSource('heart', 30);
-  const profileIcon = await Icon.getImageSource('user', 30);
+  const homeIcon = await Icon2.getImageSource('home', 30);
+  const discoverIcon = await Icon3.getImageSource('heart-multiple', 30);
+  const profileIcon = await Icon3.getImageSource('ticket', 30);
   return Navigation.setRoot({
     root: {
       bottomTabs: {
@@ -65,7 +67,8 @@ export const goHome = async (first) => {
                   icon: homeIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
-                  selectedIconColor: '#555'
+                  selectedTextColor: '#FF6A15',
+                  selectedIconColor: '#FF6A15'
                 }
               },
               children: [
@@ -109,7 +112,8 @@ export const goHome = async (first) => {
                   icon: discoverIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
-                  selectedIconColor: '#555'
+                  selectedTextColor: '#FF6A15',
+                  selectedIconColor: '#FF6A15'
                 }
               },
               children: [
@@ -147,7 +151,8 @@ export const goHome = async (first) => {
                   icon: profileIcon,
                   iconColor: '#c0c0c0',
                   textColor: '#c0c0c0',
-                  selectedIconColor: '#555'
+                  selectedTextColor: '#FF6A15',
+                  selectedIconColor: '#FF6A15'
                 },
                 topBar: {
                   visible: false,

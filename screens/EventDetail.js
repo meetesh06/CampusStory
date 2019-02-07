@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   View,
+  Platform,
   Text,
   StatusBar,
   ScrollView
@@ -18,7 +19,7 @@ import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
 import Constants from '../constants';
-import { getMonthName, formatAMPM } from './helpers/functions';
+import { getMonthName, formatAMPM, getCategoryName } from './helpers/functions';
 
 const WIDTH = Dimensions.get('window').width;
 const { TOKEN } = Constants;
@@ -29,6 +30,8 @@ class EventDetail extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.success = this.success.bind(this);
     this.handleGoing = this.handleGoing.bind(this);
+    this.updateStatus = this.updateStatus.bind(this);
+    this.handleChannelOpenNetwork = this.handleChannelOpenNetwork.bind(this);
   }
 
   state = {
@@ -101,7 +104,7 @@ class EventDetail extends React.Component {
             try {
               realm.create('Events', { _id, interested: 'true' }, true);
               this.setState({ item: { ...item, interested: 'true' } });
-            } catch(e) {
+            } catch (e) {
               console.log(e);
             }
           });
@@ -111,10 +114,25 @@ class EventDetail extends React.Component {
       .finally(() => this.setState({ loading: false }));
   }
 
+  updateStatus = () => {
+    const {
+      item
+    } = this.state;
+    const {
+      _id
+    } = item;
+    Realm.getRealm((realm) => {
+      const element = realm.objects('Events').filtered(`_id="${_id}"`);
+      const final = { ...element[0] };
+      this.setState({ item: final });
+    });
+  }
+
     handleGoing = () => {
       const { loading } = this.state;
       const { item } = this.props;
       const { _id } = item;
+      const { updateStatus } = this;
       if (loading) return;
       let going = 'false';
       Realm.getRealm((realm) => {
@@ -130,11 +148,12 @@ class EventDetail extends React.Component {
           name: 'Going Details',
           passProps: {
             _id,
-            going
+            going,
+            updateStatus
           },
           options: {
             overlay: {
-              interceptTouchOutside: true
+              interceptTouchOutside: false
             }
           }
         }
@@ -146,19 +165,50 @@ class EventDetail extends React.Component {
       this.setState({ item: { ...item, going: 'true' } });
     }
 
+    handleChannelOpenNetwork = () => {
+      // Alert.alert('Channel Open Network');
+      const { item } = this.props;
+      Navigation.showModal({
+        component: {
+          name: 'Channel Detail Screen',
+          passProps: {
+            id: item.channel
+          },
+          options: {
+            bottomTabs: {
+              animate: true,
+              drawBehind: true,
+              visible: false
+            },
+            topBar: {
+              title: {
+                text: item.name
+              },
+              visible: true
+            }
+          }
+        }
+      });
+    }
+
     render() {
       const { item, loading } = this.state;
       const { componentId } = this.props;
+      const {
+        handleChannelOpenNetwork
+      } = this;
       return (
         <View
           style={{
             flex: 1,
+            backgroundColor: '#fff'
           }}
         >
-        
-        <StatusBar barStyle="light-content" hidden />
-        
-
+          {
+            Platform.OS === 'ios'
+            && (<StatusBar barStyle="dark-content" translucent />)
+          }
+          {/* <StatusBar barStyle="light-content" hidden /> */}
           <ScrollView
             style={{
               flex: 1,
@@ -176,36 +226,55 @@ class EventDetail extends React.Component {
                 style={{
                   width: WIDTH - 20, height: (WIDTH - 20) * 0.75, borderRadius: 10
                 }}
-                source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
+                source={{
+                  uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`
+                }}
                 resizeMode={FastImage.resizeMode.cover}
               />
               <View style={{
-                position: 'absolute', top: 15, flexDirection : 'row', right: 15,
+                position: 'absolute',
+                top: 5,
+                flexDirection: 'row',
+                right: 15,
+                padding: 10
               }}
               >
-
-              <TouchableOpacity
-                style={{
-                  justifyContent: 'center',
-                  textAlign: 'right',
-                  width: 35,
-                  left : 10,
-                  height: 35,
-                  padding : 5
-                }}
-                onPress={() => Navigation.dismissModal(componentId)}
-              >
-                <Icon style={{ alignSelf: 'flex-end', color: '#000' }} size={25} name="close" />
-              </TouchableOpacity>
-              <View style={{flex : 1,}} />
-                <View style={{backgroundColor: 'rgba(0, 0, 0, 0.5)',  borderRadius: 5}}>
-                <Text style={{
-                  fontSize: 15, color: '#efefef',  marginLeft: 10, marginRight: 10, margin: 5
-                }}
+                <View
+                  style={{
+                    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    backgroundColor: '#ffffff99',
+                    borderRadius: 5,
+                    justifyContent: 'center'
+                  }}
                 >
-                  {item.category.toUpperCase()}
-                </Text>
+                  <Text style={{
+                    fontSize: 15,
+                    color: '#333',
+                    marginLeft: 10,
+                    marginRight: 10,
+                    margin: 5,
+                    alignSelf: 'center'
+                  }}
+                  >
+                    {getCategoryName(item.category)}
+                  </Text>
                 </View>
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity
+                  style={{
+                    justifyContent: 'center',
+                    textAlign: 'right',
+                    width: 35,
+                    left: 10,
+                    height: 35,
+                    padding: 5,
+                    backgroundColor: '#ffffff99',
+                    borderRadius: 30
+                  }}
+                  onPress={() => Navigation.dismissModal(componentId)}
+                >
+                  <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+                </TouchableOpacity>
               </View>
             </View>
             <View
@@ -214,6 +283,7 @@ class EventDetail extends React.Component {
                 flex: 1,
                 marginTop: 5,
                 marginLeft: 5,
+                marginRight: 5,
                 padding: 5,
                 flexDirection: 'row'
               }}
@@ -267,6 +337,7 @@ class EventDetail extends React.Component {
                   { item.title }
                 </Text>
                 <TouchableOpacity
+                  onPress={handleChannelOpenNetwork}
                   style={{
                     marginTop: 5
                   }}
@@ -463,36 +534,38 @@ Views
                 flexDirection: 'row'
               }}
             >
-            {
-              item.faq.length > 0 && 
-              <View>
-              <View
-                style={{
-                  backgroundColor: '#f1f1f1',
-                  padding: 10,
-                  marginRight: 10,
-                  borderRadius: 10
-                }}
-              >
-                <Icon style={{ color: '#444', }} size={30} name="questioncircleo" />
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: 'left',
-                    fontSize: 15,
-                    // color: '#222',
-                  }}
-                >
-                  {item.faq}
-                </Text>
-              </View>
-              </View>
+              {
+                item.faq.length > 0
+                && (
+                <View>
+                  <View
+                    style={{
+                      backgroundColor: '#f1f1f1',
+                      padding: 10,
+                      marginRight: 10,
+                      borderRadius: 10
+                    }}
+                  >
+                    <Icon style={{ color: '#444', }} size={30} name="questioncircleo" />
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        textAlign: 'left',
+                        fontSize: 15,
+                        // color: '#222',
+                      }}
+                    >
+                      {item.faq}
+                    </Text>
+                  </View>
+                </View>
+                )
             }
             </View>
 

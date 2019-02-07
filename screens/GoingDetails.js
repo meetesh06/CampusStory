@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 import React from 'react';
 import {
-  Button,
   AsyncStorage,
   ActivityIndicator,
   Alert,
@@ -45,7 +44,7 @@ class GoingDetails extends React.Component {
   }
 
   handleClose = () => {
-    const { componentId } = this.props;
+    const { componentId, updateStatus } = this.props;
     Animated.timing(
       this.position,
       {
@@ -53,11 +52,11 @@ class GoingDetails extends React.Component {
         toValue: 0,
         // friction: 0
       }
-    ).start(() => Navigation.dismissOverlay(componentId));
+    ).start(() => { updateStatus(); Navigation.dismissOverlay(componentId); });
   }
 
-  clear = () =>{
-    this.setState({name : '', email : '', phone : ''});
+  clear = () => {
+    this.setState({ name: '', email: '', phone: '' });
   }
 
   handleSubmit = async () => {
@@ -192,27 +191,33 @@ class GoingDetails extends React.Component {
 
 
           </View>
-          <View style={{flexDirection : 'row',}}>
-            <TouchableOpacity style={{backgroundColor:'#c0c0c0', width : '50%'}} onPress={this.clear}> 
-              <Text style={{fontSize : 22, color : '#fff', textAlign : 'center', margin : 5}}>Clear</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity style={{ backgroundColor: '#c0c0c0', width: '50%' }} onPress={this.clear}>
+              <Text
+                style={{
+                  fontSize: 22,
+                  color: '#fff',
+                  textAlign: 'center',
+                  margin: 5
+                }}
+              >
+                Clear
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{backgroundColor: going === 'true' ? '#c0c0c0' : 'blue',  width : '50%'}} onPress={this.handleSubmit}> 
-              <Text style={{fontSize : 22, color : '#fff', textAlign : 'center',margin : 5}}>Submit</Text>
+            <TouchableOpacity style={{ backgroundColor: going === 'true' ? '#c0c0c0' : 'blue', width: '50%' }} onPress={this.handleSubmit}>
+              <Text
+                style={{
+                  fontSize: 22,
+                  color: '#fff',
+                  textAlign: 'center',
+                  margin: 5
+                }}
+              >
+                Submit
+              </Text>
             </TouchableOpacity>
           </View>
-          {/* <Button
-            style={{
-              // flex: 1,
-              padding: 40,
-              height: 50,
-              backgroundColor: going === 'true' ? '#c0c0c0' : 'blue',
-              justifyContent: 'center'
-            }}
-            disabled={loading || going === 'true'}
-            onPress={this.handleSubmit}
-            title="SUBMIT"
-          /> */}
         </Animated.View>
 
         <TouchableOpacity

@@ -6,8 +6,8 @@ import {
   RefreshControl,
   ScrollView, View,
   Text,
-  TouchableWithoutFeedback,
   TouchableOpacity,
+  Alert,
   FlatList
 } from 'react-native';
 import axios from 'axios';
@@ -19,7 +19,12 @@ import CategoryCard from '../components/CategoryCard';
 import PostThumbnail from '../components/PostThumbnail';
 import PostImageThumbnail from '../components/PostImageThumbnail';
 import PostVideoThumbnail from '../components/PostVideoThumbnail';
-import { processRealmObj, processRealmObjRecommended, shuffleArray } from './helpers/functions';
+import {
+  getCategoryName,
+  processRealmObj,
+  processRealmObjRecommended,
+  shuffleArray
+} from './helpers/functions';
 import { categories } from './helpers/values';
 
 const { TOKEN } = Constants;
@@ -33,7 +38,9 @@ class Home extends React.Component {
     this.handleUpdateData = this.handleUpdateData.bind(this);
     this.getTrendingContent = this.getTrendingContent.bind(this);
     this.getItemView = this.getItemView.bind(this);
-    //this.handlePreviewOverlay = this.handlePreviewOverlay.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handlePreview = this.handlePreview.bind(this);
+    this.handleChannelClickStory = this.handleChannelClickStory.bind(this);
   }
 
     state = {
@@ -140,7 +147,8 @@ class Home extends React.Component {
       }).then((response) => {
         const items = response.data.data;
         this.setState({ trending: items, loading: false });
-      });
+      }).catch(err => console.log(err))
+        .finally(() => this.setState({ loading: false }));
     }
 
     updateContent = () => {
@@ -174,13 +182,36 @@ class Home extends React.Component {
       });
     }
 
+    handleChannelClickStory = (item) => {
+      Navigation.showModal({
+        component: {
+          name: 'Channel Detail Screen',
+          passProps: {
+            id: item.channel
+          },
+          options: {
+            bottomTabs: {
+              animate: true,
+              drawBehind: true,
+              visible: false
+            },
+            topBar: {
+              title: {
+                text: item.channel_name
+              },
+              visible: true
+            }
+          }
+        }
+      });
+    }
+
     handleUpdateData = (category) => {
       const { loading } = this.state;
       if (loading) return;
       const { updateRecommendedList } = this;
       Realm.getRealm((realm) => {
-        let elements;
-        console.log('Cat :', category);
+        // console.log('Cat :', category);
         // if (category === 'hottest') {
         //   elements = realm.objects('Channels').sorted('recommended', true);
         //   processRealmObj(elements, (final) => {
@@ -189,9 +220,8 @@ class Home extends React.Component {
         //     });
         //   });
         // } else {
-          
         // }
-        elements = realm.objects('Channels').filtered(`category="${category}"`);
+        const elements = realm.objects('Channels').filtered(`category="${category}"`);
         processRealmObj(elements, (final) => {
           this.setState({ channelList: final });
         });
@@ -234,11 +264,11 @@ class Home extends React.Component {
     //   });
     // }
 
-    handlePreview = (item) =>{
-      this.setState({tap : false})
+    handlePreview = (item) => {
+      this.setState({ tap: false });
       Navigation.showOverlay({
         component: {
-          id : 'preview_overlay',
+          id: 'preview_overlay',
           passProps: {
             item,
           },
@@ -252,28 +282,43 @@ class Home extends React.Component {
       });
     }
 
-    handleClose = () =>{
-      if(this.state.tap){
-        return;
-      } else {
-        Navigation.dismissOverlay('preview_overlay');
-      }
+    handleClose = () => {
+      const {
+        tap
+      } = this.state;
+      if (tap) return;
+      Navigation.dismissOverlay('preview_overlay');
     }
 
     getItemView = (item) => {
       switch (item.type) {
         case 'post': return (
-          <TouchableOpacity onPress={()=>this.setState({tap : true})} onLongPress={()=>this.handlePreview(item)} onPressOut={()=>this.handleClose()} activeOpacity = {0.9}>
+          <TouchableOpacity
+            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
+            onLongPress={() => this.handlePreview(item)}
+            onPressOut={() => this.handleClose()}
+            activeOpacity={0.9}
+          >
             <PostThumbnail message={item.message} />
           </TouchableOpacity>
         );
         case 'post-image': return (
-          <TouchableOpacity onPress={()=>this.setState({tap : true})} onLongPress={()=>this.handlePreview(item)} onPressOut={()=>this.handleClose()} activeOpacity = {0.9}>
+          <TouchableOpacity
+            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
+            onLongPress={() => this.handlePreview(item)}
+            onPressOut={() => this.handleClose()}
+            activeOpacity={0.9}
+          >
             <PostImageThumbnail image={item.media[0]} />
           </TouchableOpacity>
         );
         case 'post-video': return (
-          <TouchableOpacity onPress={()=>this.setState({tap : true})} onLongPress={()=>this.handlePreview(item)} onPressOut={()=>this.handleClose()} activeOpacity = {0.9}>
+          <TouchableOpacity
+            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
+            onLongPress={() => this.handlePreview(item)}
+            onPressOut={() => this.handleClose()}
+            activeOpacity={0.9}
+          >
             <PostVideoThumbnail video={item.media} />
           </TouchableOpacity>
         );
@@ -348,7 +393,11 @@ class Home extends React.Component {
                 fontFamily: 'Roboto', fontSize: 18, margin: 5, marginLeft: 10, marginRight: 10, marginBottom: 2
               }}
               >
-                Top {categorySelected} channels
+                Top
+                {' '}
+                {getCategoryName(categorySelected)}
+                {' '}
+                channels
               </Text>
               <FlatList
                 horizontal

@@ -52,7 +52,10 @@ const Spotlight = (props) => {
     <View>
       <FastImage
         style={{ height: 250, flexDirection: 'column' }}
-        source={{ uri: `https://www.mycampusdock.com/${JSON.parse(media)[0]}` }}
+        source={{
+          uri: `https://www.mycampusdock.com/${JSON.parse(media)[0]}`,
+          priority: FastImage.priority.high
+        }}
         resizeMode={FastImage.resizeMode.cover}
       />
       <LinearGradient
@@ -116,7 +119,6 @@ const Spotlight = (props) => {
           <Text
             style={{
               textAlign: 'center',
-              fontFamily: 'Roboto',
               fontSize: 15,
               color: '#fff',
               fontWeight: '200'

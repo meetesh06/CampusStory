@@ -6,33 +6,33 @@ import {
   AsyncStorage,
   View,
   Text,
-  TouchableOpacity
+  // TouchableOpacity
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+// import FastImage from 'react-native-fast-image';
 // import EventCardBig from '../components/EventCardBig';
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from 'react-native-linear-gradient';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
-import { goInitializing } from './helpers/Navigation';
+// import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
 import InformationCard from '../components/InformationCard';
 
-const logoWhite = require('../media/LogoWhite.png');
+// const logoWhite = require('../media/LogoWhite.png');
 // const WIDTH = Dimensions.get('window').width;
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.handleLogout = this.handleLogout.bind(this);
+    // this.handleLogout = this.handleLogout.bind(this);
     this.handleEventPress = this.handleEventPress.bind(this);
   }
 
   state = {
     interested: [],
     going: [],
-    count: 0,
+    // count: 0,
     refreshing: false
   }
 
@@ -87,19 +87,19 @@ class Profile extends React.Component {
     });
   }
 
-  handleLogout = async () => {
-    Realm.getRealm((realm) => {
-      realm.write(async () => {
-        realm.deleteAll();
-        await AsyncStorage.clear();
-        goInitializing();
-      });
-    });
-  }
+  // handleLogout = async () => {
+  //   Realm.getRealm((realm) => {
+  //     realm.write(async () => {
+  //       realm.deleteAll();
+  //       await AsyncStorage.clear();
+  //       goInitializing();
+  //     });
+  //   });
+  // }
 
   render() {
     const {
-      count,
+      // count,
       interested,
       going,
       refreshing

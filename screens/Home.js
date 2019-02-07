@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   TouchableOpacity,
+  Platform,
   Dimensions,
   RefreshControl,
   ScrollView,
@@ -25,7 +26,7 @@ import StoryIcon from '../components/StoryIcon';
 import Realm from '../realm';
 import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
-import { processRealmObj } from './helpers/functions';
+import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
 
 const { TOKEN, INTERESTS } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -70,7 +71,8 @@ class Home extends React.Component {
     fetchEventsFromRealm();
     fetchChannelsFromRealm();
     // checkForChanges();
-    this.setState({ interests: interests.split(',') });
+    shuffleArray(interests.split(','), value => this.setState({ interests: value }));
+
     if (!firebase.messaging().hasPermission()) {
       await firebase.messaging().requestPermission();
     }
@@ -244,10 +246,13 @@ class Home extends React.Component {
       const Subs = realm.objects('Firebase').filtered('channel="true"');
       processRealmObj(Subs, (result) => {
         const final = [];
+        const Channels = realm.objects('Channels').sorted('updates');
         result.forEach((value) => {
           const { _id } = value;
-          const current = realm.objects('Channels').filtered(`_id="${_id}"`);
-          final.push(current[0]);
+          const current = Channels.filtered(`_id="${_id}"`);
+          console.log(current[0]);
+          if (current[0].updates === 'true') final.unshift(current[0]);
+          else final.push(current[0]);
         });
         processRealmObj(final, (channels) => {
           this.setState({ channels });
@@ -417,6 +422,7 @@ class Home extends React.Component {
   }
 
   componentDidAppear() {
+    this.fetchChannelsFromRealm();
     this.checkForChanges();
   }
 
@@ -435,7 +441,11 @@ class Home extends React.Component {
           flex: 1,
         }}
       >
-      <StatusBar barStyle="light-content" translucent />
+        {
+          Platform.OS === 'ios'
+          && (<StatusBar barStyle="light-content" translucent />)
+        }
+
         <ScrollView
           refreshControl={(
             <RefreshControl
@@ -492,7 +502,7 @@ class Home extends React.Component {
           <Swiper
             showsButtons={false}
             autoplay
-            loop = {false}
+            loop={false}
             showsPagination={false}
             loadMinimal
             style={{ backgroundColor: '#333', height: 250 }}
@@ -521,7 +531,7 @@ class Home extends React.Component {
                         marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10
                       }}
                       >
-                        {value.toUpperCase()}
+                        {getCategoryName(value)}
                       </Text>
                       <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />} />
                     </View>
