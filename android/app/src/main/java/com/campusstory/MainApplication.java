@@ -3,6 +3,7 @@ package com.campusstory;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import io.realm.react.RealmReactPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
@@ -56,6 +57,7 @@ public class MainApplication extends NavigationApplication {
             new RNFirebasePackage(),
             new RNFirebaseMessagingPackage(),
             new RealmReactPackage(),
+            new RNCWebViewPackage(),
             new RNFirebaseNotificationsPackage(),
             new ReactVideoPackage()
         );

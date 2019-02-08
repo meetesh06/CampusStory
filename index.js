@@ -15,6 +15,7 @@ import StoryScreen from './screens/StoryScreen';
 import GoingDetails from './screens/GoingDetails';
 import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
+import EventRegister from './screens/EventRegister';
 
 const whiteTopBarImage = require('./media/LogoWhite.png');
 
@@ -53,6 +54,7 @@ Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
+Navigation.registerComponent('Event Register', () => EventRegister);
 
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({

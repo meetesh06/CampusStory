@@ -124,6 +124,7 @@ class Home extends React.Component {
         'x-access-token': await AsyncStorage.getItem(TOKEN)
       }
     }).then((response) => {
+      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.reach = JSON.stringify(el.reach);

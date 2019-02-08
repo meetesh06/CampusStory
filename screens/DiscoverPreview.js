@@ -4,10 +4,11 @@ import {
   Animated,
   View,
   Text,
+  TouchableOpacity,
   Dimensions
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import axios from 'axios';
+import Icon from 'react-native-vector-icons/AntDesign';
 import Constants from '../constants';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
@@ -89,17 +90,77 @@ class DiscoverPreview extends React.Component {
           backgroundColor: '#fff'
         }}
         >
+          
           <View
             style={{
               flex: 1,
               justifyContent: 'center'
             }}
           >
-          {
-            this.getItemView(item)
-          }
+            {
+              this.getItemView(item)
+            }
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                justifyContent: 'center',
+                textAlign: 'right',
+                width: 35,
+                right: 10,
+                top: 10,
+                height: 35,
+                padding: 5,
+                backgroundColor: '#ffffff99',
+                borderRadius: 30
+              }}
+              onPress={() => Navigation.dismissOverlay(this.props.componentId)}
+            >
+              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+            </TouchableOpacity>
           </View>
         </Animated.View>
+        <TouchableOpacity
+          style={{
+            padding: 10,
+            borderRadius: 10,
+            backgroundColor: 'blue'
+          }}
+          onPress={() => {
+            Navigation.dismissModal(this.props.componentId);
+            Navigation.showModal({
+              component: {
+                name: 'Channel Detail Screen',
+                passProps: {
+                  id: item.channel
+                },
+                options: {
+                  bottomTabs: {
+                    animate: true,
+                    drawBehind: true,
+                    visible: false
+                  },
+                  topBar: {
+                    title: {
+                      text: item.channel_name
+                    },
+                    visible: true
+                  }
+                }
+              }
+            });
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              textAlign: 'center',
+              color: '#fff'
+            }}
+          >
+            Visit Channel
+          </Text>
+          
+        </TouchableOpacity>
       </View>
     );
   }

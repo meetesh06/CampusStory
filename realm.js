@@ -33,7 +33,8 @@ const Events = {
     channel: 'string',
     interested: 'string',
     going: 'string',
-    media: 'string'
+    media: 'string',
+    reg_link: 'string'
   }
 };
 const Channels = {

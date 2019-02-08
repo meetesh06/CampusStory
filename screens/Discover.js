@@ -183,23 +183,18 @@ class Home extends React.Component {
     }
 
     handleChannelClickStory = (item) => {
-      Navigation.showModal({
+      this.setState({ tap: false });
+      Navigation.showOverlay({
         component: {
-          name: 'Channel Detail Screen',
+          id: 'preview_overlay',
           passProps: {
-            id: item.channel
+            item,
+            peek: false
           },
+          name: 'Discover Preview',
           options: {
-            bottomTabs: {
-              animate: true,
-              drawBehind: true,
-              visible: false
-            },
-            topBar: {
-              title: {
-                text: item.channel_name
-              },
-              visible: true
+            overlay: {
+              interceptTouchOutside: false
             }
           }
         }
@@ -271,6 +266,7 @@ class Home extends React.Component {
           id: 'preview_overlay',
           passProps: {
             item,
+            peek: true
           },
           name: 'Discover Preview',
           options: {

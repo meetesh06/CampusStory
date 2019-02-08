@@ -141,6 +141,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-webview')
     implementation project(':realm')
     implementation project(':react-native-firebase')
     compile 'com.facebook.fresco:webpsupport:1.10.0'

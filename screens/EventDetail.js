@@ -9,6 +9,8 @@ import {
   Platform,
   Text,
   StatusBar,
+  LinkingIOS,
+  Linking,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -50,6 +52,7 @@ class EventDetail extends React.Component {
         'x-access-token': await AsyncStorage.getItem(TOKEN)
       }
     }).then((response) => {
+      console.log(response);
       const responseObj = response.data;
       if (!responseObj.error) {
         Realm.getRealm((realm) => {
@@ -72,7 +75,7 @@ class EventDetail extends React.Component {
             el.reg_start = new Date(el.reg_start);
             el.interested = interested;
             el.going = going;
-            console.log(el);
+            // console.log(el);
             try {
               realm.create('Events', el, true);
             } catch (e) {
@@ -134,30 +137,52 @@ class EventDetail extends React.Component {
       const { _id } = item;
       const { updateStatus } = this;
       if (loading) return;
-      let going = 'false';
-      Realm.getRealm((realm) => {
-        realm.write(() => {
-          const Final = realm.objects('Events').filtered(`_id="${_id}"`);
-          // eslint-disable-next-line prefer-destructuring
-          going = Final[0].going;
+      console.log(item);
+      if (item.reg_link !== '') {
+        Navigation.showModal({
+          stack: {
+            children: [{
+              component: {
+                name: 'Event Register',
+                passProps: {
+                  uri: item.reg_link
+                },
+                options: {
+                  topBar: {
+                    title: {
+                      text: 'Event Registration Link'
+                    }
+                  }
+                }
+              }
+            }]
+          }
         });
-      });
-
-      Navigation.showOverlay({
-        component: {
-          name: 'Going Details',
-          passProps: {
-            _id,
-            going,
-            updateStatus
-          },
-          options: {
-            overlay: {
-              interceptTouchOutside: false
+      } else {
+        let going = 'false';
+        Realm.getRealm((realm) => {
+          realm.write(() => {
+            const Final = realm.objects('Events').filtered(`_id="${_id}"`);
+            // eslint-disable-next-line prefer-destructuring
+            going = Final[0].going;
+          });
+        });
+        Navigation.showOverlay({
+          component: {
+            name: 'Going Details',
+            passProps: {
+              _id,
+              going,
+              updateStatus
+            },
+            options: {
+              overlay: {
+                interceptTouchOutside: false
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
 
     success = () => {
@@ -197,6 +222,7 @@ class EventDetail extends React.Component {
       const {
         handleChannelOpenNetwork
       } = this;
+      // console.log(item);
       return (
         <View
           style={{
@@ -526,6 +552,40 @@ Views
                 </Text>
               </View>
             </View>
+            { item.reg_link !== '' && (
+              <View
+                style={{
+                  flex: 1,
+                  marginLeft: 5,
+                  padding: 5,
+                  flexDirection: 'row'
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: '#f1f1f1',
+                    padding: 10,
+                    marginRight: 10,
+                    borderRadius: 10
+                  }}
+                >
+                  <IconIonicons style={{ color: '#444', }} size={30} name="ios-link" />
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    style={{color: 'blue'}}
+                    onPress={() => Linking.openURL(item.reg_link)}>
+                    {item.reg_link}
+                  </Text>
+                </View>
+              </View>
+              )
+            }
             <View
               style={{
                 flex: 1,

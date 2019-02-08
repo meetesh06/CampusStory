@@ -1,5 +1,5 @@
 const artImage = require('../../media/topics/art.webp');
-const hottestImage = require('../../media/topics/hot.webp');
+// const hottestImage = require('../../media/topics/hot.webp');
 const calImage = require('../../media/topics/cal.webp');
 const musicImage = require('../../media/topics/music.webp');
 const satImage = require('../../media/topics/sat.webp');
