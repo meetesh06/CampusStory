@@ -58,7 +58,7 @@ export const goHome = async (first) => {
         children: [
           {
             stack: {
-              id: 'Home Stack',
+              id: 'HomeStack',
               options: {
                 bottomTab: {
                   fontSize: 10,
@@ -74,6 +74,7 @@ export const goHome = async (first) => {
               children: [
                 {
                   component: {
+                    id: 'home',
                     name: 'Home Screen',
                     passProps: {
                       first
@@ -98,7 +99,7 @@ export const goHome = async (first) => {
           },
           {
             stack: {
-              id: 'Discover Stack',
+              id: 'DiscoverStack',
               options: {
                 topBar: {
                   // visible: false,
@@ -119,6 +120,7 @@ export const goHome = async (first) => {
               children: [
                 {
                   component: {
+                    id: 'discover',
                     name: 'Discover Screen',
                     passProps: {
                       first
@@ -142,7 +144,7 @@ export const goHome = async (first) => {
           },
           {
             stack: {
-              id: 'Profile Stack',
+              id: 'ProfileStack',
               options: {
                 bottomTab: {
                   text: 'Profile',
@@ -162,6 +164,7 @@ export const goHome = async (first) => {
               children: [
                 {
                   component: {
+                    id: 'profile',
                     name: 'Profile Screen',
                     passProps: {
                       first

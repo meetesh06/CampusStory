@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Constants from '../constants';
+
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 
 const WIDTH = Dimensions.get('window').width;
-const { TOKEN } = Constants;
+// const { TOKEN } = Constants;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
@@ -24,32 +24,22 @@ class DiscoverPreview extends React.Component {
     // this.handleClose = this.handleClose.bind(this);
   }
 
-  state = {
-    loading : false
-  }
-
   componentDidMount() {
-    Animated.spring(
-      this.position,
-      {
-        toValue: 400,
-        friction: 5
-      }
-    ).start();
+    try {
+      Animated.spring(
+        this.position,
+        {
+          toValue: 400,
+          friction: 5
+        }
+      ).start();
+    } catch(e) {
+      console.log(e);
+    }
   }
-
-  // handleClose = () => {
-  //   const { componentId } = this.props;
-  //   Animated.timing(
-  //     this.position,
-  //     {
-  //       duration: 400,
-  //       toValue: 0,
-  //     }
-  //   ).start(() => Navigation.dismissOverlay(componentId));
-  // }
 
   getItemView = (item) => {
+    // eslint-disable-next-line default-case
     switch (item.type) {
       case 'post': return (
         <Post message={item.message} />
@@ -123,12 +113,13 @@ class DiscoverPreview extends React.Component {
           style={{
             padding: 10,
             borderRadius: 10,
+            margin: 10,
             backgroundColor: 'blue'
           }}
           onPress={() => {
-            Navigation.dismissModal(this.props.componentId);
             Navigation.showModal({
               component: {
+                id: 'channeldetailscreen',
                 name: 'Channel Detail Screen',
                 passProps: {
                   id: item.channel
@@ -148,6 +139,7 @@ class DiscoverPreview extends React.Component {
                 }
               }
             });
+            Navigation.dismissOverlay(this.props.componentId);
           }}
         >
           <Text

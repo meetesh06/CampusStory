@@ -41,17 +41,20 @@ class Home extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
     this.handleChannelClickStory = this.handleChannelClickStory.bind(this);
+    this.mounted = false;
   }
 
     state = {
       loading: false,
       refreshing: false,
       channelList: [],
+      peek: false,
       categorySelected: '',
       trending: []
     }
 
     componentDidMount() {
+      this.mounted = true;
       this.navigationEventListener = Navigation.events().bindComponent(this);
       Realm.getRealm((realm) => {
         const categorySelected = categories[0].value;
@@ -66,6 +69,7 @@ class Home extends React.Component {
 
     componentWillUnmount() {
       // Not mandatory
+      this.mounted = false;
       if (this.navigationEventListener) {
         this.navigationEventListener.remove();
       }
@@ -116,10 +120,7 @@ class Home extends React.Component {
                 }
               }
             });
-            const {
-              categorySelected
-            } = this.state;
-            if (categorySelected === category) {
+            if (this.mounted) {
               const elements = realm.objects('Channels').filtered(`category="${category}"`).sorted('recommended', true);
               processRealmObj(elements, (final) => {
                 shuffleArray(final, (channelList) => {
@@ -146,7 +147,7 @@ class Home extends React.Component {
         }
       }).then((response) => {
         const items = response.data.data;
-        this.setState({ trending: items, loading: false });
+        if (this.mounted) this.setState({ trending: items, loading: false });
       }).catch(err => console.log(err))
         .finally(() => this.setState({ loading: false }));
     }
@@ -183,21 +184,23 @@ class Home extends React.Component {
     }
 
     handleChannelClickStory = (item) => {
-      this.setState({ tap: false });
-      Navigation.showOverlay({
-        component: {
-          id: 'preview_overlay',
-          passProps: {
-            item,
-            peek: false
-          },
-          name: 'Discover Preview',
-          options: {
-            overlay: {
-              interceptTouchOutside: false
+      console.log('press');
+      this.setState({ peek: false }, () => {
+        Navigation.showOverlay({
+          component: {
+            id: 'preview_overlay',
+            passProps: {
+              item,
+              peek: false
+            },
+            name: 'Discover Preview',
+            options: {
+              overlay: {
+                interceptTouchOutside: false
+              }
             }
           }
-        }
+        }).catch(err => console.log(err));
       });
     }
 
@@ -206,21 +209,10 @@ class Home extends React.Component {
       if (loading) return;
       const { updateRecommendedList } = this;
       Realm.getRealm((realm) => {
-        // console.log('Cat :', category);
-        // if (category === 'hottest') {
-        //   elements = realm.objects('Channels').sorted('recommended', true);
-        //   processRealmObj(elements, (final) => {
-        //     shuffleArray(final, (channelList) => {
-        //       this.setState({ channelList });
-        //     });
-        //   });
-        // } else {
-        // }
         const elements = realm.objects('Channels').filtered(`category="${category}"`);
         processRealmObj(elements, (final) => {
           this.setState({ channelList: final });
         });
-        // get the previously recommended list to prevent redundant data response from server
         const elementsRecommended = realm.objects('Channels').filtered(`category="${category}" AND (subscribed = "true" OR recommended="true") `);
         processRealmObjRecommended(elementsRecommended, (result) => {
           updateRecommendedList(result, category);
@@ -228,70 +220,42 @@ class Home extends React.Component {
       });
     }
 
-    // handlePreviewOverlay = (item, type, index) => {
-    //   this.setState()
-    //   const { trending } = this.state;
-    //   const current = [...trending];
-    //   const final = [];
-    //   final.push(current[index]);
-    //   let i;
-    //   current.splice(index, 1);
-    //   current.unshift(item);
-    //   for (i = 1; i < current.length; i += 1) {
-    //     if (current[i].type === type) {
-    //       final.push(current[i]);
-    //     }
-    //   }
-    //   console.log(final);
-    //   Navigation.showOverlay({
-    //     component: {
-    //       passProps: {
-    //         stories: final,
-    //         type
-    //       },
-    //       name: 'Preview Overlay Screen',
-    //       options: {
-    //         overlay: {
-    //           interceptTouchOutside: false
-    //         }
-    //       }
-    //     }
-    //   });
-    // }
-
     handlePreview = (item) => {
-      this.setState({ tap: false });
-      Navigation.showOverlay({
-        component: {
-          id: 'preview_overlay',
-          passProps: {
-            item,
-            peek: true
-          },
-          name: 'Discover Preview',
-          options: {
-            overlay: {
-              interceptTouchOutside: false
+      console.log('long press');
+      this.setState({ peek: true }, () => {
+        Navigation.showOverlay({
+          component: {
+            id: 'preview_overlay1',
+            passProps: {
+              item,
+              peek: true
+            },
+            name: 'Discover Preview',
+            options: {
+              overlay: {
+                interceptTouchOutside: false
+              }
             }
           }
-        }
+        }).catch(err => console.log(e));
       });
     }
 
     handleClose = () => {
       const {
-        tap
+        peek
       } = this.state;
-      if (tap) return;
-      Navigation.dismissOverlay('preview_overlay');
+      if (!peek) return;
+      Navigation.dismissOverlay('preview_overlay1');
+      // Navigation.dismissOverlay('preview_overlay');
     }
 
     getItemView = (item) => {
       switch (item.type) {
         case 'post': return (
           <TouchableOpacity
-            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
-            onLongPress={() => this.handlePreview(item)}
+            onPress={() => this.handleChannelClickStory(item)}
+            // onLongPress={() => this.handlePreview(item)}
             onPressOut={() => this.handleClose()}
             activeOpacity={0.9}
           >
@@ -300,8 +264,8 @@ class Home extends React.Component {
         );
         case 'post-image': return (
           <TouchableOpacity
-            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
-            onLongPress={() => this.handlePreview(item)}
+            onPress={() => { this.handleChannelClickStory(item); }}
+            // onLongPress={() => this.handlePreview(item)}
             onPressOut={() => this.handleClose()}
             activeOpacity={0.9}
           >
@@ -310,8 +274,8 @@ class Home extends React.Component {
         );
         case 'post-video': return (
           <TouchableOpacity
-            onPress={() => { this.setState({ tap: true }); this.handleChannelClickStory(item); }}
-            onLongPress={() => this.handlePreview(item)}
+            onPress={() => { this.handleChannelClickStory(item); }}
+            // onLongPress={() => this.handlePreview(item)}
             onPressOut={() => this.handleClose()}
             activeOpacity={0.9}
           >
@@ -438,26 +402,64 @@ class Home extends React.Component {
               </View>
             </View>
             <View>
-            {
-                trending.length > 0 && 
-                <View>
-                <Text style={{
-                  fontFamily: 'Roboto', fontSize: 18, marginLeft: 10, marginRight: 10, marginBottom: 0
-                }}
-                >
-                  Trending Now
-                </Text>
-                <FlatList
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item, index) => `${index}`}
-                  extraData={categorySelected}
-                  numColumns={3}
-                  data={trending}
-                  renderItem={({ item }) => this.getItemView(item)
-                      }
-                />
-                </View>
-              }
+              {
+                trending.length > 0 && (
+                  <View>
+                    <Text style={{
+                      fontFamily: 'Roboto', fontSize: 18, marginLeft: 10, marginRight: 10, marginBottom: 0
+                    }}
+                    >
+                      Trending Now
+                    </Text>
+                    <FlatList
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(item, index) => `${index}`}
+                      extraData={categorySelected}
+                      numColumns={3}
+                      data={trending}
+                      renderItem={({ item }) => {
+                        if (item.type === 'post') {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => this.handleChannelClickStory(item)}
+                              onLongPress={() => this.handlePreview(item)}
+                              onPressOut={() => this.handleClose()}
+                              activeOpacity={0.9}
+                            >
+                              <PostThumbnail message={item.message} />
+                            </TouchableOpacity>
+                          );
+                        }
+                        if (item.type === 'post-image') {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => { this.handleChannelClickStory(item); }}
+                              onLongPress={() => this.handlePreview(item)}
+                              onPressOut={() => this.handleClose()}
+                              activeOpacity={0.9}
+                            >
+                              <PostImageThumbnail image={item.media[0]} />
+                            </TouchableOpacity>
+                          );
+                        }
+                        if (item.type === 'post-video') {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => { this.handleChannelClickStory(item); }}
+                              onLongPress={() => this.handlePreview(item)}
+                              onPressOut={() => this.handleClose()}
+                              activeOpacity={0.9}
+                            >
+                              <PostVideoThumbnail video={item.media} />
+                            </TouchableOpacity>
+                          );
+                        }
+                        
+                        return null;
+                      }}
+                    />
+                  </View>
+)}
             </View>
           </ScrollView>
         </View>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, Dimensions, TouchableOpacity } from 'react-native';
-
+import { Navigation } from 'react-native-navigation';
 /*
     * Title
     * Icon
@@ -16,6 +16,7 @@ class InformationCard extends React.Component {
     render() {
         return(
             <TouchableOpacity
+                onPress={ ()=> this.props.onPress() }
                 style={[{
                     backgroundColor: '#333',
                     flex: 1,

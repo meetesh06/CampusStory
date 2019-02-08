@@ -226,7 +226,7 @@ class Home extends React.Component {
       interests.forEach((value) => {
         const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
         processRealmObj(current, (result) => {
-          console.log(value, result);
+          // console.log(value, result);
           this.setState({ [value]: result });
         });
       });
@@ -251,7 +251,7 @@ class Home extends React.Component {
         result.forEach((value) => {
           const { _id } = value;
           const current = Channels.filtered(`_id="${_id}"`);
-          console.log(current[0]);
+          // console.log(current[0]);
           if (current[0].updates === 'true') final.unshift(current[0]);
           else final.push(current[0]);
         });
@@ -480,6 +480,15 @@ class Home extends React.Component {
                       channels.length === 0
                       && (
                       <InformationCard
+                        onPress={
+                          () => {
+                            Navigation.mergeOptions(this.props.componentId, {
+                              bottomTabs: {
+                                currentTabIndex: 1
+                              }
+                            });
+                          }
+                        }
                         title="Discover Channels"
                         content="You can watch stories from your subscribed channels here. Explore for more channels."
                         icon={(
