@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
 import {
-  Platform,
   StatusBar,
   BackHandler,
   ActivityIndicator,
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
-  AsyncStorage,
   View,
   Text
 } from 'react-native';
@@ -24,8 +22,9 @@ import Realm from '../realm';
 import { processRealmObj } from './helpers/functions';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
+import SessionStore from '../SessionStore';
 
-const { TOKEN } = Constants;
+const { TOKEN, MUTED } = Constants;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
@@ -64,6 +63,7 @@ class StoryScreen extends React.Component {
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
+        console.log(gestureState.moveX, gestureState.moveY, gestureState.dx, gestureState.dy, gestureState.x0, gestureState.y0, WIDTH);
         if (gestureState.dy / HEIGHT * 100 > 30) {
           Animated.timing(
             this.opacity,
@@ -80,9 +80,21 @@ class StoryScreen extends React.Component {
             this.opacity,
             {
               toValue: 1,
-              friction: 5
+              friction: 4
             }
           ).start();
+        }
+        if(gestureState.x0 > 0 && gestureState.x0 < WIDTH /4){
+          if (this.state.current === this.state.stories.length - 1) this.close();
+          else this.setState({ current: this.state.current + 1 }, () => this.updateRead());
+          
+        }
+        else if(gestureState.x0 > (WIDTH * 3) / 4){
+          if (this.state.current === 0) this.close();
+          else this.setState({ current: this.state.current - 1 });
+        }
+        else if(gestureState.dx < 5, gestureState.dy < 10){
+          this.tapped();
         }
       },
       onPanResponderTerminate: (evt, gestureState) => {
@@ -102,7 +114,7 @@ class StoryScreen extends React.Component {
             this.opacity,
             {
               toValue: 1,
-              friction: 5
+              friction: 4
             }
           ).start();
         }
@@ -115,16 +127,17 @@ class StoryScreen extends React.Component {
     stories: [],
     current: 0,
     channel : {media : '""'},
-    loading: true
+    loading: true,
+    muted : new SessionStore().getValue(MUTED)
   }
 
-  componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  tapped = () =>{
+    new SessionStore().putValue(MUTED, !this.state.muted);
+    this.setState({muted : !this.state.muted});
   }
 
   async componentDidMount() {
     const { _id } = this.props;
-
     Realm.getRealm((realm) => {
       const Final = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
       const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
@@ -148,7 +161,7 @@ class StoryScreen extends React.Component {
     axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       console.log(response);
@@ -179,11 +192,53 @@ class StoryScreen extends React.Component {
     return true;
   }
 
+  gotoChannel = (item) =>{
+    Navigation.showModal({
+      component: {
+        name: 'Channel Detail Screen',
+        passProps: {
+          id: item.channel
+        },
+        options: {
+          bottomTabs: {
+            animate: true,
+            drawBehind: true,
+            visible: false
+          },
+          topBar: {
+            title: {
+              text: item.channel_name
+            },
+            visible: true
+          }
+        }
+      }
+    });
+    Navigation.dismissOverlay(this.props.componentId);
+  }
+
   close = () =>{
     const {
       componentId
     } = this.props;
     Navigation.dismissOverlay(componentId);
+  }
+
+  draw_progres = (indx, size, width) =>{
+    let pos = size - indx - 1;
+    let len = (width - 30) / size;
+    let dummy = [];
+    for(var i=0; i<size; i++){
+      if(i <= pos) dummy.push(1);
+      else dummy.push(0);
+    }
+    return(
+      <View style={{flex : 1, marginLeft : 10, marginRight : 10, margin : 5, flexDirection : 'row'}}>
+        {
+          dummy.map((value, index)=><View style={{height : 3, marginLeft : 2, marginRight : 2, width : len, borderRadius : 5, backgroundColor : value === 0 ? 'rgba(180, 180, 180, 0.5)' : 'rgba(255, 255, 255, 0.8)'}} key={index}/>)
+        }
+      </View>
+    );
   }
 
   render() {
@@ -240,6 +295,7 @@ class StoryScreen extends React.Component {
                 key={stories[current]._id}
                 message={stories[current].message}
                 video={stories[current].media}
+                muted = {this.state.muted}
               />
             )
         }
@@ -256,25 +312,7 @@ class StoryScreen extends React.Component {
             position: 'absolute'
           }}
         >
-          <TouchableOpacity
-            onPress={
-              () => {
-                if (current === 0) return;
-                this.setState({ current: current - 1 });
-              }
-            }
-            style={{
-              flex: 1,
-            }}
-          />
-          <View
-            collapsable={false}
-            style={{
-              width: WIDTH / 2,
-            }}
-            {...this._panResponder.panHandlers}
-          />
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={
               () => {
                 if (current === stories.length - 1) return;
@@ -283,31 +321,64 @@ class StoryScreen extends React.Component {
             }
             style={{
               flex: 1,
+              backgroundColor : '#890'
             }}
+          /> */}
+          <View
+            collapsable={false}
+            style={{
+              width: WIDTH,
+            }}
+            {...this._panResponder.panHandlers}
           />
+          {/* <TouchableOpacity
+            onPress={
+              () => {
+                if (current === 0) return;
+                this.setState({ current: current - 1 });
+              }
+            }
+            style={{
+              flex: 1,
+              backgroundColor : '#890'
+            }}
+          /> */}
         </View>
 
-        <View style={{position : 'absolute', top : 25, left : 10, flexDirection : 'row'}}>
+        <View style={{position : 'absolute', top : 18, left : 0, width : '100%'}}>
+        <View style={{width : '100%', marginTop : 8}}>
+            {
+              this.draw_progres(current, stories.length, WIDTH)
+            }
+        </View>
           <View style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', width : '100%'}}>
+          <TouchableOpacity onPress ={()=>this.gotoChannel({channel : this.state.channel._id, channel_name : this.state.channel.name})} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginLeft : 12, marginTop : 5}}>
             <FastImage
               style={{
-                width : 36,
-                height : 36,
-                borderRadius: 20,
-                backgroundColor: '#000'
+                width : 36, height : 36, borderRadius : 20
               }}
-              source={{
-                uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}`,
-                priority: FastImage.priority.high,
-              }}
+              source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
               resizeMode={FastImage.resizeMode.cover}
             />
             <Text style={{fontSize : 15, color : '#fff', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
-            <View style={{flex : 1}}/>
-            <TouchableOpacity onPress={()=>this.close()} style={{padding : 5}}>
-              <Icon style={{ color: '#fff', marginRight : 15}} size={25} name="close" />
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+          <View style={{flex : 1}}/>
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              textAlign: 'right',
+              width: 30,
+              height: 30,
+              padding: 5,
+              marginRight : 12, 
+              backgroundColor: '#ffffff99',
+              borderRadius: 20
+            }}
+            onPress={() => this.close()}
+          >
+            <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
+          </TouchableOpacity>
+        </View>
         </View>
       </Animated.View>
     );

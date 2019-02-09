@@ -2,7 +2,6 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  AsyncStorage,
   TouchableOpacity,
   Dimensions,
   View,
@@ -22,6 +21,7 @@ import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
 import Constants from '../constants';
 import { getMonthName, formatAMPM, getCategoryName } from './helpers/functions';
+import SessionStore from '../SessionStore';
 
 const WIDTH = Dimensions.get('window').width;
 const { TOKEN } = Constants;
@@ -49,7 +49,7 @@ class EventDetail extends React.Component {
     axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id }, {
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       console.log(response);
@@ -97,7 +97,7 @@ class EventDetail extends React.Component {
     axios.post('https://www.mycampusdock.com/events/user/interested', { _id }, {
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       const responseObj = response.data;
@@ -290,16 +290,16 @@ class EventDetail extends React.Component {
                   style={{
                     justifyContent: 'center',
                     textAlign: 'right',
-                    width: 35,
+                    width: 30,
                     left: 10,
-                    height: 35,
+                    height: 30,
                     padding: 5,
                     backgroundColor: '#ffffff99',
-                    borderRadius: 30
+                    borderRadius: 20
                   }}
                   onPress={() => Navigation.dismissModal(componentId)}
                 >
-                  <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+                  <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
                 </TouchableOpacity>
               </View>
             </View>

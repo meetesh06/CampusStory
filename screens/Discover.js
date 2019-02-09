@@ -2,12 +2,10 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  AsyncStorage,
   RefreshControl,
   ScrollView, View,
   Text,
   TouchableOpacity,
-  Alert,
   FlatList
 } from 'react-native';
 import axios from 'axios';
@@ -19,6 +17,8 @@ import CategoryCard from '../components/CategoryCard';
 import PostThumbnail from '../components/PostThumbnail';
 import PostImageThumbnail from '../components/PostImageThumbnail';
 import PostVideoThumbnail from '../components/PostVideoThumbnail';
+import SessionStore from '../SessionStore';
+
 import {
   getCategoryName,
   processRealmObj,
@@ -80,7 +80,7 @@ class Home extends React.Component {
         loading: true,
         categorySelected: category
       });
-      const token = await AsyncStorage.getItem(TOKEN);
+      const token = new SessionStore().getValue(TOKEN);
 
       // eslint-disable-next-line no-undef
       const formData = new FormData();
@@ -135,7 +135,7 @@ class Home extends React.Component {
     }
 
     getTrendingContent = async () => {
-      const token = await AsyncStorage.getItem(TOKEN);
+      const token = new SessionStore().getValue(TOKEN);
       // eslint-disable-next-line no-undef
       const formData = new FormData();
       const { categorySelected } = this.state;

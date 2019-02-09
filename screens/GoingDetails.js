@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 import React from 'react';
 import {
-  AsyncStorage,
   ActivityIndicator,
   Alert,
   TextInput,
@@ -15,6 +14,7 @@ import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
 import Constants from '../constants';
 import Realm from '../realm';
+import SessionStore from '../SessionStore';
 
 const WIDTH = Dimensions.get('window').width;
 const { TOKEN } = Constants;
@@ -86,7 +86,7 @@ class GoingDetails extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       console.log(response);

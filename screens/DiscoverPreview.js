@@ -9,28 +9,42 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-
+import Realm from '../realm';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
+import FastImage from 'react-native-fast-image';
+import { processRealmObj } from './helpers/functions';
 
 const WIDTH = Dimensions.get('window').width;
-// const { TOKEN } = Constants;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
     super(props);
     this.position = new Animated.Value(0);
-    // this.handleClose = this.handleClose.bind(this);
   }
 
+  state = {
+    channel : {media : '["dummy"]', name : 'dummy'}
+  }
   componentDidMount() {
+    const {item} = this.props;
+    Realm.getRealm((realm) => {
+      const channel = realm.objects('Channels').filtered(`_id="${item.channel}"`);
+      processRealmObj(channel, (result)=>{
+        if(result.length > 0){
+          this.setState({channel : result[0]});
+        } else {
+          this.setState({ channel : { name : item.channel_name, media : '["dummy"]'}});
+        }
+      });
+    });
     try {
       Animated.spring(
         this.position,
         {
           toValue: 400,
-          friction: 5
+          friction: 6
         }
       ).start();
     } catch(e) {
@@ -53,24 +67,58 @@ class DiscoverPreview extends React.Component {
     }
   }
 
+  gotoChannel = (item) =>{
+    Navigation.showModal({
+      component: {
+        name: 'Channel Detail Screen',
+        passProps: {
+          id: item.channel
+        },
+        options: {
+          bottomTabs: {
+            animate: true,
+            drawBehind: true,
+            visible: false
+          },
+          topBar: {
+            title: {
+              text: item.channel_name
+            },
+            visible: true
+          }
+        }
+      }
+    });
+    Navigation.dismissOverlay(this.props.componentId);
+  }
+
+  updateStatus = () =>{
+    
+  }
+
+  close = (componentId) =>{
+    Animated.timing(
+      this.position,
+      {
+        duration: 400,
+        toValue: 0,
+      }
+    ).start(() => { 
+      this.updateStatus(); 
+      Navigation.dismissOverlay(componentId); 
+    });
+  }
+
   render() {
     const {item} = this.props;
     return (
       <View
         style={{
           flex: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
           justifyContent: 'center'
         }}
       >
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#fff'
-          }}
-        >
-          {item.channel_name}
-        </Text>
         <Animated.View style={{
           width: WIDTH - 20,
           marginLeft: 10,
@@ -90,69 +138,37 @@ class DiscoverPreview extends React.Component {
             {
               this.getItemView(item)
             }
-            <TouchableOpacity
+          </View>
+
+          <View style={{position : 'absolute', flexDirection : 'row', top : 0, left : 0, padding : 5, justifyContent : 'center', alignItems : 'center'}}>
+          
+          <TouchableOpacity onPress ={()=>this.gotoChannel(item)} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', }}>
+            <FastImage
               style={{
-                position: 'absolute',
-                justifyContent: 'center',
-                textAlign: 'right',
-                width: 35,
-                right: 10,
-                top: 10,
-                height: 35,
+                width : 36, height : 36, borderRadius : 20
+              }}
+              source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <Text style={{fontSize : 15, color : '#dfdfdf', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
+          </TouchableOpacity>
+          
+          <View style={{flex : 1}} />
+          
+          <TouchableOpacity
+              style={{
+                width: 30,
+                height: 30,
                 padding: 5,
                 backgroundColor: '#ffffff99',
-                borderRadius: 30
+                borderRadius: 20
               }}
-              onPress={() => Navigation.dismissOverlay(this.props.componentId)}
+              onPress={() => this.close(this.props.componentId)}
             >
-              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
             </TouchableOpacity>
           </View>
         </Animated.View>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            borderRadius: 10,
-            margin: 10,
-            backgroundColor: 'blue'
-          }}
-          onPress={() => {
-            Navigation.showModal({
-              component: {
-                id: 'channeldetailscreen',
-                name: 'Channel Detail Screen',
-                passProps: {
-                  id: item.channel
-                },
-                options: {
-                  bottomTabs: {
-                    animate: true,
-                    drawBehind: true,
-                    visible: false
-                  },
-                  topBar: {
-                    title: {
-                      text: item.channel_name
-                    },
-                    visible: true
-                  }
-                }
-              }
-            });
-            Navigation.dismissOverlay(this.props.componentId);
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: 'center',
-              color: '#fff'
-            }}
-          >
-            Visit Channel
-          </Text>
-          
-        </TouchableOpacity>
       </View>
     );
   }

@@ -1,6 +1,4 @@
 import { Navigation } from 'react-native-navigation';
-import Icon from 'react-native-vector-icons/AntDesign';
-import Icon1 from 'react-native-vector-icons/SimpleLineIcons';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -191,72 +189,3 @@ export const goHome = async (first) => {
     }
   });
 };
-
-
-// export const goHome = () => Navigation.setRoot({
-//   root: {
-//     bottomTabs: {
-//       id: 'BottomTabsId',
-//       children: [
-//         {
-//           stack: {
-//             id: "Home Stack",
-//             options: {
-//               topBar: {
-//                 visible: false,
-//                 drawBehind: true
-//               }
-//             },
-//             children: [
-//               {
-//                 component: {
-//                   name: 'Home Screen',
-//                   options: {
-//                     bottomTab: {
-//                       fontSize: 10,
-//                       selectedFontSize: 12,
-//                       text: 'Home',
-//                       icon: require('../../media/navigation/home-not.png'),
-//                       selectedIcon: require('../../media/navigation/home.png')
-//                     }
-//                   }
-//                 }
-//               }
-//             ]
-//           }
-//         },
-//         {
-//           component: {
-//             name: 'Discover Screen',
-//             options: {
-//               bottomTab: {
-//                 text: 'Discover',
-//                 fontSize: 10,
-//                 selectedFontSize: 12,
-//                 icon: require('../../media/navigation/home-not.png'),
-//                 selectedIcon: require('../../media/navigation/home.png')
-//               }
-//             }
-//           },
-//         },
-//         {
-//           component: {
-//             name: 'Profile Screen',
-//             options: {
-//               bottomTab: {
-//                 text: 'Profile',
-//                 fontSize: 10,
-//                 selectedFontSize: 12,
-//                 icon: require('../../media/navigation/home-not.png'),
-//                 selectedIcon: require('../../media/navigation/home.png')
-//               },
-//               topBar: {
-//                 visible: false
-//               }
-//             }
-//           },
-//         },
-//       ],
-//     }
-//   }
-// });

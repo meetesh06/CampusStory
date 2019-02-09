@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react';
 import {
-  AsyncStorage,
   Alert,
   View,
   Text,
@@ -23,9 +22,7 @@ import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
 import InformationCard from '../components/InformationCard';
 import { categoriesNoHottest } from './helpers/values';
-import {
-  getCategoryName
-} from './helpers/functions';
+import SessionStore from '../SessionStore';
 
 const one = []; const two = []; let i;
 for (i = 0; i < categoriesNoHottest.length; i += 1) {
@@ -40,7 +37,9 @@ const {
   SET_UP_STATUS,
   COLLEGE,
   INTERESTS,
-  TOKEN
+  TOKEN,
+  MUTED,
+  CONFIG
 } = Constants;
 
 class Interests extends React.Component {
@@ -65,10 +64,13 @@ class Interests extends React.Component {
   }
 
   updateLocalState = async (college, interestsProcessed, token) => {
-    await AsyncStorage.setItem(COLLEGE, college);
-    await AsyncStorage.setItem(INTERESTS, interestsProcessed);
-    await AsyncStorage.setItem(TOKEN, token);
-    await AsyncStorage.setItem(SET_UP_STATUS, 'true');
+    const store = new SessionStore();
+    store.putValue(COLLEGE, college);
+    store.putValue(INTERESTS, interestsProcessed);
+    store.putValue(TOKEN, token);
+    store.putValue(SET_UP_STATUS, true);
+    store.putValue(MUTED, true);
+    store.putValue(CONFIG, {});
     goHome(true);
   }
 

@@ -5,34 +5,28 @@ import {
   FlatList,
   Platform,
   View,
+  AsyncStorage,
   Text,
-  // TouchableOpacity
 } from 'react-native';
-// import FastImage from 'react-native-fast-image';
-// import EventCardBig from '../components/EventCardBig';
-// import LinearGradient from 'react-native-linear-gradient';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
-// import { goInitializing } from './helpers/Navigation';
+import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
 import InformationCard from '../components/InformationCard';
-
-// const logoWhite = require('../media/LogoWhite.png');
-// const WIDTH = Dimensions.get('window').width;
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    // this.handleLogout = this.handleLogout.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.handleEventPress = this.handleEventPress.bind(this);
   }
 
   state = {
     interested: [],
     going: [],
-    // count: 0,
+    count: 0,
     refreshing: false
   }
 
@@ -54,7 +48,6 @@ class Profile extends React.Component {
   }
 
   handleEventPress = (item) => {
-    // const { componentId } = this.props;
     const { _id } = item;
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
@@ -87,15 +80,18 @@ class Profile extends React.Component {
     });
   }
 
-  // handleLogout = async () => {
-  //   Realm.getRealm((realm) => {
-  //     realm.write(async () => {
-  //       realm.deleteAll();
-  //       await AsyncStorage.clear();
-  //       goInitializing();
-  //     });
-  //   });
-  // }
+  handleLogout = async () => {
+    this.setState({count : this.state.count + 1});
+    if(this.state.count > 16){
+      Realm.getRealm((realm) => {
+        realm.write(async () => {
+          realm.deleteAll();
+          await AsyncStorage.clear();
+          goInitializing();
+        });
+      });
+    }
+  }
 
   componentDidAppear() {
     this.updateContent();
@@ -118,35 +114,6 @@ class Profile extends React.Component {
         }}
       >
 
-        {/* <LinearGradient
-          style={{
-            overflow: 'hidden', justifyContent: 'center', alignItems: 'center', padding: 2
-          }}
-          colors={['#FF4A3F', '#FF6A15']}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({ count: count + 1 }, () => {
-                if (count > 15) {
-                  this.handleLogout();
-                }
-              });
-            }}
-          >
-            <FastImage
-              style={{
-                width: 84,
-                height: 84,
-                alignSelf: 'center',
-                marginTop: 50,
-                marginBottom: 20
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-              source={logoWhite}
-            />
-          </TouchableOpacity>
-        </LinearGradient>
-         */}
         <ScrollView
           style={{
             flex: 1
@@ -216,7 +183,7 @@ class Profile extends React.Component {
             >
               This page shows all your registered events
             </Text>
-            <InformationCard icon={<Icon name="lock1" size={45} color="#111" style={{ margin: 10, alignSelf: 'center', }} />} title="Secured Data" content="All of your data shared on this platform will be safe and never shared with anyone without your permission." style_card={{}} />
+            <InformationCard icon={<Icon name="lock1" size={45} color="#111" style={{ margin: 10, alignSelf: 'center', }} />} title="Secured Data" content="All of your data shared on this platform will be safe and never shared with anyone without your permission." style_card={{}} onPress = {this.handleLogout}/>
           </View>
         </ScrollView>
       </View>

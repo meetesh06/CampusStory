@@ -1,16 +1,28 @@
 import React from 'react';
 import {
-  ActivityIndicator, Dimensions, View, Text
+  ActivityIndicator, TouchableWithoutFeedback,TouchableOpacity, Dimensions, View, Text
 } from 'react-native';
 import Video from 'react-native-video';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import SessionStore from '../SessionStore';
+import constants from '../constants';
 
 const WIDTH = Dimensions.get('window').width;
-
+const {MUTED} = constants;
 class PostVideo extends React.Component {
-    state = {
+
+  constructor(props) {
+    super(props);
+    this.state = {
       loading: true,
-      buffering: false
+      buffering: false,
+      muted : this.props.muted === undefined ? new SessionStore().getValue(MUTED) : this.props.muted
     }
+  }
+
+  componentDidUpdate(prevProps){
+    if(this.props.muted !== prevProps.muted) this.setState({muted : this.props.muted}); /* ANTI PATTERN */
+  }
 
     render() {
       const {
@@ -30,20 +42,31 @@ class PostVideo extends React.Component {
           justifyContent: 'center'
         }}
         >
-          <Text />
-          <Video
-            source={{ uri: `https://www.mycampusdock.com/${video}` }}
-            onLoad={() => this.setState({ loading: false })}
-            repeat
-            // eslint-disable-next-line react/no-unused-state
-            onBuffer={val => this.setState({ buffering: val.isBuffering })}
-            style={{
-              backgroundColor: thumb ? undefined : '#222',
-              width: WIDTH,
-              height: 300,
-              margin: 5,
-            }}
-          />
+          <TouchableWithoutFeedback onPress = {()=>{
+            new SessionStore().putValue(MUTED, !this.state.muted);
+            this.setState({muted : !this.state.muted});
+          }}>
+            <Video
+              source={{ uri: `https://www.mycampusdock.com/${video}` }}
+              onLoad={() => this.setState({ loading: false })}
+              repeat
+              muted = {this.state.muted}
+              // eslint-disable-next-line react/no-unused-state
+              onBuffer={val => this.setState({ buffering: val.isBuffering })}
+              style={{
+                backgroundColor: thumb ? undefined : '#222',
+                width: WIDTH,
+                height: 300,
+                margin: 5,
+              }}
+            />
+          </TouchableWithoutFeedback>
+
+          <View style={{flexDirection : 'row',}}>
+              <TouchableOpacity style={{width : 30 , height : 30, borderRadius : 20, backgroundColor : 'rgba(255, 255, 255, 0.2)', justifyContent : 'center', alignItems : 'center'}} onPress ={()=>this.setState({muted : !this.state.muted})}>
+                <Icon name = {this.state.muted ? 'volume-mute' : 'volume-high' } size = {22} />
+              </TouchableOpacity>
+          </View>
 
           <Text
             style={{

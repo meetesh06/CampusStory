@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 import {
-  AsyncStorage,
   Platform,
   TouchableOpacity,
   StatusBar,
@@ -18,6 +17,7 @@ import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
 import Constants from '../constants';
 import { processRealmObj, getCategoryName } from './helpers/functions';
+import SessionStore from '../SessionStore';
 
 const { TOKEN } = Constants;
 
@@ -65,7 +65,7 @@ class ChannelDetailScreen extends React.Component {
     axios.post('https://www.mycampusdock.com/channels/user/fetch-channel-data', { _id: id }, {
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       if (!response.data.error) {
@@ -269,15 +269,15 @@ class ChannelDetailScreen extends React.Component {
               style={{
                 justifyContent: 'center',
                 textAlign: 'right',
-                width: 35,
-                height: 35,
+                width: 30,
+                height: 30,
                 padding: 5,
                 backgroundColor: '#ffffff99',
-                borderRadius: 30
+                borderRadius: 20
               }}
               onPress={() => Navigation.dismissModal(componentId)}
             >
-              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
             </TouchableOpacity>
           </View>
           <Text

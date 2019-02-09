@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
-  AsyncStorage,
   View
 } from 'react-native';
 import axios from 'axios';
@@ -17,6 +16,7 @@ import Constants from '../constants';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
+import SessionStore from '../SessionStore';
 
 const { TOKEN } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -73,7 +73,7 @@ class PreviewOverlayScreen extends React.Component {
             this.opacity,
             {
               toValue: 1,
-              friction: 5
+              friction: 6
             }
           ).start();
         }
@@ -95,7 +95,7 @@ class PreviewOverlayScreen extends React.Component {
             this.opacity,
             {
               toValue: 1,
-              friction: 5
+              friction: 6
             }
           ).start();
         }
@@ -122,7 +122,7 @@ class PreviewOverlayScreen extends React.Component {
     axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       console.log(response);

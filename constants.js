@@ -3,7 +3,9 @@ const constants = {
   SET_UP_STATUS: 'set_up_status',
   COLLEGE: 'college',
   INTERESTS: 'interests',
-  TOKEN: 'token'
+  TOKEN: 'token',
+  MUTED : 'muted',
+  CONFIG : 'config'
 };
 
 export default constants;

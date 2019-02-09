@@ -1,7 +1,7 @@
 /** @format */
 import { Navigation } from 'react-native-navigation';
 import React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform, AppState, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Initializing from './screens/Initializing';
@@ -16,8 +16,12 @@ import GoingDetails from './screens/GoingDetails';
 import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
+import SessionStore from './SessionStore'
 
 const whiteTopBarImage = require('./media/LogoWhite.png');
+this.state = {
+  appState : AppState.currentState,
+};
 
 const homeTopBar = () => (
   <LinearGradient
@@ -56,7 +60,13 @@ Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScree
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 
-Navigation.events().registerAppLaunchedListener(() => {
+Navigation.events().registerAppLaunchedListener(async () => {
+  AppState.addEventListener('change', this.onAppStateChanged);
+  await new SessionStore().getValueBulk();
+  this.init();
+});
+
+init = () =>{
   Navigation.setRoot({
     root: {
       component: {
@@ -64,4 +74,18 @@ Navigation.events().registerAppLaunchedListener(() => {
       }
     }
   });
-});
+}
+
+onAppStateChanged = async (nextAppState) => {
+  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){
+    /* forground */
+    console.log('Background - Forground');
+  } else if(nextAppState === 'background') {
+    /* background */
+    await new SessionStore().setValueBulk();
+  } else if(nextAppState === 'active'){
+    /* from background to forground */
+    console.log('Forground');
+  }
+  this.state.appState = nextAppState;
+};

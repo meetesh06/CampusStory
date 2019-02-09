@@ -4,13 +4,15 @@ import {
   View,
   Text,
   Image,
-  AsyncStorage,
+  Platform,
+  StatusBar,
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Constants from '../constants';
 import { goToInterestsSelector, goHome } from './helpers/Navigation';
+import SessionStore from '../SessionStore';
 
 const logoWhite = require('../media/LogoWhite.png');
 
@@ -27,13 +29,13 @@ class App extends React.Component {
 
   async componentDidMount() {
     try {
-      const status = await AsyncStorage.getItem(SET_UP_STATUS);
-      if (status === 'true') {
+      const status = new SessionStore().getValue(SET_UP_STATUS);
+      console.log('Status', status);
+      if (status === true) {
         goHome(false);
       } else {
         this.setState({ loading: false });
       }
-      // this.setState({ loading: false });
     } catch (err) {
       console.log('error: ', err);
       this.setState({ loading: false });
@@ -48,6 +50,10 @@ class App extends React.Component {
     const { loading } = this.state;
     return (
       <View style={{ flex: 1 }}>
+      {
+          Platform.OS === 'ios'
+          && (<StatusBar barStyle="light-content" translucent />)
+        }
         <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
           <View style={{ flex: 2, justifyContent: 'center' }}>
             <Image

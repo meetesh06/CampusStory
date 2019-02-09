@@ -9,7 +9,6 @@ import {
   ScrollView,
   FlatList,
   StatusBar,
-  AsyncStorage,
   View,
   Text
 } from 'react-native';
@@ -17,7 +16,7 @@ import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
-// import type { Notification, NotificationOpen, RemoteMessage } from 'react-native-firebase';
+import SessionStore from '../SessionStore';
 import FastImage from 'react-native-fast-image';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
@@ -59,8 +58,9 @@ class Home extends React.Component {
   }
 
   async componentDidMount() {
+    const store = new SessionStore();
     this.navigationEventListener = Navigation.events().bindComponent(this);
-    const interests = await AsyncStorage.getItem(INTERESTS);
+    const interests = store.getValue(INTERESTS);
     const {
       updateContent,
       handleStoryOpenNotification,
@@ -121,7 +121,7 @@ class Home extends React.Component {
     axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated: lastUpdated }, {
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       console.log(response);
@@ -170,7 +170,7 @@ class Home extends React.Component {
     axios.post('https://www.mycampusdock.com/channels/fetch-activity-list', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'x-access-token': await AsyncStorage.getItem(TOKEN)
+        'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
       const responseObject = response.data;
@@ -216,8 +216,7 @@ class Home extends React.Component {
   }
 
   fetchEventsFromRealm = async () => {
-    // const { processRealmObj } = this;
-    let interests = await AsyncStorage.getItem(INTERESTS);
+    let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
     Realm.getRealm((realm) => {
       const Events = realm.objects('Events').sorted('timestamp', true);
@@ -226,7 +225,6 @@ class Home extends React.Component {
       interests.forEach((value) => {
         const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
         processRealmObj(current, (result) => {
-          // console.log(value, result);
           this.setState({ [value]: result });
         });
       });
@@ -242,7 +240,6 @@ class Home extends React.Component {
   }
 
   fetchChannelsFromRealm = async () => {
-    // const { processRealmObj } = this;
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('channel="true"');
       processRealmObj(Subs, (result) => {
@@ -251,7 +248,6 @@ class Home extends React.Component {
         result.forEach((value) => {
           const { _id } = value;
           const current = Channels.filtered(`_id="${_id}"`);
-          // console.log(current[0]);
           if (current[0].updates === 'true') final.unshift(current[0]);
           else final.push(current[0]);
         });
@@ -367,19 +363,6 @@ class Home extends React.Component {
                 drawBehind: true,
                 animate: true
               },
-              // customTransition: {
-              //   animations: [
-              //     {
-              //       type: 'sharedElement',
-              //       fromId: 'image1',
-              //       toId: 'image2',
-              //       startDelay: 0,
-              //       springVelocity: 0.2,
-              //       duration: 10
-              //     }
-              //   ],
-              //   duration: 0.8
-              // }
             }
           }
         });
