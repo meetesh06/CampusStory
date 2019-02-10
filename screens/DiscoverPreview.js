@@ -3,6 +3,7 @@ import React from 'react';
 import {
   Animated,
   View,
+  BackHandler,
   Text,
   TouchableOpacity,
   Dimensions
@@ -15,6 +16,7 @@ import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import FastImage from 'react-native-fast-image';
 import { processRealmObj } from './helpers/functions';
+import SessionStore from '../SessionStore';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -28,7 +30,10 @@ class DiscoverPreview extends React.Component {
     channel : {media : '["dummy"]', name : 'dummy'}
   }
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const {item} = this.props;
+    const store = new SessionStore();
+    store.pushUpdate(item._id);
     Realm.getRealm((realm) => {
       const channel = realm.objects('Channels').filtered(`_id="${item.channel}"`);
       processRealmObj(channel, (result)=>{
@@ -92,8 +97,8 @@ class DiscoverPreview extends React.Component {
     Navigation.dismissOverlay(this.props.componentId);
   }
 
-  updateStatus = () =>{
-    
+  async componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   close = (componentId) =>{
@@ -103,10 +108,14 @@ class DiscoverPreview extends React.Component {
         duration: 400,
         toValue: 0,
       }
-    ).start(() => { 
-      this.updateStatus(); 
+    ).start(() => {
       Navigation.dismissOverlay(componentId); 
     });
+  }
+
+  handleBackButtonClick = () =>{
+    this.close();
+    return true;
   }
 
   render() {

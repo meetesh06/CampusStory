@@ -71,6 +71,7 @@ class Interests extends React.Component {
     store.putValue(SET_UP_STATUS, true);
     store.putValue(MUTED, true);
     store.putValue(CONFIG, {});
+    await store.setValueBulk();
     goHome(true);
   }
 
@@ -93,7 +94,7 @@ class Interests extends React.Component {
 
     if (interestsProcessed.length < 2) {
       Alert.alert(
-        'Please select atleast 2 interests',
+        'Please select atleast 2 interests!',
       );
       return;
     }
@@ -152,8 +153,8 @@ class Interests extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id: 'global', notify: 'true', channel: 'false' }, true);
-            firebase.messaging().subscribeToTopic('global');
+            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', channel: 'false' }, true);
+            firebase.messaging().subscribeToTopic('ogil7190');
             for (i = 0; i < array.length; i += 1) {
               realm.create('Firebase', { _id: array[i], notify: 'true', channel: 'false' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
@@ -272,12 +273,12 @@ class Interests extends React.Component {
             />
             <View style={{ flex: 1, marginLeft: 10, marginTop: 5 }}>
               <Text
-                style={{ fontFamily: 'Roboto' }}
+                style={{ fontFamily: 'Roboto', fontSize : 13 }}
               >
                 {name}
               </Text>
               <Text
-                style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 14 }}
+                style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 12 }}
               >
                 {location}
               </Text>
@@ -346,18 +347,10 @@ class Interests extends React.Component {
           <InformationCard
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information."
-            icon={<IconSimple name="emotsmile" size={40} color="#111" style={{ margin: 10, alignSelf: 'center',}} />}
+            icon={<IconSimple name="emotsmile" size={40} color="#888" style={{ margin: 10, alignSelf: 'center',}} />}
           />
-          <View
-            style={{
-              flex: 1,
-              height: 90
-            }}
-          />
-        </ScrollView>
-
-        <View style={{
-          position: 'absolute', bottom: 30, alignSelf: 'center', elevation: 10, backgroundColor: '#dfefef', padding: 5, borderRadius: 30
+          <View style={{
+          alignSelf: 'center', elevation: 10, backgroundColor: '#dfefef', padding: 5, borderRadius: 30
         }}
         >
           <TouchableOpacity
@@ -368,7 +361,15 @@ class Interests extends React.Component {
           >
             <IconMaterial name="navigate-next" size={45} color="#fff" />
           </TouchableOpacity>
-        </View>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              height: 90
+            }}
+          />
+        </ScrollView>
+
 
         <CustomModal
           newSelection={(data) => {

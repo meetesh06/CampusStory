@@ -2,6 +2,7 @@ import {
   AsyncStorage
 } from 'react-native';
 import Constants from './constants';
+import axios from 'axios';
 
 const {
   SET_UP_STATUS,
@@ -9,7 +10,8 @@ const {
   INTERESTS,
   TOKEN,
   MUTED,
-  CONFIG
+  CONFIG,
+  UPDATES
 } = Constants;
 
 export default class SessionStore {
@@ -27,7 +29,8 @@ export default class SessionStore {
     [CONFIG] : {},
     [SET_UP_STATUS] : '',
     [COLLEGE] : '',
-    [INTERESTS] : ''
+    [INTERESTS] : '',
+    [UPDATES] : []
   }
 
   getValueFromStore = async (key)=>{
@@ -53,7 +56,6 @@ export default class SessionStore {
     for(var i=0; i< resArrays.length; i++){
       this.state['' + resArrays[i][0]] = JSON.parse(resArrays[i][1]);
     }
-    console.log('State GET', this.state);
   }
 
   setValueBulk = async () =>{ // [['key', value], ['key2', value]]
@@ -63,6 +65,29 @@ export default class SessionStore {
       arr.push([keys[i], JSON.stringify(this.state[keys[i]])]);
     }
     await AsyncStorage.multiSet(arr);
-    console.log('State SET', this.state);
+    if(this.state[UPDATES] && this.state[UPDATES].length > 0){
+      this.publishUpdates();
+    }
+  }
+
+  publishUpdates = () =>{
+    const formData = new FormData();
+    formData.append('activity_list', JSON.stringify(this.state[UPDATES]));
+    axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-access-token': this.state[TOKEN]
+      }
+    }).then((response) => {
+      console.log('UPDATES', response);
+    }).catch(err => console.log(err));
+  }
+
+  pushUpdate = (element) =>{
+    let updates = this.state[UPDATES] === null ? [] : this.state[UPDATES];
+    if(updates.indexOf(element) === -1){
+      console.log('ITEM ADDED');
+      updates.push(element);
+    }
   }
 };

@@ -135,7 +135,6 @@ class Home extends React.Component {
     }
 
     getTrendingContent = async () => {
-      const token = new SessionStore().getValue(TOKEN);
       // eslint-disable-next-line no-undef
       const formData = new FormData();
       const { categorySelected } = this.state;
@@ -143,7 +142,7 @@ class Home extends React.Component {
       await axios.post('https://www.mycampusdock.com/channels/fetch-popular-activity', formData, {
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': token
+          'x-access-token': new SessionStore().getValue(TOKEN)
         }
       }).then((response) => {
         const items = response.data.data;

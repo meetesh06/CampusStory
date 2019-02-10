@@ -38,7 +38,7 @@ class StoryScreen extends React.Component {
     this.radius = new Animated.Value(0);
     this.updateRead = this.updateRead.bind(true);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-    this.toUpdate = [];
+    //this.toUpdate = [];
     const {
       componentId
     } = props;
@@ -137,6 +137,7 @@ class StoryScreen extends React.Component {
   }
 
   async componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const { _id } = this.props;
     Realm.getRealm((realm) => {
       let Activity = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
@@ -173,18 +174,18 @@ class StoryScreen extends React.Component {
   }
 
   async componentWillUnmount() {
-    console.log(this.toUpdate);
-    // eslint-disable-next-line no-undef
-    const formData = new FormData();
-    formData.append('activity_list', JSON.stringify(this.toUpdate));
-    axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'x-access-token': new SessionStore().getValue(TOKEN)
-      }
-    }).then((response) => {
-      console.log(response);
-    }).catch(err => console.log(err));
+    // console.log(this.toUpdate);
+    // // eslint-disable-next-line no-undef
+    // const formData = new FormData();
+    // formData.append('activity_list', JSON.stringify(this.toUpdate));
+    // axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //     'x-access-token': new SessionStore().getValue(TOKEN)
+    //   }
+    // }).then((response) => {
+    //   console.log(response);
+    // }).catch(err => console.log(err));
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -198,7 +199,9 @@ class StoryScreen extends React.Component {
     const {
       _id
     } = currentObj;
-    this.toUpdate.push(_id);
+    //this.toUpdate.push(_id);
+    const store = new SessionStore();
+    store.pushUpdate(_id);
     Realm.getRealm((realm) => {
       realm.write(() => {
         realm.create('Activity', { _id, read: 'true' }, true);
@@ -252,7 +255,7 @@ class StoryScreen extends React.Component {
       else dummy.push(0);
     }
     return(
-      <View style={{flex : 1, marginLeft : 10, marginRight : 10, margin : 5, flexDirection : 'row'}}>
+      <View style={{flex : 1, flexDirection : 'row', justifyContent : 'center', marginLeft : 5, marginRight : 5,}}>
         {
           dummy.map((value, index)=><View style={{height : 3, marginLeft : 2, marginRight : 2, width : len, borderRadius : 5, backgroundColor : value === 0 ? 'rgba(180, 180, 180, 0.5)' : 'rgba(255, 255, 255, 0.8)'}} key={index}/>)
         }
@@ -368,7 +371,7 @@ class StoryScreen extends React.Component {
         </View>
 
         <View style={{position : 'absolute', top : 18, left : 0, width : '100%'}}>
-          <View style={{width : '100%', marginTop : 8}}>
+          <View style={{width : '100%',}}>
             {
               this.draw_progres(current, stories.length, WIDTH)
             }

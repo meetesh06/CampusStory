@@ -59,7 +59,7 @@ class App extends React.Component {
             <Image
               source={logoWhite}
               style={{
-                width: 150, height: 150, resizeMode: 'contain', alignSelf: 'center'
+                width: 120, height: 120, resizeMode: 'contain', alignSelf: 'center'
               }}
             />
             <Text style={{

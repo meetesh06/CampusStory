@@ -5,7 +5,8 @@ const constants = {
   INTERESTS: 'interests',
   TOKEN: 'token',
   MUTED : 'muted',
-  CONFIG : 'config'
+  CONFIG : 'config',
+  UPDATES : 'updates'
 };
 
 export default constants;

@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import firebase from 'react-native-firebase';
 import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
@@ -294,7 +295,7 @@ class ChannelDetailScreen extends React.Component {
             style={{
               marginTop: 10,
               fontFamily: 'Roboto-Light',
-              fontSize: 15,
+              fontSize: 14,
               padding: 10,
               backgroundColor: '#e0e0e0',
               margin: 10,
@@ -307,6 +308,8 @@ class ChannelDetailScreen extends React.Component {
           >
             {item !== null && item !== undefined && item.description !== undefined && item.description}
           </Text>
+
+          <Text style={{fontSize : 10, color : '#505050', textAlign : 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
           <View
             style={{
               marginTop: 20,
@@ -323,14 +326,16 @@ class ChannelDetailScreen extends React.Component {
           <TouchableOpacity
             onPress={this.handleSubscribe}
             style={{
-              padding: 20,
+              padding: 15,
+              paddingLeft : 5, 
+              paddingRight : 5,
               flex: 1
             }}
           >
             <Text
               style={{
                 color: '#fff',
-                fontSize: 20,
+                fontSize: 18,
                 fontFamily: 'Roboto',
                 textAlign: 'center'
               }}
@@ -345,22 +350,27 @@ class ChannelDetailScreen extends React.Component {
                       <TouchableOpacity
                         onPress={this.handleNotify}
                         style={{
-                          padding: 20,
-                          backgroundColor: notify ? '#c0c0c0' : '#0a9ad3',
+                          padding: 15,
+                          paddingLeft : 5, 
+                          paddingRight : 5,
+                          backgroundColor: notify ? '#0a9ad3' : '#c0c0c0',
                           flex: 1
                         }}
                       >
                         <Text
                           style={{
                             color: '#fff',
-                            fontSize: 20,
+                            fontSize: 18,
                             fontFamily: 'Roboto',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            textAlignVertical: 'center',
                           }}
                         >
-                              GET NOTIFIED
+                              {'GET NOTIFIED  '}
+                              <IconMaterial name = {notify ?  'notifications-active' : 'notifications-off'} size = {20} style={{marginLeft : 10, marginTop : 2}} />
                         </Text>
                       </TouchableOpacity>
+                      
                       )
                   }
 

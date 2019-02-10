@@ -8,7 +8,6 @@ import {
   Platform,
   Text,
   StatusBar,
-  LinkingIOS,
   Linking,
   ScrollView
 } from 'react-native';
@@ -413,6 +412,7 @@ class EventDetail extends React.Component {
                 }}
               >
                 <Text
+                  selectable = {true}
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
@@ -542,6 +542,7 @@ Views
                 }}
               >
                 <Text
+                  selectable = {true}
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
@@ -640,7 +641,7 @@ Views
                         <TouchableOpacity
                           onPress={this.handleClick}
                           style={{
-                            padding: 20,
+                            padding: 15,
                             backgroundColor: 'blue',
                             flex: 1
                           }}
@@ -655,12 +656,12 @@ Views
                                 <Text
                                   style={{
                                     color: '#fff',
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontFamily: 'Roboto',
                                     textAlign: 'center'
                                   }}
                                 >
-                                    I'M INTERESTED
+                                    {'I am  Interested! '} <Icon name='heart' size = {18} />
                                 </Text>
                                 )
                             }
@@ -671,7 +672,7 @@ Views
                         <TouchableOpacity
                           onPress={this.handleGoing}
                           style={{
-                            padding: 20,
+                            padding: 15,
                             backgroundColor: '#fa3e3e',
                             flex: 1
                           }}
@@ -683,15 +684,15 @@ Views
                           <Text
                             style={{
                               color: '#fff',
-                              fontSize: 20,
+                              fontSize: 18,
                               fontFamily: 'Roboto',
                               textAlign: 'center'
                             }}
                           >
                             {
-                                    !loading
-                                    && 'Want to Register Now?'
-                                }
+                                    'Want to Register Now?  '
+                            }
+                            <Icon name='checkcircle' size = {18} />
                           </Text>
                         </TouchableOpacity>
                         ) }
@@ -699,7 +700,7 @@ Views
                         && (
                         <TouchableOpacity
                           style={{
-                            padding: 20,
+                            padding: 15,
                             backgroundColor: '#c0c0c0',
                             flex: 1
                           }}
@@ -707,7 +708,7 @@ Views
                           <Text
                             style={{
                               color: '#fff',
-                              fontSize: 20,
+                              fontSize: 18,
                               fontFamily: 'Roboto',
                               textAlign: 'center'
                             }}

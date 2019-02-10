@@ -16,6 +16,7 @@ class InformationCard extends React.Component {
     render() {
         return(
             <TouchableOpacity
+                activeOpacity = {this.props.touchable ? 0.2 : 1}
                 onPress={ ()=> this.props.onPress === undefined ? console.log('nothing') : this.props.onPress() }
                 style={[{
                     backgroundColor: '#333',

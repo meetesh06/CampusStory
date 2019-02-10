@@ -3,17 +3,24 @@ import { Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const Post = (props) => {
-  const { message, thumb } = props;
+  const { message, thumb, type } = props;
+
+  getColors = (type) =>{
+    switch(type){
+      case 1 : return ['#0056e5', '#85f5ff'];
+      case 2 : return ['#FF6A15', '#FF4A3F'];
+      default : return ['#0056e5', '#85f5ff'];
+    }
+  }
   return (
     <LinearGradient
       style={{
         flex: thumb ? undefined : 1,
         height: 250,
-        // borderRadius: thumb ? 10 : undefined,
         alignItems: 'center',
         justifyContent: 'center'
       }}
-      colors={['#0056e5', '#85f5ff']}
+      colors={this.getColors(type)}
     >
       <Text
         style={{

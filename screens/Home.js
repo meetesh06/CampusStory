@@ -27,7 +27,7 @@ import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
 import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
 
-const { TOKEN, INTERESTS } = Constants;
+const { TOKEN, INTERESTS, CONFIG } = Constants;
 const WIDTH = Dimensions.get('window').width;
 
 class Home extends React.Component {
@@ -59,6 +59,25 @@ class Home extends React.Component {
 
   async componentDidMount() {
     const store = new SessionStore();
+    if (!firebase.messaging().hasPermission()) {
+      console.log('REQUESTING PERMISSION');
+      try {
+        await firebase.messaging().requestPermission();
+        console.log('PERMISSION GRANTED');
+        let config = store.getValue(CONFIG);
+        config['firebase_enabled'] = true;
+        const fcmToken = await firebase.messaging().getToken();
+        config['firebase_token'] = fcmToken;
+        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        store.putValue(CONFIG, config);
+      } catch (error) {
+        console.log('PERMISSION DENIED');
+        let config = store.getValue(CONFIG);
+        config['firebase_enabled'] = false;
+        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        store.putValue(CONFIG, config);
+      }
+    }
     this.navigationEventListener = Navigation.events().bindComponent(this);
     const interests = store.getValue(INTERESTS);
     const {
@@ -73,9 +92,6 @@ class Home extends React.Component {
     // checkForChanges();
     shuffleArray(interests.split(','), value => this.setState({ interests: value }));
 
-    if (!firebase.messaging().hasPermission()) {
-      await firebase.messaging().requestPermission();
-    }
     this.notificationDisplayedListener = firebase
       .notifications().onNotificationDisplayed((notification) => {
         console.log(notification);
@@ -462,6 +478,7 @@ class Home extends React.Component {
                       channels.length === 0
                       && (
                       <InformationCard
+                      touchable = {true}
                         onPress={
                           () => {
                             Navigation.mergeOptions(this.props.componentId, {
