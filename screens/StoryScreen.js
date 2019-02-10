@@ -139,17 +139,36 @@ class StoryScreen extends React.Component {
   async componentDidMount() {
     const { _id } = this.props;
     Realm.getRealm((realm) => {
-      const Final = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
+      let Activity = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
+      const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
+      const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
       const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
-      processRealmObj(channel, (channel_result) =>{
-        console.log('Channel', channel_result);
+      processRealmObj(channel, (channelResult) => {
+        // console.log('Channel', channel_result);
         realm.write(() => {
           realm.create('Channels', { _id, updates: 'false' }, true);
         });
-        processRealmObj(Final, (result) => {
-          this.setState({ stories: result, loading: false, channel : channel_result[0] }, () => this.updateRead());
+        let Final;
+        processRealmObj(readActivity, (result1) => {
+          // console.log(result1);
+          const res1 = result1.slice(0, 15);
+          // console.log(res1);
+          processRealmObj(unreadActivity, (result2) => {
+            console.log(result2);
+            Final = result2.concat(res1);
+            const current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
+            // if(result2.length === 0) current -= 1;
+            console.log(Final);
+            console.log(current);
+            this.setState({
+              current,
+              stories: Final,
+              loading: false,
+              channel: channelResult[0]
+            }, () => this.updateRead());
+          });
         });
-      })
+      });
     });
   }
 
@@ -259,7 +278,7 @@ class StoryScreen extends React.Component {
           backgroundColor: '#000000'
         }]}
       >
-      <StatusBar barStyle="light-content" hidden />
+        <StatusBar barStyle="light-content" hidden />
         {
           loading
           && <ActivityIndicator size="small" color="#fff" />
@@ -274,11 +293,13 @@ class StoryScreen extends React.Component {
         }
         {
           stories.length > 0
+          && stories[current] !== undefined
           && stories[current].type === 'post'
           && <Post thumb={false} key={stories[current]._id} message={stories[current].message} />
         }
         {
           stories.length > 0
+          && stories[current] !== undefined
           && stories[current].type === 'post-image' && (
           <PostImage
             key={stories[current]._id}
@@ -289,6 +310,7 @@ class StoryScreen extends React.Component {
         }
         {
           stories.length > 0
+          && stories[current] !== undefined
           && stories[current].type === 'post-video'
             && (
               <PostVideo
@@ -346,39 +368,39 @@ class StoryScreen extends React.Component {
         </View>
 
         <View style={{position : 'absolute', top : 18, left : 0, width : '100%'}}>
-        <View style={{width : '100%', marginTop : 8}}>
+          <View style={{width : '100%', marginTop : 8}}>
             {
               this.draw_progres(current, stories.length, WIDTH)
             }
-        </View>
+          </View>
           <View style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', width : '100%'}}>
-          <TouchableOpacity onPress ={()=>this.gotoChannel({channel : this.state.channel._id, channel_name : this.state.channel.name})} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginLeft : 12, marginTop : 5}}>
-            <FastImage
+            <TouchableOpacity onPress ={()=>this.gotoChannel({channel : this.state.channel._id, channel_name : this.state.channel.name})} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginLeft : 12, marginTop : 5}}>
+              <FastImage
+                style={{
+                  width : 36, height : 36, borderRadius : 20
+                }}
+                source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <Text style={{fontSize : 15, color : '#fff', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
+            </TouchableOpacity>
+            <View style={{flex : 1}}/>
+            <TouchableOpacity
               style={{
-                width : 36, height : 36, borderRadius : 20
+                justifyContent: 'center',
+                textAlign: 'right',
+                width: 30,
+                height: 30,
+                padding: 5,
+                marginRight : 12, 
+                backgroundColor: '#ffffff99',
+                borderRadius: 20
               }}
-              source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
-              resizeMode={FastImage.resizeMode.cover}
-            />
-            <Text style={{fontSize : 15, color : '#fff', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
-          </TouchableOpacity>
-          <View style={{flex : 1}}/>
-          <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              textAlign: 'right',
-              width: 30,
-              height: 30,
-              padding: 5,
-              marginRight : 12, 
-              backgroundColor: '#ffffff99',
-              borderRadius: 20
-            }}
-            onPress={() => this.close()}
-          >
-            <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
-          </TouchableOpacity>
-        </View>
+              onPress={() => this.close()}
+            >
+              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     );
