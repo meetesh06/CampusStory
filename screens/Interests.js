@@ -56,11 +56,46 @@ class Interests extends React.Component {
     };
     this.handleInterestSelection = this.handleInterestSelection.bind(this);
     this.handleNextScreen = this.handleNextScreen.bind(this);
+    this.firebaseConfig = this.firebaseConfig.bind(this);
   }
 
   componentDidMount() {
+    this.firebaseConfig();
     const { _onRefresh } = this;
     _onRefresh();
+  }
+
+  firebaseConfig = async () => {
+    const store = new SessionStore();
+    const enabled = await firebase.messaging().hasPermission();
+    console.log(enabled);
+    if (!enabled) {
+      console.log('REQUESTING PERMISSION');
+      try {
+        await firebase.messaging().requestPermission();
+        console.log('PERMISSION GRANTED');
+        const config = store.getValue(CONFIG);
+        config['firebase_enabled'] = true;
+        const fcmToken = await firebase.messaging().getToken();
+        config['firebase_token'] = fcmToken;
+        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        store.putValue(CONFIG, config);
+      } catch (error) {
+        console.log('PERMISSION DENIED');
+        let config = store.getValue(CONFIG);
+        config['firebase_enabled'] = false;
+        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        store.putValue(CONFIG, config);
+      }
+    } else {
+      const config = store.getValue(CONFIG);
+      config['firebase_enabled'] = true;
+      const fcmToken = await firebase.messaging().getToken();
+      config['firebase_token'] = fcmToken;
+      config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+      store.putValue(CONFIG, config);
+      console.log(fcmToken);
+    }
   }
 
   updateLocalState = async (college, interestsProcessed, token) => {

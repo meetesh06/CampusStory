@@ -113,7 +113,7 @@ class Home extends React.Component {
     this.messageListener = firebase
       .messaging().onMessage((message) => {
         // eslint-disable-next-line no-underscore-dangle
-        console.log(message);
+        // console.log(message);
         if (message._data.type === 'post') {
           this.setState({ newUpdates: true });
         }
