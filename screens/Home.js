@@ -60,12 +60,13 @@ class Home extends React.Component {
   async componentDidMount() {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
-    if (enabled) {
+    console.log(enabled);
+    if (!enabled) {
       console.log('REQUESTING PERMISSION');
       try {
         await firebase.messaging().requestPermission();
         console.log('PERMISSION GRANTED');
-        let config = store.getValue(CONFIG);
+        const config = store.getValue(CONFIG);
         config['firebase_enabled'] = true;
         const fcmToken = await firebase.messaging().getToken();
         config['firebase_token'] = fcmToken;
@@ -78,6 +79,14 @@ class Home extends React.Component {
         config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       }
+    } else {
+      const config = store.getValue(CONFIG);
+      config['firebase_enabled'] = true;
+      const fcmToken = await firebase.messaging().getToken();
+      config['firebase_token'] = fcmToken;
+      config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+      store.putValue(CONFIG, config);
+      console.log(fcmToken);
     }
     this.navigationEventListener = Navigation.events().bindComponent(this);
     const interests = store.getValue(INTERESTS);
@@ -104,6 +113,7 @@ class Home extends React.Component {
     this.messageListener = firebase
       .messaging().onMessage((message) => {
         // eslint-disable-next-line no-underscore-dangle
+        console.log(message);
         if (message._data.type === 'post') {
           this.setState({ newUpdates: true });
         }
