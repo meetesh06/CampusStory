@@ -59,7 +59,8 @@ class Home extends React.Component {
 
   async componentDidMount() {
     const store = new SessionStore();
-    if (!firebase.messaging().hasPermission()) {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
       console.log('REQUESTING PERMISSION');
       try {
         await firebase.messaging().requestPermission();
