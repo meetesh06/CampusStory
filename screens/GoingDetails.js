@@ -196,6 +196,7 @@ class GoingDetails extends React.Component {
               <Text
                 style={{
                   fontSize: 22,
+                  padding: 5,
                   color: '#fff',
                   textAlign: 'center',
                   margin: 5
@@ -210,6 +211,7 @@ class GoingDetails extends React.Component {
                 style={{
                   fontSize: 22,
                   color: '#fff',
+                  padding: 5,
                   textAlign: 'center',
                   margin: 5
                 }}

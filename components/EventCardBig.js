@@ -53,7 +53,7 @@ const EventCardBig = (props) => {
   } = props;
   const {
     media,
-    college,
+    channel_name,
     title,
     location,
     views,
@@ -74,7 +74,7 @@ const EventCardBig = (props) => {
         backgroundColor: '#111',
         shadowColor: '#000',
         margin: 10,
-        borderRadius: 15,
+        borderRadius: 10,
         shadowOpacity: 0.3,
         shadowRadius: 3,
         shadowOffset: {
@@ -104,6 +104,7 @@ const EventCardBig = (props) => {
         colors={['#11111166', '#000000cc']}
       />
       <Text
+        numberOfLines={1}
         style={{
           fontFamily: 'Roboto',
           fontSize: 12,
@@ -115,9 +116,10 @@ const EventCardBig = (props) => {
           color: '#dfdfdf'
         }}
       >
-        {college}
+        {channel_name}
       </Text>
       <Text
+        numberOfLines={1}
         style={{
           fontFamily: 'Roboto',
           fontSize: 22,
@@ -132,6 +134,7 @@ const EventCardBig = (props) => {
         {title}
       </Text>
       <Text
+        numberOfLines={1}
         style={{
           fontFamily: 'Roboto',
           fontSize: 15,
@@ -164,6 +167,7 @@ const EventCardBig = (props) => {
       >
         <Icon size={15} name="eye" style={{ color: '#fff', alignSelf: 'center' }} />
         <Text
+          numberOfLines={1}
           style={{
             fontFamily: 'Roboto',
             fontSize: 18,

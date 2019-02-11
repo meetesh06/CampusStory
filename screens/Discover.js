@@ -299,7 +299,7 @@ class Home extends React.Component {
         trending
       } = this.state;
       return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#333' }}>
           {/* <View
             elevation={5}
             style={{

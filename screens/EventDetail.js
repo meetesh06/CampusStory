@@ -8,12 +8,14 @@ import {
   Platform,
   Text,
   StatusBar,
-  Linking,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Entypo';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon4 from 'react-native-vector-icons/Octicons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
@@ -221,29 +223,26 @@ class EventDetail extends React.Component {
       const {
         handleChannelOpenNetwork
       } = this;
-      // console.log(item);
       return (
         <View
           style={{
             flex: 1,
-            backgroundColor: '#fff'
+            backgroundColor: '#333'
           }}
         >
           {
             Platform.OS === 'ios'
-            && (<StatusBar barStyle="dark-content" translucent />)
+            && (<StatusBar barStyle="light-content" translucent />)
           }
-          {/* <StatusBar barStyle="light-content" hidden /> */}
           <ScrollView
             style={{
               flex: 1,
-              // backgroundColor: '#333'
             }}
           >
 
             <View
               style={{
-                backgroundColor: '#efefef',
+                backgroundColor: '#222',
                 padding: 10,
               }}
             >
@@ -272,14 +271,16 @@ class EventDetail extends React.Component {
                     justifyContent: 'center'
                   }}
                 >
-                  <Text style={{
-                    fontSize: 15,
-                    color: '#333',
-                    marginLeft: 10,
-                    marginRight: 10,
-                    margin: 5,
-                    alignSelf: 'center'
-                  }}
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      fontSize: 15,
+                      color: '#333',
+                      marginLeft: 10,
+                      marginRight: 10,
+                      margin: 5,
+                      alignSelf: 'center'
+                    }}
                   >
                     {getCategoryName(item.category)}
                   </Text>
@@ -315,19 +316,19 @@ class EventDetail extends React.Component {
             >
               <View
                 style={{
-                  backgroundColor: '#f1f1f1',
+                  // backgroundColor: '#222',
                   marginRight: 10,
-                  paddingRight: 10,
-                  paddingLeft: 10,
-                  // padding: 5,
-                  borderRadius: 10
+                  width: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
                 }}
               >
                 <Text
                   style={{
                     fontFamily: 'Roboto',
                     fontSize: 15,
-                    color: '#fa3e3e',
+                    color: '#FF6A15',
                     textAlign: 'center',
                     fontWeight: '900'
                   }}
@@ -338,7 +339,7 @@ class EventDetail extends React.Component {
                   style={{
                     textAlign: 'center',
                     fontSize: 22,
-                    color: '#333',
+                    color: '#a0a0a0',
                   }}
                 >
                   {/* { JSON.stringify( item.date ) } */}
@@ -353,10 +354,11 @@ class EventDetail extends React.Component {
                 }}
               >
                 <Text
+                  numberOfLines={1}
                   style={{
                     textAlign: 'left',
                     fontSize: 20,
-                    color: '#222',
+                    color: '#f0f0f0',
                   }}
                 >
                   { item.title }
@@ -368,15 +370,19 @@ class EventDetail extends React.Component {
                   }}
                 >
                   <Text
+                    numberOfLines={1}
                     style={{
-                      fontFamily: 'Roboto-Thin'
+                      // fontFamily: 'Roboto-Thin',
+                      fontSize: 15,
+                      color: '#a0a0a0',
                     }}
                   >
 
                     {'Hosted by ' }
                     <Text
                       style={{
-                        color: '#1111aa',
+                        color: '#FF6A15',
+                        textDecorationLine: 'underline',
                         fontFamily: 'Roboto'
                       }}
                     >
@@ -390,20 +396,22 @@ class EventDetail extends React.Component {
               style={{
                 marginLeft: 5,
                 flex: 1,
-
                 padding: 5,
                 flexDirection: 'row'
               }}
             >
               <View
                 style={{
-                  backgroundColor: '#f1f1f1',
-                  padding: 10,
+                  justifyContent: 'center',
                   marginRight: 10,
-                  borderRadius: 10
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
                 }}
               >
-                <Icon1 style={{ color: '#fa3e3e', }} size={30} name="location-pin" />
+                <Icon1 style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="location-pin" />
               </View>
               <View
                 style={{
@@ -412,11 +420,11 @@ class EventDetail extends React.Component {
                 }}
               >
                 <Text
-                  selectable = {true}
+                  selectable
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    // color: '#222',
+                    color: '#f0f0f0',
                   }}
                 >
                   { item.location }
@@ -425,7 +433,7 @@ class EventDetail extends React.Component {
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    color: '#222',
+                    color: '#a0a0a0',
                   }}
                 >
                   {formatAMPM(item.date)}
@@ -442,13 +450,16 @@ class EventDetail extends React.Component {
             >
               <View
                 style={{
-                  backgroundColor: '#f1f1f1',
-                  padding: 10,
+                  justifyContent: 'center',
                   marginRight: 10,
-                  borderRadius: 10
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
                 }}
               >
-                <Icon style={{ color: '#444', }} size={30} name="smileo" />
+                <Icon2 style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="people" />
               </View>
               <View
                 style={{
@@ -460,7 +471,7 @@ class EventDetail extends React.Component {
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    // color: '#222',
+                    color: '#f0f0f0',
                   }}
                 >
                   { item.enrollees }
@@ -471,7 +482,7 @@ People Going
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    color: '#222',
+                    color: '#a0a0a0',
                   }}
                 >
                   { item.views }
@@ -491,13 +502,16 @@ Views
             >
               <View
                 style={{
-                  backgroundColor: '#f1f1f1',
-                  padding: 10,
+                  justifyContent: 'center',
                   marginRight: 10,
-                  borderRadius: 10
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
                 }}
               >
-                <Icon1 style={{ color: '#444', }} size={30} name="text" />
+                <Icon1 style={{ alignSelf: 'center', color: '#FF6A15', }} size={30} name="text" />
               </View>
               <View
                 style={{
@@ -509,7 +523,7 @@ Views
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    // color: '#222',
+                    color: '#f0f0f0',
                   }}
                 >
                   {item.description}
@@ -527,13 +541,16 @@ Views
             >
               <View
                 style={{
-                  backgroundColor: '#f1f1f1',
-                  padding: 10,
+                  justifyContent: 'center',
                   marginRight: 10,
-                  borderRadius: 10
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
                 }}
               >
-                <IconIonicons style={{ color: '#444', }} size={30} name="md-contact" />
+                <IconIonicons style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="ios-call" />
               </View>
               <View
                 style={{
@@ -542,18 +559,20 @@ Views
                 }}
               >
                 <Text
-                  selectable = {true}
+                  selectable
                   style={{
                     textAlign: 'left',
                     fontSize: 15,
-                    // color: '#222',
+                    color: '#f0f0f0',
                   }}
                 >
                   {item.contact_details}
                 </Text>
               </View>
             </View>
-            { item.reg_link !== '' && (
+            {
+              item.faq > 0
+              && (
               <View
                 style={{
                   flex: 1,
@@ -562,15 +581,19 @@ Views
                   flexDirection: 'row'
                 }}
               >
+
                 <View
                   style={{
-                    backgroundColor: '#f1f1f1',
-                    padding: 10,
+                    justifyContent: 'center',
                     marginRight: 10,
-                    borderRadius: 10
+                    width: 50,
+                    height: 50,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                    borderRadius: 5
                   }}
                 >
-                  <IconIonicons style={{ color: '#444', }} size={30} name="ios-link" />
+                  <Icon3 style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="comment-question" />
                 </View>
                 <View
                   style={{
@@ -579,56 +602,20 @@ Views
                   }}
                 >
                   <Text
-                    style={{color: 'blue'}}
-                    onPress={() => Linking.openURL(item.reg_link)}>
-                    {item.reg_link}
+                    selectable
+                    style={{
+                      textAlign: 'left',
+                      fontSize: 15,
+                      color: '#f0f0f0',
+                    }}
+                  >
+                    {item.faq}
                   </Text>
                 </View>
+
               </View>
               )
-            }
-            <View
-              style={{
-                flex: 1,
-                marginLeft: 5,
-                padding: 5,
-                flexDirection: 'row'
-              }}
-            >
-              {
-                item.faq.length > 0
-                && (
-                <View>
-                  <View
-                    style={{
-                      backgroundColor: '#f1f1f1',
-                      padding: 10,
-                      marginRight: 10,
-                      borderRadius: 10
-                    }}
-                  >
-                    <Icon style={{ color: '#444', }} size={30} name="questioncircleo" />
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        textAlign: 'left',
-                        fontSize: 15,
-                        // color: '#222',
-                      }}
-                    >
-                      {item.faq}
-                    </Text>
-                  </View>
-                </View>
-                )
-            }
-            </View>
+          }
 
           </ScrollView>
           <View
@@ -642,7 +629,7 @@ Views
                           onPress={this.handleClick}
                           style={{
                             padding: 15,
-                            backgroundColor: 'blue',
+                            backgroundColor: '#0056e5',
                             flex: 1
                           }}
                         >
@@ -655,13 +642,17 @@ Views
                                 && (
                                 <Text
                                   style={{
-                                    color: '#fff',
+                                    color: '#fafafa',
                                     fontSize: 18,
                                     fontFamily: 'Roboto',
                                     textAlign: 'center'
                                   }}
                                 >
-                                    {'I am  Interested! '} <Icon name='heart' size = {18} />
+                                  <Icon style={{ color: '#fff' }} name="heart" size={18} />
+                                  {' '}
+                                  {' Interested '}
+                                  {' '}
+                                  <Icon style={{ color: '#fff' }} name="heart" size={18} />
                                 </Text>
                                 )
                             }
@@ -689,10 +680,11 @@ Views
                               textAlign: 'center'
                             }}
                           >
+                            <Icon4 name="bookmark" size={18} />
                             {
-                                    'Want to Register Now?  '
+                                    '  Register Now  '
                             }
-                            <Icon name='checkcircle' size = {18} />
+                            <Icon4 name="bookmark" size={18} />
                           </Text>
                         </TouchableOpacity>
                         ) }
@@ -717,8 +709,6 @@ Views
                           </Text>
                         </TouchableOpacity>
                         ) }
-
-
           </View>
         </View>
       );

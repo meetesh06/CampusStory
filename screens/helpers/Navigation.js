@@ -1,6 +1,7 @@
 import { Navigation } from 'react-native-navigation';
-import Icon2 from 'react-native-vector-icons/Entypo';
-import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon1 from 'react-native-vector-icons/Foundation';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
+// import Icon3 from 'react-native-vector-icons/MaterialIcons';
 
 export const goToInterestsSelector = () => Navigation.setRoot({
   root: {
@@ -46,13 +47,18 @@ export const goInitializing = () => Navigation.setRoot({
 });
 
 export const goHome = async (first) => {
-  const homeIcon = await Icon2.getImageSource('home', 30);
-  const discoverIcon = await Icon3.getImageSource('heart-multiple', 30);
-  const profileIcon = await Icon3.getImageSource('ticket', 30);
+  const homeIcon = await Icon1.getImageSource('home', 28);
+  const discoverIcon = await Icon2.getImageSource('free-breakfast', 28);
+  const profileIcon = await Icon2.getImageSource('person', 28);
   return Navigation.setRoot({
     root: {
       bottomTabs: {
         id: 'BottomTabsId',
+        options: {
+          bottomTabs: {
+            backgroundColor: '#222'
+          }
+        },
         children: [
           {
             stack: {
@@ -83,7 +89,7 @@ export const goHome = async (first) => {
                         visible: true,
                         animate: true,
                         background: {
-                          color: '#FF6A15',
+                          color: '#222',
                           component: {
                             name: 'homeTopBar'
                           }
@@ -125,14 +131,15 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        visible: true,
-                        animate: true,
-                        background: {
-                          color: '#FF6A15',
-                          component: {
-                            name: 'homeTopBar'
-                          }
-                        }
+                        visible: false,
+                        drawBehind: true,
+                        // animate: true,
+                        // background: {
+                        //   color: '#222',
+                        //   component: {
+                        //     name: 'homeTopBar'
+                        //   }
+                        // }
                       }
                     }
                   }

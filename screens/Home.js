@@ -16,8 +16,8 @@ import { Navigation } from 'react-native-navigation';
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
-import SessionStore from '../SessionStore';
 import FastImage from 'react-native-fast-image';
+import SessionStore from '../SessionStore';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import EventCardBig from '../components/EventCardBig';
@@ -67,24 +67,24 @@ class Home extends React.Component {
         await firebase.messaging().requestPermission();
         console.log('PERMISSION GRANTED');
         const config = store.getValue(CONFIG);
-        config['firebase_enabled'] = true;
+        config.firebase_enabled = true;
         const fcmToken = await firebase.messaging().getToken();
-        config['firebase_token'] = fcmToken;
-        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        config.firebase_token = fcmToken;
+        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       } catch (error) {
         console.log('PERMISSION DENIED');
-        let config = store.getValue(CONFIG);
-        config['firebase_enabled'] = false;
-        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        const config = store.getValue(CONFIG);
+        config.firebase_enabled = false;
+        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       }
     } else {
       const config = store.getValue(CONFIG);
-      config['firebase_enabled'] = true;
+      config.firebase_enabled = true;
       const fcmToken = await firebase.messaging().getToken();
-      config['firebase_token'] = fcmToken;
-      config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+      config.firebase_token = fcmToken;
+      config.platform = Platform.OS === 'android' ? 'android' : 'ios';
       store.putValue(CONFIG, config);
       console.log(fcmToken);
     }
@@ -449,6 +449,7 @@ class Home extends React.Component {
       <View
         style={{
           flex: 1,
+          backgroundColor: '#333'
         }}
       >
         {
@@ -489,7 +490,7 @@ class Home extends React.Component {
                       channels.length === 0
                       && (
                       <InformationCard
-                      touchable = {true}
+                        touchable
                         onPress={
                           () => {
                             Navigation.mergeOptions(this.props.componentId, {
@@ -509,38 +510,62 @@ class Home extends React.Component {
                               alignSelf: 'center'
                             }}
                             // eslint-disable-next-line global-require
-                            source={require('../media/app-bar/logo.png')}
+                            source={require('../media/LogoWhite.png')}
                             resizeMode={FastImage.resizeMode.contain}
                           />
                         )}
-                        style_card={{ backgroundColor: '#e0e0e0' }}
-                        style_title={{ color: '#444' }}
-                        style_content={{ color: '#444', }}
+                        style_card={{ backgroundColor: '#555' }}
+                        style_title={{ color: '#d0d0d0' }}
+                        style_content={{ color: '#c0c0c0', }}
                       />
                       )
                   }
-          <Swiper
-            showsButtons={false}
-            autoplay
-            loop={false}
-            showsPagination={false}
-            loadMinimal
-            style={{ backgroundColor: '#333', height: 250 }}
-            autoplayTimeout={5}
-          >
-            {
-              weekEventList !== undefined
-              // eslint-disable-next-line no-underscore-dangle
-              && weekEventList.map(item => (
-                <Spotlight
-                  item={item}
-                  // eslint-disable-next-line no-underscore-dangle
-                  key={item._id}
-                  onPress={this.handleEventPress}
-                />
-              ))
-            }
-          </Swiper>
+          {
+            weekEventList !== undefined
+            && weekEventList.length > 0
+              && (
+                <View>
+                  <Swiper
+                    showsButtons={false}
+                    autoplay
+                    loop={false}
+                    showsPagination={false}
+                    loadMinimal
+                    style={{ backgroundColor: '#333', height: 250 }}
+                    autoplayTimeout={5}
+                  >
+                    {
+                      weekEventList !== undefined
+                      // eslint-disable-next-line no-underscore-dangle
+                      && weekEventList.map(item => (
+                        <Spotlight
+                          item={item}
+                          // eslint-disable-next-line no-underscore-dangle
+                          key={item._id}
+                          onPress={this.handleEventPress}
+                        />
+                      ))
+                    }
+                  </Swiper>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      left: 0,
+                      right: 0,
+                      position: 'absolute',
+                      fontFamily: 'Roboto',
+                      color: 'white',
+                      fontSize: 25,
+                      textAlign: 'center',
+                      fontWeight: '300'
+                    }}
+                  >
+                    In the Spotlight
+                  </Text>
+                </View>
+              )
+          }
+
           {
               interests.map(value => (
                 <View key={value}>
@@ -548,7 +573,13 @@ class Home extends React.Component {
                     && (
                     <View>
                       <Text style={{
-                        marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 25, marginLeft: 10
+                        color: '#f0f0f0',
+                        marginTop: 8,
+                        marginBottom: 8,
+                        textAlign: 'center',
+                        fontFamily: 'Roboto-Light',
+                        fontSize: 20,
+                        marginLeft: 10
                       }}
                       >
                         {getCategoryName(value)}

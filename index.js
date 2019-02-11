@@ -1,7 +1,7 @@
 /** @format */
 import { Navigation } from 'react-native-navigation';
 import React from 'react';
-import { Platform, AppState, Text } from 'react-native';
+import { Platform, AppState, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Initializing from './screens/Initializing';
@@ -18,32 +18,32 @@ import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
 import SessionStore from './SessionStore'
 
-const whiteTopBarImage = require('./media/LogoWhite.png');
+const whiteTopBarImage = require('./media/app-bar/logo.png');
 this.state = {
   appState : AppState.currentState,
 };
 
 const homeTopBar = () => (
-  <LinearGradient
+  <View
     style={{
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center'
     }}
-    colors={['#FF6A15', '#ff5b29']}>
+  >
     <FastImage
       style={{
         marginTop: Platform.OS === 'android' ? 5 : 0,
         width: 36,
         margin: 5,
-        height: 36,
+        height: 36
       }}
       resizeMode={FastImage.resizeMode.contain}
       source={whiteTopBarImage}
     />
-    <Text style={{ alignSelf: 'center', fontSize: 18, color: '#fff' }}>Campus Story</Text>
-  </LinearGradient>
+    <Text style={{ fontFamily: 'Roboto', alignSelf: 'center', fontSize: 18, color: '#FF6A15' }}>Campus Story</Text>
+  </View>
 );
 
 Navigation.registerComponent('Initializing Screen', () => Initializing);

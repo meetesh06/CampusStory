@@ -58,7 +58,7 @@ const Spotlight = (props) => {
         }}
         resizeMode={FastImage.resizeMode.cover}
       />
-      <LinearGradient
+      {/* <LinearGradient
         style={{
           flex: 1,
           position: 'absolute',
@@ -66,7 +66,17 @@ const Spotlight = (props) => {
           width: '100%',
           height: 250
         }}
-        colors={['#rgba(0, 0, 0, 0.3)', '#rgba(0,0,0,0.9)']}
+        colors={['#rgba(0, 0, 0, 0.5)', '#rgba(0,0,0,0.7)']}
+      /> */}
+      <LinearGradient
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: 250,
+          opacity: 1,
+          flex: 1
+        }}
+        colors={['#11111166', '#000000cc']}
       />
       <View
         style={{
@@ -75,18 +85,11 @@ const Spotlight = (props) => {
           height: 250
         }}
       >
-        <Text
+        <View
           style={{
-            marginTop: 10,
-            fontFamily: 'Roboto',
-            color: 'white',
-            fontSize: 22,
-            textAlign: 'center',
-            fontWeight: '300'
+            height: 45
           }}
-        >
-          In the Spotlight
-        </Text>
+        />
         <TouchableOpacity
           activeOpacity={0.6}
           style={{
@@ -107,16 +110,20 @@ const Spotlight = (props) => {
         </TouchableOpacity>
         <View style={{ flex: 1, paddingTop: 5 }}>
           <Text
+            numberOfLines={1}
             style={{
               textAlign: 'center',
               fontFamily: 'Roboto-Light',
               fontSize: 20,
+              marginLeft: 5,
+              marginRight: 5,
               color: '#fff'
             }}
           >
             {title}
           </Text>
           <Text
+            numberOfLines={1}
             style={{
               textAlign: 'center',
               fontSize: 15,
@@ -127,6 +134,7 @@ const Spotlight = (props) => {
             {item.channel_name}
           </Text>
           <Text
+            numberOfLines={1}
             style={{
               textAlign: 'center',
               fontFamily: 'Roboto',

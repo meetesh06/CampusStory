@@ -24,6 +24,7 @@ class DiscoverPreview extends React.Component {
   constructor(props) {
     super(props);
     this.position = new Animated.Value(0);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   state = {
@@ -113,8 +114,11 @@ class DiscoverPreview extends React.Component {
     });
   }
 
-  handleBackButtonClick = () =>{
-    this.close();
+  handleBackButtonClick = () => {
+    const {
+      componentId
+    } = this.props;
+    this.close(componentId);
     return true;
   }
 
