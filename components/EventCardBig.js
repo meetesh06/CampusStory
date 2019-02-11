@@ -181,9 +181,9 @@ const EventCardBig = (props) => {
       </View>
       <Icon
         size={20}
-        name={ interested === 'true' ? 'heart' : 'hearto'}
+        name={interested === 'true' ? 'heart' : 'hearto'}
         style={{
-          color: '#fff',
+          color: interested === 'true' ? '#FF6A15' : '#fff',
           alignSelf: 'center',
           position: 'absolute',
           bottom: 15,

@@ -6,6 +6,8 @@ import {
   Text,
   RefreshControl,
   FlatList,
+  Platform,
+  StatusBar,
   ScrollView,
   TouchableOpacity
 } from 'react-native';
@@ -75,24 +77,24 @@ class Interests extends React.Component {
         await firebase.messaging().requestPermission();
         console.log('PERMISSION GRANTED');
         const config = store.getValue(CONFIG);
-        config['firebase_enabled'] = true;
+        config.firebase_enabled = true;
         const fcmToken = await firebase.messaging().getToken();
-        config['firebase_token'] = fcmToken;
-        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        config.firebase_token = fcmToken;
+        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       } catch (error) {
         console.log('PERMISSION DENIED');
-        let config = store.getValue(CONFIG);
-        config['firebase_enabled'] = false;
-        config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+        const config = store.getValue(CONFIG);
+        config.firebase_enabled = false;
+        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       }
     } else {
       const config = store.getValue(CONFIG);
-      config['firebase_enabled'] = true;
+      config.firebase_enabled = true;
       const fcmToken = await firebase.messaging().getToken();
-      config['firebase_token'] = fcmToken;
-      config['platform'] = Platform.OS === 'android' ? 'android' : 'ios';
+      config.firebase_token = fcmToken;
+      config.platform = Platform.OS === 'android' ? 'android' : 'ios';
       store.putValue(CONFIG, config);
       console.log(fcmToken);
     }
@@ -265,9 +267,13 @@ class Interests extends React.Component {
       handleInterestSelection
     } = this;
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#222' }}>
+        {
+          Platform.OS === 'ios'
+          && (<StatusBar barStyle="light-content" translucent />)
+        }
         <ScrollView
-          style={{ flex: 1, backgroundColor: '#fff', borderRadius: 10 }}
+          style={{ flex: 1, backgroundColor: '#333' }}
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
@@ -275,9 +281,15 @@ class Interests extends React.Component {
             />
           )}
         >
-          <Text style={{
-            textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop : 10
-          }}
+          <Text
+            style={{
+              color: '#f0f0f0',
+              textAlign: 'center',
+              fontFamily: 'Roboto-Light',
+              fontSize: 22,
+              marginLeft: 10,
+              marginTop: 10
+            }}
           >
             Select your college
           </Text>
@@ -287,7 +299,7 @@ class Interests extends React.Component {
           />
           <View
             style={{
-              backgroundColor: '#e0e0e0',
+              backgroundColor: '#444',
               borderRadius: 10,
               overflow: 'hidden',
               paddingTop: 5,
@@ -296,24 +308,29 @@ class Interests extends React.Component {
               paddingRight: 5,
               marginLeft: 10,
               marginRight: 10,
-              marginTop: 5,
-              marginBottom: 5,
+              // marginTop: 5,
+              // marginBottom: 5,
               flexDirection: 'row'
             }}
           >
             <FastImage
-              style={{ width: 90, height: 75, borderRadius: 15 }}
+              style={{ width: 90, height: 75, borderRadius: 10 }}
               source={{ uri: `https://www.mycampusdock.com/${media}` }}
               resizeMode={FastImage.resizeMode.contain}
             />
             <View style={{ flex: 1, marginLeft: 10, marginTop: 5 }}>
               <Text
-                style={{ fontFamily: 'Roboto', fontSize : 13 }}
+                style={{ fontFamily: 'Roboto', fontSize: 13, color: '#fff' }}
               >
                 {name}
               </Text>
               <Text
-                style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 12 }}
+                style={{
+                  fontFamily: 'Roboto',
+                  color: '#c5c5c5',
+                  marginTop: 5,
+                  fontSize: 12
+                }}
               >
                 {location}
               </Text>
@@ -325,25 +342,30 @@ class Interests extends React.Component {
                   }
               style={{ alignSelf: 'center', marginRight: 5 }}
             >
-              <Icon style={{ color: '#505050' }} size={30} name="circle-edit-outline" />
+              <Icon style={{ color: '#f0f0f0' }} size={30} name="circle-edit-outline" />
 
             </TouchableOpacity>
           </View>
           <Text style={{
-            textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 22, marginLeft: 10, marginTop: 20,
+            color: '#f0f0f0',
+            textAlign: 'center',
+            fontFamily: 'Roboto-Light',
+            fontSize: 22,
+            marginLeft: 10,
+            marginTop: 15,
           }}
           >
             Select your interests
           </Text>
           <View style={{
-            backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 120, marginTop: 4, marginBottom: 10, alignSelf: 'center'
+            backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 120, marginTop: 4, alignSelf: 'center'
           }}
           />
           <FlatList
             style={{
-              backgroundColor: '#fff',
-              paddingTop: 15,
-              paddingBottom: 15,
+              // backgroundColor: '#fff',
+              paddingTop: 10,
+              // paddingBottom: 15,
             }}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -360,11 +382,6 @@ class Interests extends React.Component {
             )}
           />
           <FlatList
-            style={{
-              backgroundColor: '#fff',
-              paddingTop: 15,
-              paddingBottom: 15,
-            }}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
@@ -380,32 +397,38 @@ class Interests extends React.Component {
             )}
           />
           <InformationCard
+            touchable
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information."
-            icon={<IconSimple name="emotsmile" size={40} color="#888" style={{ margin: 10, alignSelf: 'center',}} />}
+            icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
+            style_card={{ backgroundColor: '#555' }}
+            style_title={{ color: '#d0d0d0' }}
+            style_content={{ color: '#c0c0c0', }}
           />
-          <View style={{
-          alignSelf: 'center', elevation: 10, backgroundColor: '#dfefef', padding: 5, borderRadius: 30
-        }}
-        >
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#FF6A15', borderRadius: 40, justifyContent: 'center', alignItems: 'center', padding: 5
-            }}
-            onPress={this.handleNextScreen}
-          >
-            <IconMaterial name="navigate-next" size={45} color="#fff" />
-          </TouchableOpacity>
-          </View>
           <View
             style={{
-              flex: 1,
-              height: 90
+              alignSelf: 'center',
+              elevation: 10,
+              backgroundColor: '#444',
+              padding: 5,
+              borderRadius: 30,
+              marginBottom: 10
             }}
-          />
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#FF6A15',
+                borderRadius: 40,
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 5
+              }}
+              onPress={this.handleNextScreen}
+            >
+              <IconMaterial name="navigate-next" size={45} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
-
-
         <CustomModal
           newSelection={(data) => {
             this.setState({ showModal: false, collegeSelection: data });

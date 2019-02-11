@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
@@ -82,8 +81,11 @@ class Profile extends React.Component {
   }
 
   handleLogout = async () => {
-    this.setState({count : this.state.count + 1});
-    if(this.state.count > 16){
+    const {
+      count
+    } = this.state;
+    this.setState({ count: count + 1 });
+    if (count > 16) {
       Realm.getRealm((realm) => {
         realm.write(async () => {
           realm.deleteAll();
@@ -111,7 +113,8 @@ class Profile extends React.Component {
     return (
       <View
         style={{
-          flex: 1
+          flex: 1,
+          backgroundColor: '#333'
         }}
       >
 
@@ -127,23 +130,20 @@ class Profile extends React.Component {
           )}
         >
           {
-            Platform.OS === 'android' && (
-              <View
-                style={{
-                  flex: 1,
-                  height: 50
-                }}
-              />
-            )}
-          {
             interested.length > 0 && (
               <Text
                 style={{
-                  marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 18, marginLeft: 10
+                  marginTop: 10,
+                  marginBottom: 10,
+                  textAlign: 'center',
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  color: '#f0f0f0',
+                  marginLeft: 10,
                 }}
               >
                 {'Interested Events '}
-                <Icon name = 'heart' size = {18} />
+                <Icon name="heart" size={15} />
               </Text>
             )
           }
@@ -160,11 +160,17 @@ class Profile extends React.Component {
             going.length > 0 && (
               <Text
                 style={{
-                  marginTop: 10, textAlign: 'center', fontFamily: 'Roboto-Light', fontSize: 18, marginLeft: 10
+                  marginTop: 10,
+                  marginBottom: 10,
+                  textAlign: 'center',
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  marginLeft: 10,
+                  color: '#f0f0f0',
                 }}
               >
                 {'Registered Events '}
-                <Icon name = 'checkcircle' size = {18} />
+                <Icon name="checkcircle" size={15} />
               </Text>
             )}
           <FlatList
@@ -177,8 +183,27 @@ class Profile extends React.Component {
             )}
           />
           <View>
-            {/* <InformationCard icon={<IconIonicons name="md-settings" size={45} color="#c5c5c5" style={{ margin: 10, alignSelf: 'center', }} />} title="Settings" content="Modify Settings for better app experience." style_card={{}} onPress = {this.handleLogout} touchable = {true}/> */}
-            <InformationCard icon={<Icon name="lock1" size={45} color="#888" style={{ margin: 10, alignSelf: 'center', }} />} title="Secured Data" content="All of your data shared on this platform will be safe and never shared with anyone without your permission." style_card={{}} onPress = {this.handleLogout}/>
+            <InformationCard
+              touchable
+              title="Secured Data"
+              content="All of your data shared on this platform will be safe and never shared with anyone without your permission."
+              icon={(
+                <Icon
+                  style={{
+                    margin: 10,
+                    color: '#f0f0f0',
+                    // opacity: 0.6,
+                    alignSelf: 'center'
+                  }}
+                  name="lock1"
+                  size={30}
+                />
+              )}
+              onPress={this.handleLogout}
+              style_card={{ backgroundColor: '#555' }}
+              style_title={{ color: '#d0d0d0' }}
+              style_content={{ color: '#c0c0c0', }}
+            />
           </View>
         </ScrollView>
       </View>

@@ -49,7 +49,13 @@ const Spotlight = (props) => {
   const { item, onPress } = props;
   const { media, title, date } = item;
   return (
-    <View>
+    <View
+      style={{
+        // borderRadius: 10,
+        // margin: 10,
+        overflow: 'hidden'
+      }}
+    >
       <FastImage
         style={{ height: 250, flexDirection: 'column' }}
         source={{
@@ -73,10 +79,9 @@ const Spotlight = (props) => {
           position: 'absolute',
           width: '100%',
           height: 250,
-          opacity: 1,
           flex: 1
         }}
-        colors={['#11111166', '#000000cc']}
+        colors={['#00000066', '#000000dd']}
       />
       <View
         style={{

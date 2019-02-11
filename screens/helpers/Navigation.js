@@ -14,7 +14,11 @@ export const goToInterestsSelector = () => Navigation.setRoot({
             options: {
               topBar: {
                 title: {
-                  text: 'Basic Details'
+                  text: 'Basic Details',
+                  color: '#c0c0c0'
+                },
+                background: {
+                  color: '#222',
                 }
               }
             }
@@ -47,9 +51,9 @@ export const goInitializing = () => Navigation.setRoot({
 });
 
 export const goHome = async (first) => {
-  const homeIcon = await Icon1.getImageSource('home', 28);
-  const discoverIcon = await Icon2.getImageSource('free-breakfast', 28);
-  const profileIcon = await Icon2.getImageSource('person', 28);
+  const homeIcon = await Icon1.getImageSource('home', 25);
+  const discoverIcon = await Icon2.getImageSource('free-breakfast', 25);
+  const profileIcon = await Icon2.getImageSource('person', 25);
   return Navigation.setRoot({
     root: {
       bottomTabs: {
@@ -106,9 +110,8 @@ export const goHome = async (first) => {
               id: 'DiscoverStack',
               options: {
                 topBar: {
-                  // visible: false,
-                  // drawBehind: true
-
+                  visible: false,
+                  drawBehind: true
                 },
                 bottomTab: {
                   fontSize: 10,
@@ -131,8 +134,8 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        visible: false,
-                        drawBehind: true,
+                        // hideOnScroll: true,
+                        // visible: true,
                         // animate: true,
                         // background: {
                         //   color: '#222',
@@ -162,8 +165,8 @@ export const goHome = async (first) => {
                   selectedIconColor: '#FF6A15'
                 },
                 topBar: {
-                  visible: false,
-                  drawBehind: true
+                  // visible: false,
+                  // drawBehind: true
                 }
               },
               children: [
@@ -179,7 +182,7 @@ export const goHome = async (first) => {
                         visible: true,
                         animate: true,
                         background: {
-                          color: '#FF6A15',
+                          color: '#222',
                           component: {
                             name: 'homeTopBar'
                           }

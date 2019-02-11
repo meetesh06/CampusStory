@@ -59,7 +59,7 @@ class AdvertCard extends React.Component {
           }
         </View>
         <Text style={{
-          color: '#111', textAlign: 'center', alignSelf: 'center', fontSize: 12
+          color: '#f0f0f0', textAlign: 'center', alignSelf: 'center', fontSize: 12
         }}
         >
           {text}

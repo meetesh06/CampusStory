@@ -29,7 +29,8 @@ const homeTopBar = () => (
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      backgroundColor: '#222'
     }}
   >
     <FastImage

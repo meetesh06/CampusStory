@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   View,
+  Platform,
   Text,
   TouchableOpacity
 } from 'react-native';
@@ -18,7 +19,7 @@ const CategoryCard = (props) => {
   return (
     <TouchableOpacity
       style={{
-        marginBottom: 10
+        marginTop: Platform.OS === 'ios' ? 15 : 0,
       }}
       onPress={() => {
         if (!selected) onPress();
@@ -27,15 +28,15 @@ const CategoryCard = (props) => {
       <View
         style={{
           overflow: 'hidden',
-          width,
-          height,
+          width: 150,
+          // height: height+40,
           // marginLeft: 10,
           // marginRight: 10,
           // borderRadius: 10,
-          marginTop: 15,
-          marginLeft: 10,
-          marginRight: 10,
-          padding: 5,
+          // marginTop: 15,
+          // marginLeft: 10,
+          // marginRight: 10,
+          // padding: 5,
           // backgroundColor: 'red',
           justifyContent: 'center',
           alignItems: 'center'
@@ -45,44 +46,29 @@ const CategoryCard = (props) => {
           style={{
             width,
             height,
-            borderRadius: 10,
-            position: 'absolute'
+            // position: 'absolute'
           }}
           source={image}
           resizeMode={FastImage.resizeMode.cover}
         />
-      </View>
-      {/* <Text
-        // ellipsizeMode="tail"
+        <Text
         numberOfLines={1}
-        style={{
-          marginLeft: 15,
-          marginTop: 3,
-          textAlign: 'center',
-          fontFamily: 'Roboto',
-          color: '#fff',
-          padding: 5,
-          width,
-          fontSize: 12
-        }}
-      >
-        {name.toUpperCase()}
-      </Text> */}
-      {selected && (
-      <View
-        style={{
-          // width: name.length * 8,
-          width: width - 50,
-          marginTop: 10,
-          maxWidth: width,
-          height: 2,
-          backgroundColor: '#fff',
-          borderRadius: 10,
-          justifyContent: 'center',
-          alignSelf: 'center'
-        }}
-      />
-      )}
+          style={{
+            // position: 'absolute',
+            fontFamily: 'Roboto',
+            marginTop: 5,
+            marginLeft: 4,
+            marginRight: 4,
+            fontSize: 10,
+            textAlign: 'center',
+            // width,
+            // bottom: 0,
+            color: '#c0c0c0'
+          }}
+        >
+          {name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };

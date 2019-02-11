@@ -15,6 +15,8 @@ const PostImageThumbnail = (props) => {
         alignItems: 'center',
         justifyContent: 'center',
         margin: 3,
+        borderRadius: 10,
+        overflow: 'hidden',
         backgroundColor: '#efefef'
       }}
     >

@@ -14,6 +14,7 @@ const PostImage = (props) => {
         height: (1 * WIDTH) / 3,
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: 10,
         margin: 3
       }}
     >

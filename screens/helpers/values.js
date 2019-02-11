@@ -11,7 +11,7 @@ const halImage = require('../../media/topics/hal.webp');
 const communityImage = require('../../media/topics/community.webp');
 
 const artImageAlt = require('../../media/topics/art-small.webp');
-// const hottestImageAlt = require('../../media/topics/hot-small.webp');
+const hottestImageAlt = require('../../media/topics/hot-small.webp');
 const calImageAlt = require('../../media/topics/cal-small.webp');
 const musicImageAlt = require('../../media/topics/music-small.webp');
 const satImageAlt = require('../../media/topics/sat-small.webp');
@@ -21,6 +21,15 @@ const fashionImageAlt = require('../../media/topics/fashion-small.webp');
 const photographyImageAlt = require('../../media/topics/photography-small.webp');
 const halImageAlt = require('../../media/topics/hal-small.webp');
 const communityImageAlt = require('../../media/topics/community-small.webp');
+
+export const categoriesNew = {
+  cs: hottestImageAlt,
+  food: halImageAlt,
+  art: artImageAlt,
+  mad: musicImageAlt,
+  society: communityImageAlt,
+  sports: sagImageAlt,
+};
 
 export const categories = [
   {

@@ -60,7 +60,6 @@ class Home extends React.Component {
   async componentDidMount() {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
-    console.log(enabled);
     if (!enabled) {
       console.log('REQUESTING PERMISSION');
       try {
@@ -95,11 +94,12 @@ class Home extends React.Component {
       handleStoryOpenNotification,
       handleEventOpenNotification,
       fetchEventsFromRealm,
-      fetchChannelsFromRealm
+      fetchChannelsFromRealm,
+      checkForChanges
     } = this;
     fetchEventsFromRealm();
     fetchChannelsFromRealm();
-    // checkForChanges();
+    if (this.props.first) checkForChanges();
     shuffleArray(interests.split(','), value => this.setState({ interests: value }));
 
     this.notificationDisplayedListener = firebase
@@ -114,7 +114,10 @@ class Home extends React.Component {
       .messaging().onMessage((message) => {
         // eslint-disable-next-line no-underscore-dangle
         // console.log(message);
-        if (message._data.type === 'post') {
+        const {
+          _data
+        } = message;
+        if (_data.type === 'post') {
           this.setState({ newUpdates: true });
         }
       });
@@ -432,7 +435,10 @@ class Home extends React.Component {
   }
 
   componentDidAppear() {
+    // console.log('TEST');
     this.fetchChannelsFromRealm();
+    this.fetchEventsFromRealm();
+    this.setState({ newUpdates: false });
     this.checkForChanges();
   }
 
@@ -446,203 +452,196 @@ class Home extends React.Component {
     } = this.state;
     const { updateContent } = this;
     return (
-      <View
+      <ScrollView
         style={{
-          flex: 1,
           backgroundColor: '#333'
         }}
+        refreshControl={(
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={updateContent}
+          />
+        )}
       >
         {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" translucent />)
         }
-
-        <ScrollView
-          refreshControl={(
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={updateContent}
-            />
-          )}
-        >
-          {
-            channels.length !== 0
-              && (
-                <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item, index) => `${index}`}
-                  data={channels}
-                  extraData={channels}
-                  renderItem={({ item, index }) => (
-                    <StoryIcon
-                      onPress={obj => this.handleStoryPress(obj, index)}
-                      width={96}
-                      height={64}
-                      item={item}
-                    />
-                  )}
-                />
-              )
-          }
-
-          {
-                      channels.length === 0
-                      && (
-                      <InformationCard
-                        touchable
-                        onPress={
-                          () => {
-                            Navigation.mergeOptions(this.props.componentId, {
-                              bottomTabs: {
-                                currentTabIndex: 1
-                              }
-                            });
-                          }
-                        }
-                        title="Discover Channels"
-                        content="You can watch stories from your subscribed channels here. Explore for more channels."
-                        icon={(
-                          <FastImage
-                            style={{
-                              width: 80,
-                              height: 60,
-                              alignSelf: 'center'
-                            }}
-                            // eslint-disable-next-line global-require
-                            source={require('../media/LogoWhite.png')}
-                            resizeMode={FastImage.resizeMode.contain}
-                          />
-                        )}
-                        style_card={{ backgroundColor: '#555' }}
-                        style_title={{ color: '#d0d0d0' }}
-                        style_content={{ color: '#c0c0c0', }}
-                      />
-                      )
-                  }
-          {
-            weekEventList !== undefined
-            && weekEventList.length > 0
-              && (
-                <View>
-                  <Swiper
-                    showsButtons={false}
-                    autoplay
-                    loop={false}
-                    showsPagination={false}
-                    loadMinimal
-                    style={{ backgroundColor: '#333', height: 250 }}
-                    autoplayTimeout={5}
-                  >
-                    {
-                      weekEventList !== undefined
-                      // eslint-disable-next-line no-underscore-dangle
-                      && weekEventList.map(item => (
-                        <Spotlight
-                          item={item}
-                          // eslint-disable-next-line no-underscore-dangle
-                          key={item._id}
-                          onPress={this.handleEventPress}
-                        />
-                      ))
-                    }
-                  </Swiper>
-                  <Text
-                    style={{
-                      marginTop: 10,
-                      left: 0,
-                      right: 0,
-                      position: 'absolute',
-                      fontFamily: 'Roboto',
-                      color: 'white',
-                      fontSize: 25,
-                      textAlign: 'center',
-                      fontWeight: '300'
-                    }}
-                  >
-                    In the Spotlight
-                  </Text>
-                </View>
-              )
-          }
-
-          {
-              interests.map(value => (
-                <View key={value}>
-                  { this.state[value] !== undefined && this.state[value].length > 0
-                    && (
-                    <View>
-                      <Text style={{
-                        color: '#f0f0f0',
-                        marginTop: 8,
-                        marginBottom: 8,
-                        textAlign: 'center',
-                        fontFamily: 'Roboto-Light',
-                        fontSize: 20,
-                        marginLeft: 10
-                      }}
-                      >
-                        {getCategoryName(value)}
-                      </Text>
-                      <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />} />
-                    </View>
-                    )}
-                </View>
-              ))
-          }
-          <FlatList
-            horizontal={false}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => `${index}`}
-            data={eventList}
-            renderItem={({ item }) => (
-              <EventCardBig
-                onPress={this.handleEventPress}
-                width={WIDTH - 20}
-                height={(WIDTH - 20) * 0.75}
-                item={item}
+        {
+          channels.length !== 0
+            && (
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => `${index}`}
+                data={channels}
+                extraData={channels}
+                renderItem={({ item, index }) => (
+                  <StoryIcon
+                    onPress={obj => this.handleStoryPress(obj, index)}
+                    width={96}
+                    height={64}
+                    item={item}
+                  />
+                )}
               />
             )
-            }
-          />
-
-        </ScrollView>
+        }
         {
-          this.state.newUpdates && (
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 10,
-              borderRadius: 75,
-              left: 0,
-              right: 0,
-              justifyContent: 'center'
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: 100,
-                alignSelf: 'center',
-                padding: 10,
-                borderRadius: 50,
-                backgroundColor: '#4475c4',
-              }}
-              disabled={refreshing}
-              onPress={updateContent}
-            >
+          channels.length === 0
+          && (
+            <InformationCard
+              touchable
+              onPress={
+                () => {
+                  Navigation.mergeOptions(this.props.componentId, {
+                    bottomTabs: {
+                      currentTabIndex: 1
+                    }
+                  });
+                }
+              }
+              title="Discover Channels"
+              content="You can watch stories from your subscribed channels here. Explore for more channels."
+              icon={(
+                <FastImage
+                  style={{
+                    margin: 10,
+                    width: 40,
+                    height: 40,
+                    opacity: 0.8,
+                    alignSelf: 'center'
+                  }}
+                  // eslint-disable-next-line global-require
+                  source={require('../media/LogoWhite.png')}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+              )}
+              style_card={{ backgroundColor: '#555' }}
+              style_title={{ color: '#d0d0d0' }}
+              style_content={{ color: '#c0c0c0', }}
+            />
+          )
+        }
+        {
+          weekEventList !== undefined
+          && weekEventList.length > 0
+          && (
+            <View>
+              <Swiper
+                showsButtons={false}
+                autoplay
+                loop={false}
+                showsPagination={false}
+                loadMinimal
+                style={{ backgroundColor: '#333', height: 250 }}
+                autoplayTimeout={5}
+              >
+                {
+                  weekEventList !== undefined
+                  // eslint-disable-next-line no-underscore-dangle
+                  && weekEventList.map(item => (
+                    <Spotlight
+                      item={item}
+                      // eslint-disable-next-line no-underscore-dangle
+                      key={item._id}
+                      onPress={this.handleEventPress}
+                    />
+                  ))
+                }
+              </Swiper>
               <Text
                 style={{
-                  fontSize: 10,
-                  color: '#fff',
-                  textAlign: 'center'
+                  marginTop: 10,
+                  left: 0,
+                  right: 0,
+                  position: 'absolute',
+                  fontFamily: 'Roboto',
+                  color: 'white',
+                  fontSize: 25,
+                  textAlign: 'center',
+                  fontWeight: '300'
                 }}
               >
-                NEW UPDATES
+                In the Spotlight
               </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          )
+        }
+        {
+          interests.map(value => (
+            <View key={value}>
+              { this.state[value] !== undefined && this.state[value].length > 0
+                && (
+                  <View>
+                    <Text style={{
+                      color: '#f0f0f0',
+                      marginTop: 8,
+                      marginBottom: 8,
+                      textAlign: 'center',
+                      fontFamily: 'Roboto-Light',
+                      fontSize: 20,
+                      marginLeft: 10
+                    }}
+                    >
+                      {getCategoryName(value)}
+                    </Text>
+                    <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />} />
+                  </View>
+                )}
+            </View>
+          ))
+        }
+        <FlatList
+          horizontal={false}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => `${index}`}
+          data={eventList}
+          renderItem={({ item }) => (
+            <EventCardBig
+              onPress={this.handleEventPress}
+              width={WIDTH - 20}
+              height={(WIDTH - 20) * 0.75}
+              item={item}
+            />
+          )
+          }
+        />
+        {
+          this.state.newUpdates && (
+            <View
+              style={{
+                flex: 1,
+                position: 'absolute',
+                top: 20,
+                left: 0,
+                right: 0
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  alignSelf: 'center',
+                  padding: 10,
+                  borderRadius: 50,
+                  backgroundColor: '#4475c4',
+                }}
+                disabled={refreshing}
+                onPress={updateContent}
+              >
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: '#fff',
+                    textAlign: 'center'
+                  }}
+                >
+                  NEW UPDATES
+                </Text>
+              </TouchableOpacity>
+            </View>
           )}
-      </View>
+      </ScrollView>
     );
   }
 }
