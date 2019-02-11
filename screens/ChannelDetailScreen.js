@@ -47,7 +47,6 @@ class ChannelDetailScreen extends React.Component {
       const element = realm.objects('Firebase').filtered(`_id="${id}"`);
       const item = realm.objects('Channels').filtered(`_id="${id}"`);
       processRealmObj(element, (result) => {
-        console.log(result);
         if (result.length > 0) {
           this.setState({ subscribed: true, notify: result[0].notify !== 'false' });
         }
@@ -94,7 +93,7 @@ class ChannelDetailScreen extends React.Component {
             }
           });
         });
-        console.log(data[0]);
+        // console.log(data[0]);
         this.setState({ item: data[0] });
       }
     }).catch(err => console.log(err));
@@ -190,36 +189,11 @@ class ChannelDetailScreen extends React.Component {
             flex: 1,
           }}
         >
-          {/* <View
-            style={{
-              textAlign: 'left',
-              flexDirection: 'row',
-              paddingRight: 10,
-              paddingLeft: 10
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                // backgroundColor: 'red',
-                textAlign: 'right',
-                width: 35,
-                height: 35
-              }}
-              onPress={() => Navigation.dismissModal(componentId)}
-            >
-            <Icon style={{ alignSelf: 'flex-start', color: '#a0a0a0' }} size={25} name="close" />
-            </TouchableOpacity>
-          </View> */}
-
-
           <View
             style={{
               backgroundColor: '#fff'
             }}
           >
-
             {
               item !== null && item !== undefined && item.media !== undefined
               && (
@@ -309,7 +283,7 @@ class ChannelDetailScreen extends React.Component {
             {item !== null && item !== undefined && item.description !== undefined && item.description}
           </Text>
 
-          <Text style={{fontSize : 10, color : '#505050', textAlign : 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
+          <Text style={{ fontSize: 10, color: '#505050', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
           <View
             style={{
               marginTop: 20,
