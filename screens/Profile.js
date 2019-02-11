@@ -104,8 +104,8 @@ class Profile extends React.Component {
     const isCameraAuthorized = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
     if(!isCameraAuthorized || isCameraAuthorized === -1) {
       const isUserAuthorizedCamera = await CameraKitCamera.requestDeviceCameraAuthorization();
-      if(!isUserAuthorizedCamera) Alert.alert('Cannot use the camera');
-    }
+      if(!isUserAuthorizedCamera) Alert.alert('No Permission for camera');
+    } 
   }
 
   onBottomButtonPressed(event) {
