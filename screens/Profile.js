@@ -1,9 +1,11 @@
+/* eslint-disable global-require */
 import React from 'react';
 import {
   ScrollView,
   RefreshControl,
   FlatList,
   Platform,
+  Alert,
   View,
   AsyncStorage,
   Text,
@@ -15,6 +17,7 @@ import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
 import InformationCard from '../components/InformationCard';
+import { CameraKitCameraScreen, CameraKitCamera } from 'react-native-camera-kit';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -96,8 +99,25 @@ class Profile extends React.Component {
     }
   }
 
-  componentDidAppear() {
+  async componentDidAppear() {
     this.updateContent();
+    const isCameraAuthorized = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
+    if(!isCameraAuthorized || isCameraAuthorized === -1) {
+      const isUserAuthorizedCamera = await CameraKitCamera.requestDeviceCameraAuthorization();
+      if(!isUserAuthorizedCamera) Alert.alert('Cannot use the camera');
+    }
+  }
+
+  onBottomButtonPressed(event) {
+    const captureImages = JSON.stringify(event.captureImages);
+    Alert.alert(
+      `${event.type} button pressed`,
+      `${captureImages}`,
+      [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ],
+      { cancelable: false }
+    )
   }
 
   render() {
@@ -117,8 +137,18 @@ class Profile extends React.Component {
           backgroundColor: '#333'
         }}
       >
-
-        <ScrollView
+        <CameraKitCameraScreen
+          actions={{ rightButtonText: 'Done', leftButtonText: 'Cancel' }}
+          onBottomButtonPressed={(event) => this.onBottomButtonPressed(event)}
+          flashImages={{
+            on: require('../media/flashOn.png'),
+            off: require('../media/flashOff.png'),
+            auto: require('../media/flashAuto.png')
+          }}
+          cameraFlipImage={require('../media/cameraFlipIcon.png')}
+          captureButtonImage={require('../media/cameraButton.png')}
+        />
+        {/* <ScrollView
           style={{
             flex: 1
           }}
@@ -146,8 +176,8 @@ class Profile extends React.Component {
                 <Icon name="heart" size={15} />
               </Text>
             )
-          }
-          <FlatList
+          } */}
+          {/* <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
@@ -205,7 +235,7 @@ class Profile extends React.Component {
               style_content={{ color: '#c0c0c0', }}
             />
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
     );
   }

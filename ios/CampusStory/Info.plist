@@ -66,6 +66,13 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>npm install react-native-camera-kit --save
+</key>
+	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Campus Story to capture image for sharing</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

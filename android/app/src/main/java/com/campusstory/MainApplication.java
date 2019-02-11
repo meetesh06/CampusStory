@@ -24,7 +24,7 @@ import com.reactnativenavigation.react.ReactGateway;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // <-- Add this line
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage; // <-- Add this line
-
+import com.wix.RNCameraKit.RNCameraKitPackage;
 
 import com.BV.LinearGradient.LinearGradientPackage;
 
@@ -59,7 +59,8 @@ public class MainApplication extends NavigationApplication {
             new RealmReactPackage(),
             new RNCWebViewPackage(),
             new RNFirebaseNotificationsPackage(),
-            new ReactVideoPackage()
+            new ReactVideoPackage(),
+            new RNCameraKitPackage()
         );
     }
   
