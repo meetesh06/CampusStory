@@ -175,13 +175,13 @@ class ChannelDetailScreen extends React.Component {
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: '#333',
           flex: 1
         }}
       >
         {
           Platform.OS === 'ios'
-          && (<StatusBar barStyle="dark-content" translucent />)
+          && (<StatusBar barStyle="light-content" translucent />)
         }
 
         <ScrollView
@@ -191,7 +191,10 @@ class ChannelDetailScreen extends React.Component {
         >
           <View
             style={{
-              backgroundColor: '#fff'
+              backgroundColor: '#222',
+              justifyContent: 'center',
+              padding: 10,
+              height: (WIDTH - 20) * 0.75 + 20
             }}
           >
             {
@@ -199,9 +202,12 @@ class ChannelDetailScreen extends React.Component {
               && (
               <FastImage
                 style={{
-                  width: WIDTH - 20, marginLeft: 10, marginTop: 10, height: 200, borderRadius: 10, backgroundColor: '#000'
+                  width: WIDTH - 20,
+                  height: (WIDTH - 20) * 0.75,
+                  borderRadius: 10
                 }}
                 source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
+                // source={{ uri: 'https://mycampusdock.com/undefined' }}
                 resizeMode={FastImage.resizeMode.cover}
               />
               )
@@ -257,7 +263,7 @@ class ChannelDetailScreen extends React.Component {
           </View>
           <Text
             style={{
-              marginTop: 20,
+              // marginTop: 20,
               textAlign: 'center',
               fontSize: 20,
               fontFamily: 'Roboto-Light'
@@ -267,23 +273,23 @@ class ChannelDetailScreen extends React.Component {
           </Text>
           <Text
             style={{
-              marginTop: 10,
+              // marginTop: 10,
               fontFamily: 'Roboto-Light',
               fontSize: 14,
               padding: 10,
-              backgroundColor: '#e0e0e0',
+              backgroundColor: '#444',
               margin: 10,
               borderRadius: 10,
               minHeight: 50,
               overflow: 'hidden',
               textAlign: 'center',
-              color: '#333'
+              color: '#f0f0f0'
             }}
           >
             {item !== null && item !== undefined && item.description !== undefined && item.description}
           </Text>
 
-          <Text style={{ fontSize: 10, color: '#505050', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
+          <Text style={{ fontSize: 10, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
           <View
             style={{
               marginTop: 20,
@@ -293,11 +299,12 @@ class ChannelDetailScreen extends React.Component {
         </ScrollView>
         <View
           style={{
-            backgroundColor: subscribed ? '#c0c0c0' : 'blue',
+            backgroundColor: (subscribed || this.state.item === null || this.state.item === undefined) ? '#c0c0c0' : '#FF6A15',
             flexDirection: 'row'
           }}
         >
           <TouchableOpacity
+            disabled={ this.state.item === null || this.state.item === undefined }
             onPress={this.handleSubscribe}
             style={{
               padding: 15,
@@ -325,8 +332,8 @@ class ChannelDetailScreen extends React.Component {
                         onPress={this.handleNotify}
                         style={{
                           padding: 15,
-                          paddingLeft : 5, 
-                          paddingRight : 5,
+                          paddingLeft: 5,
+                          paddingRight: 5,
                           backgroundColor: notify ? '#0a9ad3' : '#c0c0c0',
                           flex: 1
                         }}
@@ -340,8 +347,8 @@ class ChannelDetailScreen extends React.Component {
                             textAlignVertical: 'center',
                           }}
                         >
-                              {'GET NOTIFIED  '}
-                              <IconMaterial name = {notify ?  'notifications-active' : 'notifications-off'} size = {20} style={{marginLeft : 10, marginTop : 2}} />
+                          {'GET NOTIFIED  '}
+                          <IconMaterial name = {notify ? 'notifications-active' : 'notifications-off'} size={20} style={{ marginLeft: 10, marginTop: 2 }} />
                         </Text>
                       </TouchableOpacity>
                       

@@ -46,16 +46,17 @@ export default class Discover extends React.Component {
             scrollEnabled
             indicatorStyle={{ backgroundColor: '#FF6A15' }}
             // pressOpacity={0.6}
+            // initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
             labelStyle={{ color: '#fff' }}
             style={{
-              backgroundColor: '#222',
+              backgroundColor: '#222'
             }}
             tabStyle={{
               width: 100
             }}
             renderLabel={val => (
               <CategoryCard
-                width={50}
+                width={80}
                 height={50}
                 name={val.route.title}
                 // selected={this.state.routes[this.state.index].key === val.route.key}
@@ -67,7 +68,10 @@ export default class Discover extends React.Component {
         navigationState={this.state}
         renderScene={this.renderScene}
         onIndexChange={index => this.setState({ index })}
-        initialLayout={{ width: Dimensions.get('window').width }}
+        initialLayout={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height,
+        }}
       />
     );
   }

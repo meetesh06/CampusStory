@@ -20,6 +20,7 @@ const CategoryCard = (props) => {
     <TouchableOpacity
       style={{
         marginTop: Platform.OS === 'ios' ? 15 : 0,
+        borderRadius: 10
       }}
       onPress={() => {
         if (!selected) onPress();
@@ -46,6 +47,7 @@ const CategoryCard = (props) => {
           style={{
             width,
             height,
+            borderRadius: 10
             // position: 'absolute'
           }}
           source={image}

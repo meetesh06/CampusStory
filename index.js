@@ -16,7 +16,8 @@ import GoingDetails from './screens/GoingDetails';
 import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
-import SessionStore from './SessionStore'
+import CameraScreen from './screens/CameraScreen';
+import SessionStore from './SessionStore';
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
 this.state = {
@@ -60,6 +61,7 @@ Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
+Navigation.registerComponent('Camera Screen', () => CameraScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);

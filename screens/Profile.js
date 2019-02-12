@@ -4,14 +4,17 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
-  Platform,
   Alert,
   View,
   AsyncStorage,
+  PermissionsAndroid,
+  TouchableOpacity,
   Text,
 } from 'react-native';
+
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
@@ -24,6 +27,7 @@ class Profile extends React.Component {
     super(props);
     this.handleLogout = this.handleLogout.bind(this);
     this.handleEventPress = this.handleEventPress.bind(this);
+    this.handleCamera = this.handleCamera.bind(this);
   }
 
   state = {
@@ -35,6 +39,26 @@ class Profile extends React.Component {
 
   componentDidMount() {
     this.navigationEventListener = Navigation.events().bindComponent(this);
+  }
+
+  handleCamera = () => {
+    Navigation.showModal({
+      component: {
+        name: 'Camera Screen',
+        options: {
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          }
+        }
+      }
+    });
   }
 
   updateContent = () => {
@@ -101,23 +125,6 @@ class Profile extends React.Component {
 
   async componentDidAppear() {
     this.updateContent();
-    const isCameraAuthorized = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
-    if(!isCameraAuthorized || isCameraAuthorized === -1) {
-      const isUserAuthorizedCamera = await CameraKitCamera.requestDeviceCameraAuthorization();
-      if(!isUserAuthorizedCamera) Alert.alert('No Permission for camera');
-    } 
-  }
-
-  onBottomButtonPressed(event) {
-    const captureImages = JSON.stringify(event.captureImages);
-    Alert.alert(
-      `${event.type} button pressed`,
-      `${captureImages}`,
-      [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ],
-      { cancelable: false }
-    )
   }
 
   render() {
@@ -137,18 +144,7 @@ class Profile extends React.Component {
           backgroundColor: '#333'
         }}
       >
-        <CameraKitCameraScreen
-          actions={{ rightButtonText: 'Done', leftButtonText: 'Cancel' }}
-          onBottomButtonPressed={(event) => this.onBottomButtonPressed(event)}
-          flashImages={{
-            on: require('../media/flashOn.png'),
-            off: require('../media/flashOff.png'),
-            auto: require('../media/flashAuto.png')
-          }}
-          cameraFlipImage={require('../media/cameraFlipIcon.png')}
-          captureButtonImage={require('../media/cameraButton.png')}
-        />
-        {/* <ScrollView
+        <ScrollView
           style={{
             flex: 1
           }}
@@ -159,6 +155,26 @@ class Profile extends React.Component {
             />
           )}
         >
+          <TouchableOpacity
+            onPress={this.handleCamera}
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+              marginTop: 15,
+              backgroundColor: '#c0c0c0',
+              borderRadius: 75,
+              width: 120,
+              height: 120
+            }}
+          >
+            <Icon
+              style={{
+                alignSelf: 'center'
+              }}
+              name="camera"
+              size={50}
+            />
+          </TouchableOpacity>
           {
             interested.length > 0 && (
               <Text
@@ -176,8 +192,8 @@ class Profile extends React.Component {
                 <Icon name="heart" size={15} />
               </Text>
             )
-          } */}
-          {/* <FlatList
+          }
+          <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
@@ -235,7 +251,7 @@ class Profile extends React.Component {
               style_content={{ color: '#c0c0c0', }}
             />
           </View>
-        </ScrollView> */}
+        </ScrollView>
       </View>
     );
   }
