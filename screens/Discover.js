@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, Dimensions, SafeAreaView } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import CategoryView from './CategoryView';
 import CategoryCard from '../components/CategoryCard';
@@ -33,10 +33,13 @@ export default class Discover extends React.Component {
 
   render() {
     return (
-      <TabView
+      <SafeAreaView
         style={{
-          backgroundColor: '#222'
+          backgroundColor: '#222',
+          flex : 1,
         }}
+      >
+      <TabView
         animationEnabled={false}
         lazy
         swipeEnabled
@@ -45,8 +48,6 @@ export default class Discover extends React.Component {
             {...props}
             scrollEnabled
             indicatorStyle={{ backgroundColor: '#FF6A15' }}
-            // pressOpacity={0.6}
-            // initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
             labelStyle={{ color: '#fff' }}
             style={{
               backgroundColor: '#222'
@@ -59,7 +60,6 @@ export default class Discover extends React.Component {
                 width={80}
                 height={50}
                 name={val.route.title}
-                // selected={this.state.routes[this.state.index].key === val.route.key}
                 image={categoriesNew[val.route.key]}
               />
             )}
@@ -73,6 +73,7 @@ export default class Discover extends React.Component {
           height: Dimensions.get('window').height,
         }}
       />
+      </SafeAreaView>
     );
   }
 }

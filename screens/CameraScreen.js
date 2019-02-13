@@ -5,7 +5,6 @@ import {
   PermissionsAndroid
 } from 'react-native';
 import { CameraKitCameraScreen, CameraKitCamera } from 'react-native-camera-kit';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Navigation } from 'react-native-navigation';
 
 class CameraScreen extends React.Component {
@@ -19,14 +18,14 @@ class CameraScreen extends React.Component {
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         {
           title: 'Campus Story',
-          message: 'Campus Story needs permission for save images from camera '
+          message: 'Campus Story needs permission to save images from camera.'
         }
       );
       if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
         return Navigation.dismissModal(this.props.componentId);
       }
     } catch (err) {
-      console.warn(err);
+      console.log(err);
     }
     const isCameraAuthorized = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
     if (!isCameraAuthorized || isCameraAuthorized === -1) {

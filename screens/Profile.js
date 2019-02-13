@@ -4,23 +4,20 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
-  Alert,
   View,
   AsyncStorage,
-  PermissionsAndroid,
   TouchableOpacity,
   Text,
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
 import InformationCard from '../components/InformationCard';
-import { CameraKitCameraScreen, CameraKitCamera } from 'react-native-camera-kit';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -167,12 +164,12 @@ class Profile extends React.Component {
               height: 120
             }}
           >
-            <Icon
+            <IconFontAwesome5
               style={{
                 alignSelf: 'center'
               }}
-              name="camera"
-              size={50}
+              name="user-tie"
+              size={75}
             />
           </TouchableOpacity>
           {
@@ -238,7 +235,6 @@ class Profile extends React.Component {
                   style={{
                     margin: 10,
                     color: '#f0f0f0',
-                    // opacity: 0.6,
                     alignSelf: 'center'
                   }}
                   name="lock1"

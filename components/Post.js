@@ -15,7 +15,7 @@ const Post = (props) => {
   return (
     <LinearGradient
       style={{
-        flex: thumb ? undefined : 1,
+        flex: 1,
         height: 250,
         alignItems: 'center',
         justifyContent: 'center'

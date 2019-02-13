@@ -18,6 +18,7 @@ import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
 import FastImage from 'react-native-fast-image';
 import SessionStore from '../SessionStore';
+import RealmManager from '../RealmManager';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import EventCardBig from '../components/EventCardBig';
@@ -265,28 +266,64 @@ class Home extends React.Component {
   fetchEventsFromRealm = async () => {
     let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
-    Realm.getRealm((realm) => {
-      const Events = realm.objects('Events').sorted('timestamp', true);
-      const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
-      const cs = Date.parse(new Date());
-      interests.forEach((value) => {
-        const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
-        processRealmObj(current, (result) => {
-          this.setState({ [value]: result });
-        });
-      });
-      const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
-      const weekEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms < ${ts} AND ms > ${cs}`).sorted('date', true);
-      processRealmObj(latestEvents, (result) => {
-        this.setState({ eventList: result });
-      });
-      processRealmObj(weekEvents, (result) => {
-        this.setState({ weekEventList: result });
-      });
+
+    const realm_manager = new RealmManager();
+    const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
+    const cs = Date.parse(new Date());
+
+    interests.forEach((value) => {
+      realm_manager.getItems([`ms > ${cs}`, 'going="false"', `category="${value}"`], 'Events', 'date', true, (result)=>{
+        this.setState({ [value]: result });
+      })
     });
+
+    realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result)=>{
+      this.setState({ eventList: result });
+    });
+
+    realm_manager.getItems(['going = "false"', `ms < ${ts} AND ms > ${cs}`], 'Events', 'date', true, (result)=>{
+      this.setState({ weekEventList: result });
+    });
+    
+
+    // Realm.getRealm((realm) => {
+    //   const Events = realm.objects('Events').sorted('timestamp', true);
+    //   const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
+    //   const cs = Date.parse(new Date());
+    //   interests.forEach((value) => {
+    //     const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
+    //     processRealmObj(current, (result) => {
+    //       this.setState({ [value]: result });
+    //     });
+    //   });
+    //   const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
+    //   const weekEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms < ${ts} AND ms > ${cs}`).sorted('date', true);
+    //   processRealmObj(latestEvents, (result) => {
+    //     this.setState({ eventList: result });
+    //   });
+    //   processRealmObj(weekEvents, (result) => {
+    //     this.setState({ weekEventList: result });
+    //   });
+    // });
   }
 
   fetchChannelsFromRealm = async () => {
+    // console.log('OUR TEST BEGIN');
+    // const realm_manager = new RealmManager();
+    // realm_manager.getItems(['channel="true"'], 'Firebase', null, false, (Subs)=>{
+    //   let final = [];
+    //   Subs.forEach((value) =>{
+    //     const {_id} = value;
+    //     realm_manager.getItemById(_id, 'Channels', (current)=>{
+    //       if(current.updates === 'true') final.unshift(current);
+    //       else final.push(current)
+    //     });
+    //   });
+    //   realm_manager.process_two(final, (channels) =>{
+    //     this.setState({ channels });
+    //   });
+    // });
+
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('channel="true"');
       processRealmObj(Subs, (result) => {
@@ -471,6 +508,7 @@ class Home extends React.Component {
     const { updateContent } = this;
     return (
       <ScrollView
+        showsVerticalScrollIndicator = {false}
         style={{
           backgroundColor: '#333'
         }}

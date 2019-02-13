@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 import {
-  ActivityIndicator,
   RefreshControl,
   ScrollView, View,
   Text,
@@ -17,6 +16,7 @@ import PostThumbnail from '../components/PostThumbnail';
 import PostImageThumbnail from '../components/PostImageThumbnail';
 import PostVideoThumbnail from '../components/PostVideoThumbnail';
 import SessionStore from '../SessionStore';
+import RealmManager from '../RealmManager';
 
 import {
   getCategoryName,
@@ -77,7 +77,6 @@ class Home extends React.PureComponent {
         'x-access-token': token
       }
     }).then((response) => {
-      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.priority = JSON.stringify(el.priority);
@@ -127,7 +126,6 @@ class Home extends React.PureComponent {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log(response);
       const items = response.data.data;
       this.setState({ trending: items, refreshing: false });
     }).catch(err => console.log(err))
@@ -261,6 +259,19 @@ class Home extends React.PureComponent {
       default: return <Text>.</Text>;
     }
   }
+  
+  getChannelImage = async (id) =>{
+    let img;
+    const realm_manager = new RealmManager();
+    await realm_manager.getItemById(id, 'Channels', (result)=>{
+      if(result === null) img = 'null';
+      else img =  result.media[0];
+      console.log('EXECUTION STOPPED');
+      return img;
+    });
+    console.log('RETURNING', img);
+    return img;
+  }
 
   render() {
     const { handleUpdateData, handleChannelClick } = this;
@@ -274,6 +285,7 @@ class Home extends React.PureComponent {
     return (
       <View style={{ flex: 1, backgroundColor: '#333' }}>
         <ScrollView
+          showsVerticalScrollIndicator = {false}
           refreshControl={(
             <RefreshControl
               refreshing={refreshing}
@@ -315,7 +327,7 @@ class Home extends React.PureComponent {
             {
               trending.length > 0 && (
                 <View>
-                  <Text style={{
+                  {/* <Text style={{
                     fontFamily: 'Roboto',
                     fontSize: 18,
                     marginLeft: 10,
@@ -326,12 +338,11 @@ class Home extends React.PureComponent {
                   }}
                   >
                     Trending Now
-                  </Text>
+                  </Text> */}
                   <FlatList
-                    showsHorizontalScrollIndicator={false}
                     keyExtractor={(item, index) => `${index}`}
                     extraData={categorySelected}
-                    numColumns={3}
+//                    numColumns={3}
                     data={trending}
                     renderItem={({ item }) => {
                       if (item.type === 'post') {
@@ -342,7 +353,7 @@ class Home extends React.PureComponent {
                             onPressOut={() => this.handleClose()}
                             activeOpacity={0.9}
                           >
-                            <PostThumbnail message={item.message} />
+                            <PostThumbnail message={item.message} channel_name = {item.channel_name} channel_image = {this.getChannelImage(item.channel)} />
                           </TouchableOpacity>
                         );
                       }
@@ -350,7 +361,6 @@ class Home extends React.PureComponent {
                         return (
                           <TouchableOpacity
                             style={{
-                              borderRadius: 10,
                               overflow: 'hidden'
                             }}
                             onPress={() => { this.handleChannelClickStory(item); }}
@@ -366,7 +376,6 @@ class Home extends React.PureComponent {
                         return (
                           <TouchableOpacity
                             style={{
-                              borderRadius: 10,
                               overflow: 'hidden'
                             }}
                             onPress={() => { this.handleChannelClickStory(item); }}

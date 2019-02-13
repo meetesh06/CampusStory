@@ -1,14 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-// import AnimatedImageButton from './Button';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image'
 import LinearGradient from 'react-native-linear-gradient';
 
 class AdvertCardText extends React.Component {
-    // state = {
-    //     pressed: this
-    // }
+
     render() {
         console.log(this.props);
         return(
@@ -18,7 +15,6 @@ class AdvertCardText extends React.Component {
                             style={{ opacity: this.props.pressed ? 0.6 : 1, width: "100%", height: this.props.height, position: 'absolute' }}
                             source={{ uri: this.props.image }}
                             resizeMode={FastImage.resizeMode.cover}
-                            // resizeMode='cover'
                         />
                         <LinearGradient style={{ opacity: 0.8, flex: 1 }} colors={['#505050', '#000']}>
                         </LinearGradient>

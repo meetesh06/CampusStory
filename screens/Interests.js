@@ -70,13 +70,13 @@ class Interests extends React.Component {
   firebaseConfig = async () => {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
-    console.log(enabled);
     if (!enabled) {
       console.log('REQUESTING PERMISSION');
       try {
         await firebase.messaging().requestPermission();
         console.log('PERMISSION GRANTED');
-        const config = store.getValue(CONFIG);
+        let config = store.getValue(CONFIG);
+        config = config === null ? [] : config;
         config.firebase_enabled = true;
         const fcmToken = await firebase.messaging().getToken();
         config.firebase_token = fcmToken;
@@ -90,13 +90,13 @@ class Interests extends React.Component {
         store.putValue(CONFIG, config);
       }
     } else {
-      const config = store.getValue(CONFIG);
+      let config = store.getValue(CONFIG);
+      config = config === null ? [] : config;
       config.firebase_enabled = true;
       const fcmToken = await firebase.messaging().getToken();
       config.firebase_token = fcmToken;
       config.platform = Platform.OS === 'android' ? 'android' : 'ios';
       store.putValue(CONFIG, config);
-      console.log(fcmToken);
     }
   }
 
@@ -358,14 +358,17 @@ class Interests extends React.Component {
             Select your interests
           </Text>
           <View style={{
-            backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 120, marginTop: 4, alignSelf: 'center'
+            backgroundColor: '#c5c5c5', 
+            borderRadius: 10, 
+            height: 2, 
+            width: 120, 
+            marginTop: 4, 
+            alignSelf: 'center',
           }}
           />
           <FlatList
             style={{
-              // backgroundColor: '#fff',
               paddingTop: 10,
-              // paddingBottom: 15,
             }}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -396,10 +399,30 @@ class Interests extends React.Component {
               />
             )}
           />
+          <Text style={{
+            color: '#f0f0f0',
+            textAlign: 'center',
+            fontFamily: 'Roboto-Light',
+            fontSize: 22,
+            marginLeft: 10,
+            marginTop: 15,
+          }}
+          >
+            {'Terms & Conditions'}
+          </Text>
+          <View style={{
+            backgroundColor: '#c5c5c5', 
+            borderRadius: 10, 
+            height: 2, 
+            width: 120, 
+            marginTop: 4, 
+            alignSelf: 'center',
+          }}
+          />
           <InformationCard
             touchable
             title="Thank You"
-            content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. We hope to be your companion and bring you useful information."
+            content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. All of your data shared on this platform will be safe and never shared with anyone without your permission."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
             style_card={{ backgroundColor: '#555' }}
             style_title={{ color: '#d0d0d0' }}
@@ -421,11 +444,13 @@ class Interests extends React.Component {
                 borderRadius: 40,
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: 5
+                padding: 5,
+                flexDirection : 'row'
               }}
               onPress={this.handleNextScreen}
             >
-              <IconMaterial name="navigate-next" size={45} color="#fff" />
+              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 22, textAlignVertical : 'center', textAlign : 'center'}}>{'Next'}</Text>
+              <IconMaterial name="navigate-next" size={35} color="#fff" />
             </TouchableOpacity>
           </View>
         </ScrollView>
