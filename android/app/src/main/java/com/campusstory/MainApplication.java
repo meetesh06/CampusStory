@@ -32,7 +32,7 @@ public class MainApplication extends NavigationApplication {
     @Override
     protected ReactGateway createReactGateway() {
         ReactNativeHost host = new NavigationReactNativeHost(this, isDebug(), createAdditionalReactPackages()) {
-            @Overridex
+            @Override
             protected String getJSMainModuleName() {
                 return "index";
             }

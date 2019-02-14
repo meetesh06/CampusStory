@@ -274,17 +274,16 @@ class Home extends React.Component {
     interests.forEach((value) => {
       realm_manager.getItems([`ms > ${cs}`, 'going="false"', `category="${value}"`], 'Events', 'date', true, (result)=>{
         this.setState({ [value]: result });
-      })
+      });
     });
 
-    realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result)=>{
+    realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result) => {
       this.setState({ eventList: result });
     });
 
     realm_manager.getItems(['going = "false"', `ms < ${ts} AND ms > ${cs}`], 'Events', 'date', true, (result)=>{
       this.setState({ weekEventList: result });
     });
-    
 
     // Realm.getRealm((realm) => {
     //   const Events = realm.objects('Events').sorted('timestamp', true);
@@ -391,7 +390,7 @@ class Home extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
-        Navigation.showModal({
+        Navigation.showOverlay({
           component: {
             name: 'Event Detail Screen',
             passProps: {
@@ -425,7 +424,7 @@ class Home extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
-        Navigation.showModal({
+        Navigation.showOverlay({
           component: {
             name: 'Event Detail Screen',
             passProps: {

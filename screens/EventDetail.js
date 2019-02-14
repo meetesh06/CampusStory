@@ -8,6 +8,9 @@ import {
   Platform,
   Text,
   StatusBar,
+  PanResponder,
+  Animated,
+  SafeAreaView,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -25,6 +28,8 @@ import { getMonthName, formatAMPM, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
 
 const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
+
 const { TOKEN } = Constants;
 
 class EventDetail extends React.Component {
@@ -34,19 +39,84 @@ class EventDetail extends React.Component {
     this.success = this.success.bind(this);
     this.handleGoing = this.handleGoing.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleFull = this.handleFull.bind(this);
     this.handleChannelOpenNetwork = this.handleChannelOpenNetwork.bind(this);
+    // animations
+    this.topHeight = new Animated.Value(HEIGHT);
+    this.opacity = new Animated.Value(0.3);
+    this.partial = true;
+    this.state = {
+      // eslint-disable-next-line react/destructuring-assignment
+      item: this.props.item,
+      loading: false,
+      pan: new Animated.ValueXY()
+    };
+
+    this._val = { y: 0 };
+    this.state.pan.addListener((value) => {
+      this._val = value
+    });
+
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+  
+      // Initially, set the value of x and y to 0 (the center of the screen)
+      onPanResponderGrant: (e, gestureState) => {
+        this.state.pan.setOffset({ y: this.state.pan.y._value });
+        this.state.pan.setValue({ y: 0 });
+      },
+      // When we drag/pan the object, set the delate to the states pan position
+      onPanResponderMove: Animated.event([
+        null, { dy: this.state.pan.y },
+      ]),
+      onPanResponderRelease: (e, {vx, dy}) => {
+        if (dy > 5) {
+          this.handleClose();
+        } else {
+          console.log(this.topHeight);
+          this.state.pan.setOffset({ y: 0 });
+          // this.state.pan.setValue({ y: 0 });
+          // this.handleFull();
+          Animated.parallel([
+            Animated.timing(this.state.pan, {
+              toValue: -this.topHeight._value,
+              duration: 200,
+              // friction: 20
+            })
+          ]).start();
+          // Animated.spring(this.state.pan.y, {
+          //   toValue: 100,
+          //   duration: 200,
+          //   friction: 7
+          // }).start();
+        }
+      }
+    });
   }
 
-  state = {
-    // eslint-disable-next-line react/destructuring-assignment
-    item: this.props.item,
-    loading: false
-  }
+  
 
-  async componentDidMount() {
+  componentDidMount() {
     const { item } = this.state;
-    const { _id, interested, going } = item;
-    // const { interested, going } = this.state;
+    const { _id } = item;
+
+    Animated.parallel([
+      Animated.spring(this.topHeight, {
+        toValue: HEIGHT * 0.30,
+        duration: 200,
+        friction: 7
+      }),
+      Animated.timing(this.opacity, {
+        toValue: 1,
+        duration: 400
+      })
+    ]).start();
+
+    
+
+    const { interested, going } = this.state;
     axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -56,35 +126,35 @@ class EventDetail extends React.Component {
       console.log(response);
       const responseObj = response.data;
       if (!responseObj.error) {
-        Realm.getRealm((realm) => {
-          const el = responseObj.data[0];
-          realm.write(() => {
-            const current = realm.objects('Events').filtered(`_id="${_id}"`);
-            realm.delete(current);
-            el.reach = JSON.stringify(el.reach);
-            el.views = JSON.stringify(el.views);
-            el.enrollees = JSON.stringify(el.enrollees);
-            el.name = JSON.stringify(el.name);
-            el.audience = JSON.stringify(el.audience);
-            el.media = JSON.stringify(el.media);
-            el.timestamp = new Date(el.timestamp);
-            el.time = new Date(el.time);
-            const ts = Date.parse(`${el.date}`);
-            el.date = new Date(el.date);
-            el.ms = ts;
-            el.reg_end = new Date(el.reg_end);
-            el.reg_start = new Date(el.reg_start);
-            el.interested = interested;
-            el.going = going;
-            // console.log(el);
-            try {
-              realm.create('Events', el, true);
-            } catch (e) {
-              console.log(e);
-            }
-          });
-          this.setState({ item: el });
-        });
+        // Realm.getRealm((realm) => {
+        //   const el = responseObj.data[0];
+        //   realm.write(() => {
+        //     const current = realm.objects('Events').filtered(`_id="${_id}"`);
+        //     realm.delete(current);
+        //     el.reach = JSON.stringify(el.reach);
+        //     el.views = JSON.stringify(el.views);
+        //     el.enrollees = JSON.stringify(el.enrollees);
+        //     el.name = JSON.stringify(el.name);
+        //     el.audience = JSON.stringify(el.audience);
+        //     el.media = JSON.stringify(el.media);
+        //     el.timestamp = new Date(el.timestamp);
+        //     el.time = new Date(el.time);
+        //     const ts = Date.parse(`${el.date}`);
+        //     el.date = new Date(el.date);
+        //     el.ms = ts;
+        //     el.reg_end = new Date(el.reg_end);
+        //     el.reg_start = new Date(el.reg_start);
+        //     el.interested = interested;
+        //     el.going = going;
+        //     // console.log(el);
+        //     try {
+        //       realm.create('Events', el, true);
+        //     } catch (e) {
+        //       console.log(e);
+        //     }
+        //   });
+        //   this.setState({ item: el });
+        // });
       }
     }).catch(err => console.log(err));
   }
@@ -116,6 +186,46 @@ class EventDetail extends React.Component {
       }
     }).catch(err => console.log(err))
       .finally(() => this.setState({ loading: false }));
+  }
+
+  handleClose = () => {
+    const {
+      componentId
+    } = this.props;
+    Animated.parallel([
+      Animated.spring(this.topHeight, {
+        toValue: HEIGHT + this.topHeight._value,
+        duration: 200,
+        friction: 7
+      }),
+      Animated.timing(this.opacity, {
+        toValue: 0,
+        duration: 200
+      })
+    ]).start();
+    Navigation.dismissOverlay(componentId)
+
+    // Animated.timing(this.topHeight, {
+    //   toValue: HEIGHT,
+    //   duration: 150
+    // }).start(() => Navigation.dismissModal(componentId));
+  }
+
+  handleFull = () => {
+    this.partial = false;
+    this.topHeight = 0;
+    // Animated.parallel([
+    //   Animated.spring(this.topHeight, {
+    //     toValue: 150,
+    //     duration: 200,
+    //     friction: 7
+    //   })
+    // ]).start();
+    Animated.spring(this.topHeight, {
+      toValue: 150,
+      duration: 200,
+      friction: 7
+    }).start();
   }
 
   updateStatus = () => {
@@ -220,27 +330,43 @@ class EventDetail extends React.Component {
     render() {
       const { item, loading } = this.state;
       const { componentId } = this.props;
+      let { pan } = this.state;
+      // Calculate the x and y transform from the pan value
+      let [translateY] = [pan.y];
+      // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
+      // let imageStyle = {transform: [{translateX}, {translateY}]};
       const {
         handleChannelOpenNetwork
       } = this;
       return (
-        <View
+        <SafeAreaView
           style={{
             flex: 1,
-            backgroundColor: '#333'
+            borderRadius: 10,
           }}
         >
-          {
-            Platform.OS === 'ios'
-            && (<StatusBar barStyle="light-content" translucent />)
-          }
-          <ScrollView
+          <Animated.View
             style={{
               flex: 1,
+              height: HEIGHT,
+              width: WIDTH,
+              backgroundColor: '#000000aa',
+              opacity: this.opacity
+            }}
+          />
+
+          <Animated.View
+            style={{
+              flex: 1,
+              position: 'absolute',
+              top: this.topHeight,
+              height: HEIGHT,
+              backgroundColor: '#333',
+              transform: [{ translateY }]
             }}
           >
-
             <View
+              {...this._panResponder.panHandlers}
               style={{
                 backgroundColor: '#222',
                 padding: 10,
@@ -248,7 +374,9 @@ class EventDetail extends React.Component {
             >
               <FastImage
                 style={{
-                  width: WIDTH - 20, height: (WIDTH - 20) * 0.75, borderRadius: 10
+                  width: WIDTH - 20,
+                  height: (WIDTH - 20) * 0.75,
+                  borderRadius: 10
                 }}
                 source={{
                   uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`
@@ -297,12 +425,23 @@ class EventDetail extends React.Component {
                     backgroundColor: '#ffffff99',
                     borderRadius: 20
                   }}
-                  onPress={() => Navigation.dismissModal(componentId)}
+                  onPress={() => this.handleClose()}
                 >
                   <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
                 </TouchableOpacity>
               </View>
             </View>
+          {
+            Platform.OS === 'ios'
+            && (<StatusBar barStyle="light-content" translucent />)
+          }
+          <ScrollView
+            style={{
+              flex: 1,
+              borderRadius: 10
+            }}
+          >
+
             <View
               style={{
                 // margin: 5,
@@ -616,11 +755,10 @@ Views
               </View>
               )
           }
-
-          </ScrollView>
           <View
             style={{
-              flexDirection: 'row'
+              flexDirection: 'row',
+              marginBottom: 80
             }}
           >
             { item.interested === 'false'
@@ -629,6 +767,10 @@ Views
                           onPress={this.handleClick}
                           style={{
                             padding: 15,
+                            margin: 10,
+                            marginLeft: 15,
+                            marginRight: 15,
+                            borderRadius: 50,
                             backgroundColor: '#0056e5',
                             flex: 1
                           }}
@@ -664,6 +806,9 @@ Views
                           onPress={this.handleGoing}
                           style={{
                             padding: 15,
+                            marginLeft: 15,
+                            marginRight: 15,
+                            borderRadius: 50,
                             backgroundColor: '#fa3e3e',
                             flex: 1
                           }}
@@ -710,7 +855,10 @@ Views
                         </TouchableOpacity>
                         ) }
           </View>
-        </View>
+          </ScrollView>
+          
+          </Animated.View>
+        </SafeAreaView>
       );
     }
 }

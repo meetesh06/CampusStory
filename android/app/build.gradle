@@ -163,7 +163,7 @@ dependencies {
     
     compile project(':react-native-video')
 
-    compile project(":rncamerakit")
+//    compile project(":rncamerakit")
 
 }
 
