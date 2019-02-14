@@ -22,9 +22,8 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 
 import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // <-- Add this line
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage; // <-- Add this line
-import com.wix.RNCameraKit.RNCameraKitPackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 import com.BV.LinearGradient.LinearGradientPackage;
 
@@ -33,7 +32,7 @@ public class MainApplication extends NavigationApplication {
     @Override
     protected ReactGateway createReactGateway() {
         ReactNativeHost host = new NavigationReactNativeHost(this, isDebug(), createAdditionalReactPackages()) {
-            @Override
+            @Overridex
             protected String getJSMainModuleName() {
                 return "index";
             }
@@ -47,10 +46,7 @@ public class MainApplication extends NavigationApplication {
     }
 
     protected List<ReactPackage> getPackages() {
-        // Add additional packages you require here
-        // No need to add RnnPackage and MainReactPackage
         return Arrays.<ReactPackage>asList(
-            // eg. new VectorIconsPackage()
             new LinearGradientPackage(),
             new FastImageViewPackage(),
             new VectorIconsPackage(),
@@ -59,8 +55,7 @@ public class MainApplication extends NavigationApplication {
             new RealmReactPackage(),
             new RNCWebViewPackage(),
             new RNFirebaseNotificationsPackage(),
-            new ReactVideoPackage(),
-            new RNCameraKitPackage()
+            new ReactVideoPackage()
         );
     }
   

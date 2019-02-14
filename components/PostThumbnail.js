@@ -9,7 +9,6 @@ const HEIGHT = Dimensions.get('window').height;
 
 const PostThumbnail = (props) => {
   const { message, channel_name, channel_image} = props;
-  console.log(channel_name, channel_image);
   return (
     <LinearGradient
       style={{
