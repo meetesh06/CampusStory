@@ -342,7 +342,7 @@ class Home extends React.PureComponent {
                   <FlatList
                     keyExtractor={(item, index) => `${index}`}
                     extraData={categorySelected}
-//                    numColumns={3}
+                   numColumns={3}
                     data={trending}
                     renderItem={({ item }) => {
                       if (item.type === 'post') {

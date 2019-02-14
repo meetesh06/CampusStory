@@ -2,26 +2,26 @@ import React from 'react';
 import { Text, View, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Entypo';
-import FastImage from 'react-native-fast-image';
 
 const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 const PostThumbnail = (props) => {
-  const { message, channel_name, channel_image} = props;
+  const { message } = props;
   return (
     <LinearGradient
       style={{
-        width: WIDTH,
-        height: HEIGHT * 0.73,
+        width: (WIDTH / 3) - 6,
+        height: WIDTH / 3,
         justifyContent: 'center',
         alignItems: 'center',
+        margin: 3,
+        borderRadius: 10
       }}
-      colors={['#FF6A15', '#FF4A3F']}
+      colors={['#0056e5', '#85f5ff']}
     >
       <Text
         style={{
-          fontSize: 25,
+          fontSize: 12,
           textAlign: 'center',
           margin: 5,
           fontFamily: 'Roboto',
@@ -42,24 +42,7 @@ const PostThumbnail = (props) => {
           borderRadius: 25
         }}
       >
-        <Icon name="text" size={18} style={{ color: '#fff' }} />
-      </View>
-      <View
-      style={{
-        top : 5,
-        position : 'absolute',
-        left : 5,
-      }}>
-
-      {/* <FastImage
-        style={{
-          width: 36,
-          height: 36,
-        }}
-        resizeMode={FastImage.resizeMode.cover}
-        source={{ uri: `https://www.mycampusdock.com/${channel_image}` }}
-        /> */}
-        <Text>{'' + channel_image}</Text>
+        <Icon name="text" size={12} style={{ color: '#fff' }} />
       </View>
     </LinearGradient>
   );

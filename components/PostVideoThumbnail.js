@@ -4,17 +4,17 @@ import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Entypo';
 
 const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 const PostImage = (props) => {
   const { video } = props;
   return (
     <View
       style={{
-        width: (WIDTH),
-        height: HEIGHT * 0.73,
+        width: (WIDTH / 3) - 6,
+        height: (1 * WIDTH) / 3,
         alignItems: 'center',
         justifyContent: 'center',
+        margin: 3
       }}
     >
       <Video
@@ -23,6 +23,8 @@ const PostImage = (props) => {
           backgroundColor: '#efefef',
           width: '100%',
           height: '100%',
+          margin: 5,
+          borderRadius: 10
         }}
         resizeMode="cover"
         repeat

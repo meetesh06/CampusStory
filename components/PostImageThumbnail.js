@@ -4,25 +4,26 @@ import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Entypo';
 
 const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 const PostImageThumbnail = (props) => {
   const { image } = props;
   return (
     <View
       style={{
-        width: WIDTH,
-        height: HEIGHT * 0.73,
+        width: (WIDTH / 3) - 6,
+        height: WIDTH / 3,
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
-        backgroundColor: '#666'
+        margin: 3,
+        backgroundColor: '#efefef'
       }}
     >
       <FastImage
         style={{
           width: '100%',
           height: '100%',
+          margin: 5,
+          borderRadius: 10
         }}
         resizeMode={FastImage.resizeMode.cover}
         source={{ uri: `https://www.mycampusdock.com/${image}` }}
