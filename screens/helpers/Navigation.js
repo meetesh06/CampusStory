@@ -53,7 +53,7 @@ export const goInitializing = () => Navigation.setRoot({
 export const goHome = async (first) => {
   const homeIcon = await Icon1.getImageSource('home', 25);
   const discoverIcon = await Icon2.getImageSource('free-breakfast', 25);
-  const profileIcon = await Icon2.getImageSource('person', 25);
+  const profileIcon = await Icon2.getImageSource('notifications', 25);
   return Navigation.setRoot({
     root: {
       bottomTabs: {
@@ -155,7 +155,7 @@ export const goHome = async (first) => {
               id: 'ProfileStack',
               options: {
                 bottomTab: {
-                  text: 'Profile',
+                  text: 'Updates',
                   fontSize: 10,
                   selectedFontSize: 12,
                   icon: profileIcon,

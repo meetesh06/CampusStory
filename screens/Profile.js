@@ -39,23 +39,23 @@ class Profile extends React.Component {
   }
 
   handleCamera = () => {
-    Navigation.showModal({
-      component: {
-        name: 'Camera Screen',
-        options: {
-          topBar: {
-            animate: true,
-            visible: true,
-            drawBehind: false
-          },
-          bottomTabs: {
-            visible: false,
-            drawBehind: true,
-            animate: true
-          }
-        }
-      }
-    });
+    // Navigation.showModal({
+    //   component: {
+    //     name: 'Camera Screen',
+    //     options: {
+    //       topBar: {
+    //         animate: true,
+    //         visible: true,
+    //         drawBehind: false
+    //       },
+    //       bottomTabs: {
+    //         visible: false,
+    //         drawBehind: true,
+    //         animate: true
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   updateContent = () => {
