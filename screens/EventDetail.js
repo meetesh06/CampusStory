@@ -80,9 +80,9 @@ class EventDetail extends React.Component {
         const {
           pan
         } = this.state;
-        if (gestureState.dy > 0 && (this.partial === false)) return pan.setValue({ y: gestureState.dy });
-        else if (gestureState.dy < 0 && (this.partial === true)) pan.setValue({ y: gestureState.dy })
-        else pan.setOffset({ y: 0 });
+        if (gestureState.dy > 0) return pan.setValue({ y: gestureState.dy });
+        else if (gestureState.dy < 0) pan.setValue({ y: gestureState.dy })
+        // else pan.setOffset({ y: 0 });
       },
       onPanResponderRelease: (e, { dy }) => {
         if (dy > 0) {
@@ -92,7 +92,13 @@ class EventDetail extends React.Component {
             pan
           } = this.state;
           pan.setOffset({ y: 0 });
-          if (this.partial === true) this.handleFull();
+          // pan.setValue({ y: -(HEIGHT * 0.30) });
+          Animated.spring(pan, {
+            toValue: -(HEIGHT * 0.30),
+            friction: 15
+          }).start();
+          // this.handleFull();
+          // if (this.partial === true) this.handleFull();
         }
       }
     });
