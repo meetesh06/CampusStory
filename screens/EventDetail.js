@@ -47,7 +47,7 @@ class EventDetail extends React.Component {
     // animations
     this.topHeight = new Animated.Value(HEIGHT);
     this.opacity = new Animated.Value(0.3);
-    this.opacity1 = new Animated.Value(0.8);
+    this.opacity1 = new Animated.Value(0);
     this.partial = true;
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
@@ -113,8 +113,8 @@ class EventDetail extends React.Component {
         duration: 200,
         friction: 7
       }),
-      Animated.timing(this.opacity, {
-        toValue: 1,
+      Animated.timing(this.opacity1, {
+        toValue: 1 - (HEIGHT * 0.30 / HEIGHT),
         duration: 400
       })
     ]).start();
@@ -383,7 +383,7 @@ class EventDetail extends React.Component {
             flex: 1,
             position: 'absolute',
             top: this.topHeight,
-            opacity: this.opacity,
+            // opacity: this.opacity,
             height: HEIGHT,
             backgroundColor: '#333',
             transform: [{ translateY }]
