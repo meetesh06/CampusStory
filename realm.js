@@ -34,7 +34,8 @@ const Events = {
     interested: 'string',
     going: 'string',
     media: 'string',
-    reg_link: 'string'
+    reg_link: 'string',
+    remind: 'string'
   }
 };
 const Channels = {
@@ -64,7 +65,7 @@ const Firebase = {
   properties: {
     _id: 'string',
     notify: 'string',
-    channel: 'string'
+    type: 'string'
   }
 };
 

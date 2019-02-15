@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import {
@@ -22,6 +23,7 @@ import Icon4 from 'react-native-vector-icons/Octicons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
+import firebase from 'react-native-firebase';
 import Realm from '../realm';
 import Constants from '../constants';
 import { getMonthName, formatAMPM, getCategoryName } from './helpers/functions';
@@ -45,58 +47,48 @@ class EventDetail extends React.Component {
     // animations
     this.topHeight = new Animated.Value(HEIGHT);
     this.opacity = new Animated.Value(0.3);
+    this.opacity1 = new Animated.Value(0.3);
     this.partial = true;
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
-      item: this.props.item,
+      item: props.item,
+      interested: props.item.interested,
+      going: props.item.going,
+      remind: props.item.remind,
       loading: false,
       pan: new Animated.ValueXY()
     };
 
-    this._val = { y: 0 };
-    this.state.pan.addListener((value) => {
-      this._val = value
-    });
-
+    // eslint-disable-next-line no-underscore-dangle
     this._panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
-  
+
       // Initially, set the value of x and y to 0 (the center of the screen)
-      onPanResponderGrant: (e, gestureState) => {
-        this.state.pan.setOffset({ y: this.state.pan.y._value });
-        this.state.pan.setValue({ y: 0 });
+      onPanResponderGrant: () => {
+        const {
+          pan
+        } = this.state;
+        const {
+          _value
+        } = pan.y;
+        pan.setOffset({ y: _value });
+        pan.setValue({ y: 0 });
       },
       // When we drag/pan the object, set the delate to the states pan position
-      onPanResponderMove: Animated.event([
-        null, { dy: this.state.pan.y },
-      ]),
-      onPanResponderRelease: (e, {vx, dy}) => {
-        if (dy > 5) {
+      onPanResponderMove: (e, gestureState) => {
+        const {
+          pan
+        } = this.state;
+        if (gestureState.dy > 0) pan.setValue({ y: gestureState.dy });
+      },
+      onPanResponderRelease: (e, { dy }) => {
+        if (dy > 0) {
           this.handleClose();
-        } else {
-          console.log(this.topHeight);
-          this.state.pan.setOffset({ y: 0 });
-          // this.state.pan.setValue({ y: 0 });
-          // this.handleFull();
-          Animated.parallel([
-            Animated.timing(this.state.pan, {
-              toValue: -this.topHeight._value,
-              duration: 200,
-              // friction: 20
-            })
-          ]).start();
-          // Animated.spring(this.state.pan.y, {
-          //   toValue: 100,
-          //   duration: 200,
-          //   friction: 7
-          // }).start();
         }
       }
     });
   }
-
-  
 
   componentDidMount() {
     const { item } = this.state;
@@ -114,9 +106,7 @@ class EventDetail extends React.Component {
       })
     ]).start();
 
-    
-
-    const { interested, going } = this.state;
+    const { interested, going, remind } = this.state;
     axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -126,35 +116,36 @@ class EventDetail extends React.Component {
       console.log(response);
       const responseObj = response.data;
       if (!responseObj.error) {
-        // Realm.getRealm((realm) => {
-        //   const el = responseObj.data[0];
-        //   realm.write(() => {
-        //     const current = realm.objects('Events').filtered(`_id="${_id}"`);
-        //     realm.delete(current);
-        //     el.reach = JSON.stringify(el.reach);
-        //     el.views = JSON.stringify(el.views);
-        //     el.enrollees = JSON.stringify(el.enrollees);
-        //     el.name = JSON.stringify(el.name);
-        //     el.audience = JSON.stringify(el.audience);
-        //     el.media = JSON.stringify(el.media);
-        //     el.timestamp = new Date(el.timestamp);
-        //     el.time = new Date(el.time);
-        //     const ts = Date.parse(`${el.date}`);
-        //     el.date = new Date(el.date);
-        //     el.ms = ts;
-        //     el.reg_end = new Date(el.reg_end);
-        //     el.reg_start = new Date(el.reg_start);
-        //     el.interested = interested;
-        //     el.going = going;
-        //     // console.log(el);
-        //     try {
-        //       realm.create('Events', el, true);
-        //     } catch (e) {
-        //       console.log(e);
-        //     }
-        //   });
-        //   this.setState({ item: el });
-        // });
+        Realm.getRealm((realm) => {
+          const el = responseObj.data[0];
+          realm.write(() => {
+            const current = realm.objects('Events').filtered(`_id="${_id}"`);
+            realm.delete(current);
+            el.reach = JSON.stringify(el.reach);
+            el.views = JSON.stringify(el.views);
+            el.enrollees = JSON.stringify(el.enrollees);
+            el.name = JSON.stringify(el.name);
+            el.audience = JSON.stringify(el.audience);
+            el.media = JSON.stringify(el.media);
+            el.timestamp = new Date(el.timestamp);
+            el.time = new Date(el.time);
+            const ts = Date.parse(`${el.date}`);
+            el.date = new Date(el.date);
+            el.ms = ts;
+            el.reg_end = new Date(el.reg_end);
+            el.reg_start = new Date(el.reg_start);
+            el.interested = interested;
+            el.going = going;
+            el.remind = remind;
+            // console.log(el);
+            try {
+              realm.create('Events', el, true);
+            } catch (e) {
+              console.log(e);
+            }
+          });
+          this.setState({ item: el });
+        });
       }
     }).catch(err => console.log(err));
   }
@@ -203,26 +194,17 @@ class EventDetail extends React.Component {
         duration: 200
       })
     ]).start();
-    Navigation.dismissOverlay(componentId)
-
-    // Animated.timing(this.topHeight, {
-    //   toValue: HEIGHT,
-    //   duration: 150
-    // }).start(() => Navigation.dismissModal(componentId));
+    setTimeout(() => Navigation.dismissOverlay(componentId), 180);
   }
 
   handleFull = () => {
+    if (this.partial === false) return;
     this.partial = false;
-    this.topHeight = 0;
-    // Animated.parallel([
-    //   Animated.spring(this.topHeight, {
-    //     toValue: 150,
-    //     duration: 200,
-    //     friction: 7
-    //   })
-    // ]).start();
-    Animated.spring(this.topHeight, {
-      toValue: 150,
+    const {
+      pan
+    } = this.state;
+    Animated.spring(pan, {
+      toValue: -(HEIGHT * 0.30),
       duration: 200,
       friction: 7
     }).start();
@@ -242,135 +224,170 @@ class EventDetail extends React.Component {
     });
   }
 
-    handleGoing = () => {
-      const { loading } = this.state;
-      const { item } = this.props;
-      const { _id } = item;
-      const { updateStatus } = this;
-      if (loading) return;
-      console.log(item);
-      if (item.reg_link !== '') {
-        Navigation.showModal({
-          stack: {
-            children: [{
-              component: {
-                name: 'Event Register',
-                passProps: {
-                  uri: item.reg_link
-                },
-                options: {
-                  topBar: {
-                    title: {
-                      text: 'Event Registration Link'
-                    }
-                  }
+  handleGoing = () => {
+    const { loading } = this.state;
+    const { item } = this.props;
+    const { _id } = item;
+    const { updateStatus } = this;
+    if (loading) return;
+    console.log(item);
+    if (item.reg_link !== '') {
+      Navigation.dismissOverlay(this.props.componentId);
+      Navigation.showModal({
+        stack: {
+          children: [{
+            component: {
+              name: 'Event Register',
+              passProps: {
+                uri: item.reg_link
+              },
+              options: {
+                topBar: {
+                  visible: false
                 }
               }
-            }]
-          }
-        });
-      } else {
-        let going = 'false';
-        Realm.getRealm((realm) => {
-          realm.write(() => {
-            const Final = realm.objects('Events').filtered(`_id="${_id}"`);
-            // eslint-disable-next-line prefer-destructuring
-            going = Final[0].going;
-          });
-        });
-        Navigation.showOverlay({
-          component: {
-            name: 'Going Details',
-            passProps: {
-              _id,
-              going,
-              updateStatus
-            },
-            options: {
-              overlay: {
-                interceptTouchOutside: false
-              }
             }
-          }
+          }]
+        }
+      });
+    } else {
+      let going = 'false';
+      Realm.getRealm((realm) => {
+        realm.write(() => {
+          const Final = realm.objects('Events').filtered(`_id="${_id}"`);
+          // eslint-disable-next-line prefer-destructuring
+          going = Final[0].going;
         });
-      }
-    }
-
-    success = () => {
-      const { item } = this.props;
-      this.setState({ item: { ...item, going: 'true' } });
-    }
-
-    handleChannelOpenNetwork = () => {
-      // Alert.alert('Channel Open Network');
-      const { item } = this.props;
-      Navigation.showModal({
+      });
+      Navigation.showOverlay({
         component: {
-          name: 'Channel Detail Screen',
+          name: 'Going Details',
           passProps: {
-            id: item.channel
+            _id,
+            going,
+            updateStatus
           },
           options: {
-            bottomTabs: {
-              animate: true,
-              drawBehind: true,
-              visible: false
-            },
-            topBar: {
-              title: {
-                text: item.name
-              },
-              visible: true
+            overlay: {
+              interceptTouchOutside: false
             }
           }
         }
       });
     }
+  }
 
-    render() {
-      const { item, loading } = this.state;
-      const { componentId } = this.props;
-      let { pan } = this.state;
-      // Calculate the x and y transform from the pan value
-      let [translateY] = [pan.y];
-      // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
-      // let imageStyle = {transform: [{translateX}, {translateY}]};
-      const {
-        handleChannelOpenNetwork
-      } = this;
-      return (
-        <SafeAreaView
+  success = () => {
+    const { item } = this.props;
+    this.setState({ item: { ...item, going: 'true' } });
+  }
+
+  handleChannelOpenNetwork = () => {
+    // Alert.alert('Channel Open Network');
+    const { item, componentId } = this.props;
+    Navigation.dismissOverlay(componentId);
+    Navigation.showModal({
+      component: {
+        name: 'Channel Detail Screen',
+        passProps: {
+          id: item.channel
+        },
+        options: {
+          bottomTabs: {
+            animate: true,
+            drawBehind: true,
+            visible: false
+          },
+          topBar: {
+            title: {
+              text: item.name
+            },
+            visible: true
+          }
+        }
+      }
+    });
+  }
+
+  handleRemind = () => {
+    const { item } = this.props;
+    const {
+      remind
+    } = this.state;
+    const { _id } = item;
+    if (item === null) return;
+    Realm.getRealm((realm) => {
+      realm.write(() => {
+        if (remind === 'false') {
+          try {
+            realm.create('Firebase', { _id, notify: 'true', type: 'event' }, true);
+            realm.create('Events', { _id, remind: 'true' }, true);
+            firebase.messaging().subscribeToTopic(_id);
+            this.setState({ remind: 'true' });
+          } catch (e) {
+            console.log(e);
+          }
+        } else {
+          try {
+            const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
+            realm.create('Events', { _id, remind: 'false' }, true);
+            realm.delete(element);
+            firebase.messaging().unsubscribeFromTopic(_id);
+            this.setState({ remind: 'false' });
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      });
+    });
+  }
+
+  render() {
+    const { item, loading, remind } = this.state;
+    const { pan } = this.state;
+    const [translateY] = [pan.y];
+    const {
+      handleChannelOpenNetwork
+    } = this;
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          borderRadius: 10,
+        }}
+      >
+        <Animated.View
           style={{
             flex: 1,
-            borderRadius: 10,
+            height: HEIGHT,
+            width: WIDTH,
+            backgroundColor: '#000000aa',
+            opacity: this.opacity
+          }}
+        />
+
+        <Animated.View
+          style={{
+            flex: 1,
+            position: 'absolute',
+            top: this.topHeight,
+            opacity: this.opacity,
+            height: HEIGHT,
+            backgroundColor: '#333',
+            transform: [{ translateY }]
           }}
         >
-          <Animated.View
+          <View
+            {...this._panResponder.panHandlers}
+            // ref={(ref) => { this.marker = ref; }}
             style={{
-              flex: 1,
-              height: HEIGHT,
-              width: WIDTH,
-              backgroundColor: '#000000aa',
-              opacity: this.opacity
-            }}
-          />
-
-          <Animated.View
-            style={{
-              flex: 1,
-              position: 'absolute',
-              top: this.topHeight,
-              height: HEIGHT,
-              backgroundColor: '#333',
-              transform: [{ translateY }]
+              backgroundColor: '#222',
+              padding: 10,
             }}
           >
-            <View
-              {...this._panResponder.panHandlers}
-              style={{
-                backgroundColor: '#222',
-                padding: 10,
-              }}
+            <TouchableOpacity
+              onPress={() => this.handleFull()}
+              activeOpacity={0.8}
             >
               <FastImage
                 style={{
@@ -383,58 +400,60 @@ class EventDetail extends React.Component {
                 }}
                 resizeMode={FastImage.resizeMode.cover}
               />
-              <View style={{
-                position: 'absolute',
-                top: 5,
-                flexDirection: 'row',
-                right: 15,
-                padding: 10
-              }}
+
+            </TouchableOpacity>
+            <View style={{
+              position: 'absolute',
+              top: 5,
+              flexDirection: 'row',
+              right: 15,
+              padding: 10
+            }}
+            >
+              <View
+                style={{
+                  // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  backgroundColor: '#ffffff99',
+                  borderRadius: 5,
+                  justifyContent: 'center'
+                }}
               >
-                <View
+                <Text
+                  numberOfLines={1}
                   style={{
-                    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    backgroundColor: '#ffffff99',
-                    borderRadius: 5,
-                    justifyContent: 'center'
+                    fontSize: 15,
+                    color: '#333',
+                    marginLeft: 10,
+                    marginRight: 10,
+                    margin: 5,
+                    alignSelf: 'center'
                   }}
                 >
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      fontSize: 15,
-                      color: '#333',
-                      marginLeft: 10,
-                      marginRight: 10,
-                      margin: 5,
-                      alignSelf: 'center'
-                    }}
-                  >
-                    {getCategoryName(item.category)}
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }} />
-                <TouchableOpacity
-                  style={{
-                    justifyContent: 'center',
-                    textAlign: 'right',
-                    width: 30,
-                    left: 10,
-                    height: 30,
-                    padding: 5,
-                    backgroundColor: '#ffffff99',
-                    borderRadius: 20
-                  }}
-                  onPress={() => this.handleClose()}
-                >
-                  <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
-                </TouchableOpacity>
+                  {getCategoryName(item.category)}
+                </Text>
               </View>
+              <View style={{ flex: 1 }} />
+              <TouchableOpacity
+                style={{
+                  justifyContent: 'center',
+                  textAlign: 'right',
+                  width: 30,
+                  left: 10,
+                  height: 30,
+                  padding: 5,
+                  backgroundColor: '#ffffff99',
+                  borderRadius: 20
+                }}
+                onPress={() => this.handleClose()}
+              >
+                <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
+              </TouchableOpacity>
             </View>
+          </View>
           {
-            Platform.OS === 'ios'
-            && (<StatusBar barStyle="light-content" translucent />)
-          }
+          Platform.OS === 'ios'
+          && (<StatusBar barStyle="light-content" translucent />)
+        }
           <ScrollView
             style={{
               flex: 1,
@@ -444,9 +463,53 @@ class EventDetail extends React.Component {
 
             <View
               style={{
-                // margin: 5,
+              // margin: 5,
                 flex: 1,
-                marginTop: 5,
+                paddingTop: 10,
+                // marginTop: 5,
+                // marginLeft: 5,
+                // marginRight: 5,
+                // padding: 5,
+                flexDirection: 'row'
+              }}
+            >
+              <View
+                style={{
+                  flex: 1
+                }}
+              />
+              <TouchableOpacity
+                onPress={this.handleRemind}
+                style={{
+                  marginRight: 15,
+                  borderRadius: 100,
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  backgroundColor: remind === 'false' ? '#FF6A15' : '#222',
+                  flexDirection: 'row'
+                }}
+              >
+                <IconIonicons size={25} style={{ color: remind === 'false' ? '#fff' : '#c0c0c0' }} name="ios-alarm" />
+                {/* <IconIonicons size={22} style={{ color: '#fff' }} name="md-alarm" /> */}
+                <Text
+                  style={{
+                    color: '#fff',
+                    alignSelf: 'center',
+                    marginLeft: 5
+                  }}
+                >
+                  {remind === 'false' ? "Stay Updated" : "Already Set"}
+                  
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+              // margin: 5,
+                flex: 1,
+                // marginTop: 5,
                 marginLeft: 5,
                 marginRight: 5,
                 padding: 5,
@@ -455,7 +518,7 @@ class EventDetail extends React.Component {
             >
               <View
                 style={{
-                  // backgroundColor: '#222',
+                // backgroundColor: '#222',
                   marginRight: 10,
                   width: 50,
                   paddingTop: 5,
@@ -511,7 +574,7 @@ class EventDetail extends React.Component {
                   <Text
                     numberOfLines={1}
                     style={{
-                      // fontFamily: 'Roboto-Thin',
+                    // fontFamily: 'Roboto-Thin',
                       fontSize: 15,
                       color: '#a0a0a0',
                     }}
@@ -710,157 +773,159 @@ Views
               </View>
             </View>
             {
-              item.faq > 0
-              && (
+            item.faq > 0
+            && (
+            <View
+              style={{
+                flex: 1,
+                marginLeft: 5,
+                padding: 5,
+                flexDirection: 'row'
+              }}
+            >
+
+              <View
+                style={{
+                  justifyContent: 'center',
+                  marginRight: 10,
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 5
+                }}
+              >
+                <Icon3 style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="comment-question" />
+              </View>
               <View
                 style={{
                   flex: 1,
-                  marginLeft: 5,
-                  padding: 5,
-                  flexDirection: 'row'
+                  justifyContent: 'center',
                 }}
               >
-
-                <View
+                <Text
+                  selectable
                   style={{
-                    justifyContent: 'center',
-                    marginRight: 10,
-                    width: 50,
-                    height: 50,
-                    paddingTop: 5,
-                    paddingBottom: 5,
-                    borderRadius: 5
+                    textAlign: 'left',
+                    fontSize: 15,
+                    color: '#f0f0f0',
                   }}
                 >
-                  <Icon3 style={{ alignSelf: 'center', color: '#FF6A15', }} size={23} name="comment-question" />
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
-                    selectable
-                    style={{
-                      textAlign: 'left',
-                      fontSize: 15,
-                      color: '#f0f0f0',
-                    }}
-                  >
-                    {item.faq}
-                  </Text>
-                </View>
-
+                  {item.faq}
+                </Text>
               </View>
-              )
-          }
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: 80
-            }}
-          >
-            { item.interested === 'false'
-                        && (
-                        <TouchableOpacity
-                          onPress={this.handleClick}
+
+            </View>
+            )
+        }
+            <View
+              style={{
+                flexDirection: 'row',
+                marginBottom: 80
+              }}
+            >
+              { item.interested === 'false' && (
+              <TouchableOpacity
+                onPress={this.handleClick}
+                style={{
+                  padding: 15,
+                  margin: 10,
+                  marginLeft: 15,
+                  marginRight: 15,
+                  borderRadius: 50,
+                  // backgroundColor: '#0056e5',
+                  borderColor: '#0056e5',
+                  borderWidth: 2,
+                  flex: 1
+                }}
+              >
+                {
+                              loading
+                              && <ActivityIndicator size="small" color="#fff" />
+                          }
+                {
+                              !loading
+                              && (
+                              <Text
+                                style={{
+                                  color: '#fafafa',
+                                  fontSize: 18,
+                                  fontFamily: 'Roboto',
+                                  textAlign: 'center'
+                                }}
+                              >
+                                <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                                {' '}
+                                {' Interested '}
+                                {' '}
+                                <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                              </Text>
+                              )
+                          }
+              </TouchableOpacity>
+              ) }
+              { item.interested === 'true' && item.going === 'false'
+                      && (
+                      <TouchableOpacity
+                        onPress={this.handleGoing}
+                        style={{
+                          padding: 15,
+                          marginLeft: 15,
+                          marginRight: 15,
+                          borderRadius: 50,
+                          // backgroundColor: '#fa3e3e',
+                          borderColor: '#fa3e3e',
+                          borderWidth: 2,
+                          flex: 1
+                        }}
+                      >
+                        {
+                              loading
+                              && <ActivityIndicator size="small" color="#fff" />
+                          }
+                        <Text
                           style={{
-                            padding: 15,
-                            margin: 10,
-                            marginLeft: 15,
-                            marginRight: 15,
-                            borderRadius: 50,
-                            backgroundColor: '#0056e5',
-                            flex: 1
+                            color: '#fff',
+                            fontSize: 18,
+                            fontFamily: 'Roboto',
+                            textAlign: 'center'
                           }}
                         >
+                          <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
                           {
-                                loading
-                                && <ActivityIndicator size="small" color="#fff" />
-                            }
-                          {
-                                !loading
-                                && (
-                                <Text
-                                  style={{
-                                    color: '#fafafa',
-                                    fontSize: 18,
-                                    fontFamily: 'Roboto',
-                                    textAlign: 'center'
-                                  }}
-                                >
-                                  <Icon style={{ color: '#fff' }} name="heart" size={18} />
-                                  {' '}
-                                  {' Interested '}
-                                  {' '}
-                                  <Icon style={{ color: '#fff' }} name="heart" size={18} />
-                                </Text>
-                                )
-                            }
-                        </TouchableOpacity>
-                        ) }
-            { item.interested === 'true' && item.going === 'false'
-                        && (
-                        <TouchableOpacity
-                          onPress={this.handleGoing}
+                                  '  Register Now  '
+                          }
+                          <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
+                        </Text>
+                      </TouchableOpacity>
+                      ) }
+              { item.interested === 'true' && item.going === 'true'
+                      && (
+                      <TouchableOpacity
+                        style={{
+                          padding: 15,
+                          backgroundColor: '#c0c0c0',
+                          flex: 1
+                        }}
+                      >
+                        <Text
                           style={{
-                            padding: 15,
-                            marginLeft: 15,
-                            marginRight: 15,
-                            borderRadius: 50,
-                            backgroundColor: '#fa3e3e',
-                            flex: 1
+                            color: '#fff',
+                            fontSize: 18,
+                            fontFamily: 'Roboto',
+                            textAlign: 'center'
                           }}
                         >
-                          {
-                                loading
-                                && <ActivityIndicator size="small" color="#fff" />
-                            }
-                          <Text
-                            style={{
-                              color: '#fff',
-                              fontSize: 18,
-                              fontFamily: 'Roboto',
-                              textAlign: 'center'
-                            }}
-                          >
-                            <Icon4 name="bookmark" size={18} />
-                            {
-                                    '  Register Now  '
-                            }
-                            <Icon4 name="bookmark" size={18} />
-                          </Text>
-                        </TouchableOpacity>
-                        ) }
-            { item.interested === 'true' && item.going === 'true'
-                        && (
-                        <TouchableOpacity
-                          style={{
-                            padding: 15,
-                            backgroundColor: '#c0c0c0',
-                            flex: 1
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: '#fff',
-                              fontSize: 18,
-                              fontFamily: 'Roboto',
-                              textAlign: 'center'
-                            }}
-                          >
-                                GOING
-                          </Text>
-                        </TouchableOpacity>
-                        ) }
-          </View>
+                              GOING
+                        </Text>
+                      </TouchableOpacity>
+                      ) }
+            </View>
           </ScrollView>
-          
-          </Animated.View>
-        </SafeAreaView>
-      );
-    }
+        </Animated.View>
+      </SafeAreaView>
+    );
+  }
 }
 
 export default EventDetail;

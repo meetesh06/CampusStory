@@ -190,13 +190,13 @@ class Interests extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', channel: 'false' }, true);
+            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', type: 'admin' }, true);
             firebase.messaging().subscribeToTopic('ogil7190');
             for (i = 0; i < array.length; i += 1) {
-              realm.create('Firebase', { _id: array[i], notify: 'true', channel: 'false' }, true);
+              realm.create('Firebase', { _id: array[i], notify: 'true', type: 'category' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
             }
-            realm.create('Firebase', { _id: clg, notify: 'true', channel: 'false' }, true);
+            realm.create('Firebase', { _id: clg, notify: 'true', type: 'college' }, true);
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {
             console.log(e);

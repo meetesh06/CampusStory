@@ -59,28 +59,35 @@ export function formatAMPM(date) {
   return strTime;
 }
 
+export function formatDate(date) {
+  const monthNames = [
+    'January', 'February', 'March',
+    'April', 'May', 'June', 'July',
+    'August', 'September', 'October',
+    'November', 'December'
+  ];
+
+  const day = date.getDate();
+  const monthIndex = date.getMonth();
+  const year = date.getFullYear();
+
+  return `${day} ${monthNames[monthIndex]} ${year}`;
+}
+
 export function getCategoryName(category) {
   switch (category) {
+    case 'food':
+      return 'Food';
+    case 'mad':
+      return 'Music and Dance';
     case 'art':
       return 'Art';
-    case 'cal':
-      return 'Career and Literature';
-    case 'music':
-      return 'Music';
-    case 'sat':
-      return 'Science and Tech';
-    case 'sag':
-      return 'Sports and Gaming';
-    case 'dad':
-      return 'Dance and Drama';
-    case 'fashion':
-      return 'Fashion';
-    case 'photography':
-      return 'Photography';
-    case 'hal':
-      return 'Health and Lifestyle';
-    case 'community':
-      return 'Community';
+    case 'society':
+      return 'Societies';
+    case 'sports':
+      return 'Sports';
+    case 'fun':
+      return 'Fun';
     default:
       return '';
   }

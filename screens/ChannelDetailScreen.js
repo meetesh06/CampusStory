@@ -68,6 +68,7 @@ class ChannelDetailScreen extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
+      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.priority = JSON.stringify(el.priority);
@@ -112,7 +113,7 @@ class ChannelDetailScreen extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id, notify: 'true', channel: 'true' }, true);
+            realm.create('Firebase', { _id, notify: 'true', type: 'channel' }, true);
             firebase.messaging().subscribeToTopic(_id);
             this.setState({ notify: true });
           } catch (e) {
@@ -122,7 +123,7 @@ class ChannelDetailScreen extends React.Component {
           try {
             const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
             realm.delete(element);
-            realm.create('Firebase', { _id, notify: 'false', channel: 'true' });
+            realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
             firebase.messaging().unsubscribeFromTopic(_id);
             this.setState({ notify: false });
           } catch (e) {
@@ -138,15 +139,15 @@ class ChannelDetailScreen extends React.Component {
       item,
       subscribed
     } = this.state;
+    if (item === null) return;
     const {
       _id
     } = item;
-    if (item === null) return;
     Realm.getRealm((realm) => {
       realm.write(() => {
         if (!subscribed) {
           try {
-            realm.create('Firebase', { _id, notify: 'false', channel: 'true' });
+            realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
             this.setState({ subscribed: true });
           } catch (e) {
             console.log(e);
@@ -170,7 +171,6 @@ class ChannelDetailScreen extends React.Component {
       subscribed,
       notify
     } = this.state;
-    console.log(item);
     const { componentId } = this.props;
     return (
       <View

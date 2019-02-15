@@ -76,7 +76,7 @@ class Profile extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
-        Navigation.showModal({
+        Navigation.showOverlay({
           component: {
             name: 'Event Detail Screen',
             passProps: {

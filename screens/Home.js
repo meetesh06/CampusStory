@@ -190,6 +190,7 @@ class Home extends React.Component {
           el.reg_start = new Date(el.reg_start);
           el.interested = 'false';
           el.going = 'false';
+          el.remind = 'false';
         });
         const responseObject = response.data;
         const { data } = responseObject;
@@ -263,7 +264,7 @@ class Home extends React.Component {
     }).catch(err => console.log(err));
   }
 
-  fetchEventsFromRealm = async () => {
+  fetchEventsFromRealm = () => {
     let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
 
@@ -306,7 +307,7 @@ class Home extends React.Component {
     // });
   }
 
-  fetchChannelsFromRealm = async () => {
+  fetchChannelsFromRealm = () => {
     // console.log('OUR TEST BEGIN');
     // const realm_manager = new RealmManager();
     // realm_manager.getItems(['channel="true"'], 'Firebase', null, false, (Subs)=>{
@@ -324,7 +325,7 @@ class Home extends React.Component {
     // });
 
     Realm.getRealm((realm) => {
-      const Subs = realm.objects('Firebase').filtered('channel="true"');
+      const Subs = realm.objects('Firebase').filtered('type="channel"');
       processRealmObj(Subs, (result) => {
         const final = [];
         const Channels = realm.objects('Channels').sorted('updates');
@@ -355,7 +356,7 @@ class Home extends React.Component {
       } catch (e) {
         lastUpdated = 'NONE';
       }
-      const Subs = realm.objects('Firebase').filtered('channel="true"');
+      const Subs = realm.objects('Firebase').filtered('type="channel"');
       processRealmObj(Subs, (result) => {
         result.forEach((value) => {
           const { _id } = value;
