@@ -47,7 +47,7 @@ class EventDetail extends React.Component {
     // animations
     this.topHeight = new Animated.Value(HEIGHT);
     this.opacity = new Animated.Value(0.3);
-    this.opacity1 = new Animated.Value(0.3);
+    this.opacity1 = new Animated.Value(0.8);
     this.partial = true;
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
@@ -56,6 +56,7 @@ class EventDetail extends React.Component {
       going: props.item.going,
       remind: props.item.remind,
       loading: false,
+      partial: true,
       pan: new Animated.ValueXY()
     };
 
@@ -80,24 +81,22 @@ class EventDetail extends React.Component {
         const {
           pan
         } = this.state;
-        if (gestureState.dy > 0) return pan.setValue({ y: gestureState.dy });
-        else if (gestureState.dy < 0) pan.setValue({ y: gestureState.dy })
+        // if (gestureState.dy > 0) {
+        //   pan.setValue({ y: gestureState.dy });
+        //   // this.opacity1.setValue(1 - gestureState.dy / HEIGHT);
+        //   // this.opacity.setValue(1 - gestureState.dy / HEIGHT);
+        // } else if (gestureState.dy < 0 ) {
+        // }
+        pan.setValue({ y: gestureState.dy });
+        this.opacity1.setValue(1 - gestureState.dy / HEIGHT);
+        this.opacity.setValue(1 - gestureState.dy / HEIGHT);
         // else pan.setOffset({ y: 0 });
       },
       onPanResponderRelease: (e, { dy }) => {
         if (dy > 0) {
           this.handleClose();
         } else {
-          const {
-            pan
-          } = this.state;
-          pan.setOffset({ y: 0 });
-          // pan.setValue({ y: -(HEIGHT * 0.30) });
-          Animated.spring(pan, {
-            toValue: -(HEIGHT * 0.30),
-            friction: 15
-          }).start();
-          // this.handleFull();
+          this.handleFull();
           // if (this.partial === true) this.handleFull();
         }
       }
@@ -212,15 +211,14 @@ class EventDetail extends React.Component {
   }
 
   handleFull = () => {
-    if (this.partial === false) return;
-    this.partial = false;
+    this.setState({ partial: false });
     const {
       pan
     } = this.state;
+    pan.setOffset({ y: 0 });
     Animated.spring(pan, {
       toValue: -(HEIGHT * 0.30),
-      duration: 200,
-      friction: 7
+      friction: 15
     }).start();
   }
 
@@ -357,7 +355,7 @@ class EventDetail extends React.Component {
   }
 
   render() {
-    const { item, loading, remind } = this.state;
+    const { item, loading, remind, partial } = this.state;
     const { pan } = this.state;
     const [translateY] = [pan.y];
     const {
@@ -376,7 +374,7 @@ class EventDetail extends React.Component {
             height: HEIGHT,
             width: WIDTH,
             backgroundColor: '#000000aa',
-            opacity: this.opacity
+            opacity: this.opacity1
           }}
         />
 
@@ -399,35 +397,35 @@ class EventDetail extends React.Component {
               padding: 10,
             }}
           >
-              <FastImage
-                style={{
-                  width: WIDTH - 20,
-                  height: (WIDTH - 20) * 0.75,
-                  borderRadius: 10
-                }}
-                source={{
-                  uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
             <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  // width: 30,
-                  // height: 30,
-                  top: -25,
-                  left: 0,
-                  right: 0,
-                  padding: 5,
-                  // backgroundColor: '#ffffff99',
-                  borderRadius: 20
-                }}
-                onPress={() => this.handleFull()}
-              >
-                <Icon style={{ alignSelf: 'center', color: '#fff' }} size={20} name="up" />
-              </TouchableOpacity>
+              style={{
+                position: 'absolute',
+                justifyContent: 'center',
+                textAlign: 'center',
+                // width: 30,
+                // height: 30,
+                top: -25,
+                left: 0,
+                right: 0,
+                padding: 5,
+                // backgroundColor: '#ffffff99',
+                borderRadius: 20
+              }}
+              onPress={() => this.handleFull()}
+            >
+              <Icon style={{ alignSelf: 'center', color: '#fff' }} size={20} name={partial ? 'up' : 'down'} />
+            </TouchableOpacity>
+            <FastImage
+              style={{
+                width: WIDTH - 20,
+                height: (WIDTH - 20) * 0.75,
+                borderRadius: 10
+              }}
+              source={{
+                uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
             <View style={{
               position: 'absolute',
               top: 5,
@@ -459,22 +457,6 @@ class EventDetail extends React.Component {
                 </Text>
               </View>
               <View style={{ flex: 1 }} />
-              
-              <TouchableOpacity
-                style={{
-                  justifyContent: 'center',
-                  textAlign: 'right',
-                  width: 30,
-                  left: 10,
-                  height: 30,
-                  padding: 5,
-                  backgroundColor: '#ffffff99',
-                  borderRadius: 20
-                }}
-                onPress={() => this.handleClose()}
-              >
-                <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
-              </TouchableOpacity>
             </View>
           </View>
           {
@@ -527,8 +509,8 @@ class EventDetail extends React.Component {
                     marginLeft: 5
                   }}
                 >
-                  {remind === 'false' ? "Stay Updated" : "Already Set"}
-                  
+                  {remind === 'false' ? 'Stay Updated' : 'Already Set'}
+
                 </Text>
               </TouchableOpacity>
             </View>
