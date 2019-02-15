@@ -76,7 +76,15 @@ const AdvertCard = (props) => {
         numberOfLines={1}
         lineBreakMode="tail"
         style={{
-          fontSize: 10, flex: 1, textAlign: 'center', justifyContent: 'center', maxWidth: width - 8, marginLeft: 10, marginRight: 10, marginBottom: 10
+          color: '#f0f0f0',
+          fontSize: 10,
+          flex: 1,
+          textAlign: 'center',
+          justifyContent: 'center',
+          maxWidth: width - 8,
+          marginLeft: 10,
+          marginRight: 10,
+          marginBottom: 10
         }}
       >
         {item.name}

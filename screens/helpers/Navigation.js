@@ -77,6 +77,9 @@ export const goHome = async (first) => {
                   textColor: '#c0c0c0',
                   selectedTextColor: '#FF6A15',
                   selectedIconColor: '#FF6A15'
+                },
+                background: {
+                  color: '#333'
                 }
               },
               children: [
@@ -97,7 +100,14 @@ export const goHome = async (first) => {
                           component: {
                             name: 'homeTopBar'
                           }
-                        }
+                        },
+                        rightButtons: [
+                          {
+                            id: 'InterestedEvents',
+                            component: {
+                              name: 'app.HeartIcon'
+                            }
+                          }]
                       }
                     }
                   }
@@ -179,14 +189,7 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        visible: true,
-                        animate: true,
-                        background: {
-                          color: '#222',
-                          component: {
-                            name: 'homeTopBar'
-                          }
-                        }
+                        visible: false,
                       }
                     }
                   }

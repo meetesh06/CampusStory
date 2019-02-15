@@ -1,7 +1,7 @@
 /** @format */
 import { Navigation } from 'react-native-navigation';
 import React from 'react';
-import { Platform, AppState, Text, View } from 'react-native';
+import { TouchableOpacity, Platform, AppState, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Initializing from './screens/Initializing';
@@ -16,6 +16,9 @@ import GoingDetails from './screens/GoingDetails';
 import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
+import InterestedScreen from './screens/InterestedScreen';
+import Icon from 'react-native-vector-icons/AntDesign';
+
 // import CameraScreen from './screens/CameraScreen';
 import SessionStore from './SessionStore';
 
@@ -48,6 +51,33 @@ const homeTopBar = () => (
   </View>
 );
 
+
+
+const HeartIcon = (props) => (
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      justifyContent: 'center',
+    }}
+    onPress={
+      () => {
+        Navigation.showModal({
+          component: {
+            name: 'Interested Screen',
+            options: {
+              topBar: {
+                visible: false
+              }
+            }
+          }
+        });
+      }
+    }
+  >
+    <Icon size={20} style={{ color: '#FF6A15' }} name="heart"/>
+  </TouchableOpacity>
+);
+
 Navigation.registerComponent('Initializing Screen', () => Initializing);
 Navigation.registerComponent('Interests Selection Screen', () => Interests);
 Navigation.registerComponent('Home Screen', () => Home);
@@ -58,9 +88,12 @@ Navigation.registerComponent('Channel Detail Screen', () => ChannelDetailScreen)
 Navigation.registerComponent('Story Screen', () => StoryScreen);
 Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
+Navigation.registerComponent('app.HeartIcon', () => HeartIcon);
+Navigation.registerComponent('app.goBackButton', () => goBackButton);
 Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
+Navigation.registerComponent('Interested Screen', () => InterestedScreen);
 // Navigation.registerComponent('Camera Screen', () => CameraScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
@@ -77,7 +110,7 @@ init = () =>{
       }
     }
   });
-}
+};
 
 onAppStateChanged = async (nextAppState) => {
   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){
