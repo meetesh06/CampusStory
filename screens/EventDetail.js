@@ -80,11 +80,19 @@ class EventDetail extends React.Component {
         const {
           pan
         } = this.state;
-        if (gestureState.dy > 0) pan.setValue({ y: gestureState.dy });
+        if (gestureState.dy > 0 && (this.partial === false)) return pan.setValue({ y: gestureState.dy });
+        else if (gestureState.dy < 0 && (this.partial === true)) pan.setValue({ y: gestureState.dy })
+        else pan.setOffset({ y: 0 });
       },
       onPanResponderRelease: (e, { dy }) => {
         if (dy > 0) {
           this.handleClose();
+        } else {
+          const {
+            pan
+          } = this.state;
+          pan.setOffset({ y: 0 });
+          if (this.partial === true) this.handleFull();
         }
       }
     });
@@ -385,10 +393,6 @@ class EventDetail extends React.Component {
               padding: 10,
             }}
           >
-            <TouchableOpacity
-              onPress={() => this.handleFull()}
-              activeOpacity={0.8}
-            >
               <FastImage
                 style={{
                   width: WIDTH - 20,
@@ -400,8 +404,24 @@ class EventDetail extends React.Component {
                 }}
                 resizeMode={FastImage.resizeMode.cover}
               />
-
-            </TouchableOpacity>
+            <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  // width: 30,
+                  // height: 30,
+                  top: -25,
+                  left: 0,
+                  right: 0,
+                  padding: 5,
+                  // backgroundColor: '#ffffff99',
+                  borderRadius: 20
+                }}
+                onPress={() => this.handleFull()}
+              >
+                <Icon style={{ alignSelf: 'center', color: '#fff' }} size={20} name="up" />
+              </TouchableOpacity>
             <View style={{
               position: 'absolute',
               top: 5,
@@ -433,6 +453,7 @@ class EventDetail extends React.Component {
                 </Text>
               </View>
               <View style={{ flex: 1 }} />
+              
               <TouchableOpacity
                 style={{
                   justifyContent: 'center',
