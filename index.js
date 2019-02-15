@@ -17,6 +17,8 @@ import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
 import InterestedScreen from './screens/InterestedScreen';
+import AboutScreen from './screens/AboutScreen';
+import SettingsScreen from './screens/SettingsScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 // import CameraScreen from './screens/CameraScreen';
@@ -94,6 +96,7 @@ Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScree
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 Navigation.registerComponent('Interested Screen', () => InterestedScreen);
+Navigation.registerComponent('About Screen', () => AboutScreen);
 // Navigation.registerComponent('Camera Screen', () => CameraScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {

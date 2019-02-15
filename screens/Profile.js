@@ -107,6 +107,13 @@ class Profile extends React.Component {
               justifyContent: 'center',
               padding: 10
             }}
+            onPress={() => {
+              Navigation.showModal({
+                component: {
+                  name: 'About Screen'
+                }
+              });
+            }}
           >
             <Icon style={{ alignSelf: 'center', color: '#FF6A15' }} size={25} name="questioncircle" />
           </TouchableOpacity>
@@ -131,6 +138,13 @@ class Profile extends React.Component {
             style={{
               justifyContent: 'center',
               padding: 10
+            }}
+            onPress={() => {
+              Navigation.showModal({
+                component: {
+                  name: 'About Screen'
+                }
+              });
             }}
           >
             <Icon1 style={{ alignSelf: 'center', color: '#FF6A15' }} size={25} name="settings" />
