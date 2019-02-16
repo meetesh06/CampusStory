@@ -168,6 +168,22 @@ class StoryFeed extends React.PureComponent {
                       </TouchableOpacity>
                     );
                   }
+
+                  if (item.type === 'post-video') {
+                    return (
+                      <TouchableOpacity
+                        style={{
+                          overflow: 'hidden'
+                        }}
+                        onPress={() => { this.handleChannelClickStory(item); }}
+                        onLongPress={() => this.handlePreview(item)}
+                        onPressOut={() => this.handleClose()}
+                        activeOpacity={0.9}
+                      >
+                        <PostVideoThumbnail video={item.media} />
+                      </TouchableOpacity>
+                    );
+                  }
                   return null;
               }}
             />
