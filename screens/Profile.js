@@ -25,7 +25,8 @@ class Profile extends React.Component {
   }
 
   state = {
-    current: today
+    current: today,
+    count : 0
   }
 
   componentDidMount() {
@@ -117,11 +118,12 @@ class Profile extends React.Component {
           >
             <Icon style={{ alignSelf: 'center', color: '#FF6A15' }} size={25} name="questioncircle" />
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
             style={{
               flex: 1,
               justifyContent: 'center'
             }}
+            onPress = {this.handleLogout}
           >
             <Icon style={{ alignSelf: 'center', color: '#f0f0f0' }} size={30} name="calendar" />
             <Text
@@ -133,7 +135,7 @@ class Profile extends React.Component {
             >
               12 OCT 2019
             </Text>
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity
             style={{
               justifyContent: 'center',

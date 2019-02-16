@@ -6,9 +6,9 @@ import LinearGradient from 'react-native-linear-gradient';
 const formatAMPM = (date) => {
   let hours = date.getHours();
   let minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
+  const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
-  hours = hours || 12; // the hour '0' should be '12'
+  hours = hours || 12;
   minutes = minutes < 10 ? `0${minutes}` : minutes;
   const strTime = `${hours}:${minutes} ${ampm}`;
   return strTime;
@@ -17,29 +17,29 @@ const formatAMPM = (date) => {
 const getMonthName = (num) => {
   switch (num) {
     case 1:
-      return 'JAN';
+      return 'Jan';
     case 2:
-      return 'FEB';
+      return 'Feb';
     case 3:
-      return 'MAR';
+      return 'Mar';
     case 4:
-      return 'APR';
+      return 'Apr';
     case 5:
-      return 'MAY';
+      return 'May';
     case 6:
-      return 'JUN';
+      return 'Jun';
     case 7:
-      return 'JUL';
+      return 'Jul';
     case 8:
-      return 'AUG';
+      return 'Aug';
     case 9:
-      return 'SEP';
+      return 'Sep';
     case 10:
-      return 'OCT';
+      return 'Oct';
     case 11:
-      return 'NOV';
+      return 'Nov';
     case 12:
-      return 'DEC';
+      return 'Dec';
     default:
       return 'FUCK';
   }
@@ -131,8 +131,9 @@ const Spotlight = (props) => {
             numberOfLines={1}
             style={{
               textAlign: 'center',
-              fontSize: 15,
-              color: '#fff',
+              fontSize: 14,
+              margin : 2,
+              color: '#a5a5a5',
               fontWeight: '200'
             }}
           >

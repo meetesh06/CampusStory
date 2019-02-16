@@ -21,7 +21,7 @@ import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import Realm from '../realm';
-import { processRealmObj, formatDate } from './helpers/functions';
+import { processRealmObj, formatDate, timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
 
 const { MUTED } = Constants;
@@ -96,7 +96,7 @@ class StoryScreen extends React.Component {
           if (current === 0) this.close();
           else this.setState({ current: current - 1 });
         // eslint-disable-next-line no-sequences
-        } else if (gestureState.dx < 5, gestureState.dy < 10) {
+        } else if (gestureState.dx < 5, gestureState.dy < 5) {
           this.tapped();
         }
       },
@@ -359,14 +359,17 @@ class StoryScreen extends React.Component {
                 source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
                 resizeMode={FastImage.resizeMode.cover}
               />
-              <Text style={{ fontSize: 15, color: '#fff', margin: 5, fontFamily: 'Roboto', fontWeight: 'bold' }} > {this.state.channel.name} </Text>
+              <Text style={{ fontSize: 14, color: '#fff', margin: 5, fontFamily: 'Roboto', fontWeight: 'bold' }} > {this.state.channel.name} </Text>
+              {this.state.stories !== null && this.state.stories !== undefined && this.state.stories[current] !== undefined &&<Text style={{fontSize : 13, color : '#dfdfdf'}}>{timelapse(this.state.stories[current].timestamp)}</Text>}
             </TouchableOpacity>
             <View style={{ flex: 1 }} />
             <View
               style={{
                 justifyContent: 'center',
                 textAlign: 'right',
-                padding: 10,
+                padding: 5,
+                paddingLeft : 8,
+                paddingRight : 8,
                 marginRight: 12,
                 backgroundColor: '#ffffff99',
                 borderRadius: 20
@@ -376,19 +379,14 @@ class StoryScreen extends React.Component {
                 style={{
                   fontFamily: 'Roboto',
                   alignSelf: 'center',
-                  fontSize: 15,
+                  fontSize: 14,
                   color: '#333'
                 }}
               >
-                {this.state.stories.length - this.state.current} / {this.state.stories.length}
+                {this.state.stories.length - this.state.current}/{this.state.stories.length}
               </Text>
             </View>
           </View>
-          {
-            this.state.stories !== null && this.state.stories !== undefined && this.state.stories[current] !== undefined &&
-            <Text style={{ marginLeft: 55, fontSize: 15, color: '#fff', fontFamily: 'Roboto', fontWeight: 'bold' }} > {formatDate(this.state.stories[current].timestamp)} </Text>
-
-          }
         </View>
       </Animated.View>
     );

@@ -18,6 +18,7 @@ const EventCard = (props) => {
         overflow: 'hidden',
         width,
         height,
+        marginBottom : 10,
         backgroundColor: '#5f5f5f',
         shadowColor: '#000',
         marginLeft: 10,

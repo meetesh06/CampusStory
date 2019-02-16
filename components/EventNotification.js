@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Realm from '../realm';
 import { processRealmObj } from '../screens/helpers/functions';
-// import FastImage from 'react-native-fast-image';
 
 class EventNotification extends React.Component {
   state = {

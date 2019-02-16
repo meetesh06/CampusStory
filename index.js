@@ -59,6 +59,11 @@ const HeartIcon = (props) => (
   <TouchableOpacity
     style={{
       flex: 1,
+      backgroundColor : '#ffffff22', 
+      width : 40,
+      height : 40,
+      alignItems : 'center',
+      borderRadius : 30,
       justifyContent: 'center',
     }}
     onPress={
@@ -76,7 +81,7 @@ const HeartIcon = (props) => (
       }
     }
   >
-    <Icon size={20} style={{ color: '#FF6A15' }} name="heart"/>
+    <Icon size={18} style={{ color: '#FF6A15' }} name="heart"/>
   </TouchableOpacity>
 );
 

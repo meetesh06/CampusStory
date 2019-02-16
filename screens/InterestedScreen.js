@@ -4,6 +4,7 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
+  Dimensions,
   View,
   AsyncStorage,
   TouchableOpacity,
@@ -19,6 +20,9 @@ import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
 import InformationCard from '../components/InformationCard';
+
+const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
 
 class InterestedScreen extends React.Component {
   constructor(props) {
@@ -106,7 +110,6 @@ class InterestedScreen extends React.Component {
 
   render() {
     const {
-      // count,
       interested,
       going,
       refreshing
@@ -123,16 +126,15 @@ class InterestedScreen extends React.Component {
       >
         <TouchableOpacity
           style={{
-            // flex: 1,
             justifyContent: 'center',
-            height: 50,
-            // backgroundColor: 'red'
+            padding : 10
           }}
           onPress={() => {
+            console.log('closing');
             Navigation.dismissModal(this.props.componentId)
           }}
         >
-          <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
+          <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15', margin : 5 }} name="closecircle" />
         </TouchableOpacity>
         <ScrollView
           style={{
@@ -159,18 +161,18 @@ class InterestedScreen extends React.Component {
                   marginLeft: 10,
                 }}
               >
-                {'Interested Events '}
+                {'Interested Events  '}
                 <Icon name="heart" size={15} />
               </Text>
             )
           }
           <FlatList
-            horizontal
+            numColumns = {2}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
             data={interested}
             renderItem={({ item }) => (
-              <EventCard onPress={this.handleEventPress} width={180} height={140} item={item} />
+              <EventCard onPress={this.handleEventPress} width={WIDTH / 2 - 20} height={140} item={item} />
             )}
           />
           {
@@ -186,7 +188,7 @@ class InterestedScreen extends React.Component {
                   color: '#f0f0f0',
                 }}
               >
-                {'Registered Events '}
+                {'Registered Events'}
                 <Icon name="checkcircle" size={15} />
               </Text>
             )}
@@ -199,28 +201,6 @@ class InterestedScreen extends React.Component {
               <EventCard onPress={this.handleEventPress} width={180} height={(140)} item={item} />
             )}
           />
-          {/* <View>
-            <InformationCard
-              touchable
-              title="Secured Data"
-              content="All of your data shared on this platform will be safe and never shared with anyone without your permission."
-              icon={(
-                <Icon
-                  style={{
-                    margin: 10,
-                    color: '#f0f0f0',
-                    alignSelf: 'center'
-                  }}
-                  name="lock1"
-                  size={30}
-                />
-              )}
-              onPress={this.handleLogout}
-              style_card={{ backgroundColor: '#555' }}
-              style_title={{ color: '#d0d0d0' }}
-              style_content={{ color: '#c0c0c0', }}
-            />
-          </View> */}
         </ScrollView>
       </SafeAreaView>
     );

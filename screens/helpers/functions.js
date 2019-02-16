@@ -74,6 +74,30 @@ export function formatDate(date) {
   return `${day} ${monthNames[monthIndex]} ${year}`;
 }
 
+export function timelapse(date) {
+  const cs = new Date().getTime();
+  const ts = date.getTime();
+
+  const diff = cs - ts;
+  const sec = diff / 1000;
+  if(sec > 60){
+    const min = sec / 60;
+    if(min > 60){
+      const hour = min / 60;
+      if(hour > 24){
+        const day = hour / 24;
+        return '' + Math.floor(day) + 'd';
+      } else {
+        return '' + Math.floor(hour) + 'h';
+      }
+    } else {
+      return '' + Math.floor(min) + 'm';
+    }
+  } else {
+    return '' + Math.floor(sec) + 's';
+  }
+}
+
 export function getCategoryName(category) {
   switch (category) {
     case 'food':

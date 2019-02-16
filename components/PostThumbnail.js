@@ -10,12 +10,11 @@ const PostThumbnail = (props) => {
   return (
     <LinearGradient
       style={{
-        width: (WIDTH / 3) - 6,
+        width: (WIDTH / 3) - 2,
         height: WIDTH / 3,
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 3,
-        borderRadius: 10
+        margin : 1
       }}
       colors={['#0056e5', '#85f5ff']}
     >
@@ -42,7 +41,7 @@ const PostThumbnail = (props) => {
           borderRadius: 25
         }}
       >
-        <Icon name="text" size={12} style={{ color: '#fff' }} />
+        <Icon name="text" size={10} style={{ color: '#fff' }} />
       </View>
     </LinearGradient>
   );

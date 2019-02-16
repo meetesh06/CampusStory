@@ -10,11 +10,11 @@ const PostImageThumbnail = (props) => {
   return (
     <View
       style={{
-        width: (WIDTH / 3) - 6,
+        width: (WIDTH / 3) - 2,
         height: WIDTH / 3,
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 3,
+        margin: 1,
         backgroundColor: '#efefef'
       }}
     >
@@ -22,8 +22,6 @@ const PostImageThumbnail = (props) => {
         style={{
           width: '100%',
           height: '100%',
-          margin: 5,
-          borderRadius: 10
         }}
         resizeMode={FastImage.resizeMode.cover}
         source={{ uri: `https://www.mycampusdock.com/${image}` }}
@@ -38,7 +36,7 @@ const PostImageThumbnail = (props) => {
           borderRadius: 25
         }}
       >
-        <Icon name="image" size={12} style={{ color: '#fff' }} />
+        <Icon name="image" size={10} style={{ color: '#fff' }} />
       </View>
     </View>
   );

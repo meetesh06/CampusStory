@@ -32,8 +32,7 @@ class PostVideo extends React.Component {
       } = this.state;
       const {
         message,
-        video,
-        thumb
+        video
       } = this.props;
       return (
         <View style={{
@@ -56,7 +55,7 @@ class PostVideo extends React.Component {
               // eslint-disable-next-line react/no-unused-state
               onBuffer={val => this.setState({ buffering: val.isBuffering })}
               style={{
-                backgroundColor: thumb ? undefined : '#222',
+                backgroundColor: '#222',
                 width: WIDTH,
                 height: 300,
                 margin: 5,

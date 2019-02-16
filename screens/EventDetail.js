@@ -62,10 +62,11 @@ class EventDetail extends React.Component {
 
     // eslint-disable-next-line no-underscore-dangle
     this._panResponder = PanResponder.create({
-      onMoveShouldSetResponderCapture: () => true,
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
 
-      // Initially, set the value of x and y to 0 (the center of the screen)
       onPanResponderGrant: () => {
         const {
           pan
@@ -76,28 +77,22 @@ class EventDetail extends React.Component {
         pan.setOffset({ y: _value });
         pan.setValue({ y: 0 });
       },
-      // When we drag/pan the object, set the delate to the states pan position
       onPanResponderMove: (e, gestureState) => {
         const {
           pan
         } = this.state;
-        // if (gestureState.dy > 0) {
-        //   pan.setValue({ y: gestureState.dy });
-        //   // this.opacity1.setValue(1 - gestureState.dy / HEIGHT);
-        //   // this.opacity.setValue(1 - gestureState.dy / HEIGHT);
-        // } else if (gestureState.dy < 0 ) {
-        // }
         pan.setValue({ y: gestureState.dy });
         this.opacity1.setValue(1 - gestureState.dy / HEIGHT);
         this.opacity.setValue(1 - gestureState.dy / HEIGHT);
-        // else pan.setOffset({ y: 0 });
       },
-      onPanResponderRelease: (e, { dy }) => {
-        if (dy > 0) {
+      onPanResponderRelease: (e, { dx, dy }) => {
+        if (dy > 10) {
           this.handleClose();
-        } else {
+        } else if(dy < -20) {
           this.handleFull();
-          // if (this.partial === true) this.handleFull();
+        }
+        else if (dx < 5, dy < 5) {
+          if(this.state.partial) this.handleFull();
         }
       }
     });
@@ -373,7 +368,7 @@ class EventDetail extends React.Component {
             flex: 1,
             height: HEIGHT,
             width: WIDTH,
-            backgroundColor: '#000000aa',
+            backgroundColor: '#000000dd',
             opacity: this.opacity1
           }}
         />
@@ -383,7 +378,6 @@ class EventDetail extends React.Component {
             flex: 1,
             position: 'absolute',
             top: this.topHeight,
-            // opacity: this.opacity,
             height: HEIGHT,
             backgroundColor: '#333',
             transform: [{ translateY }]
@@ -391,7 +385,6 @@ class EventDetail extends React.Component {
         >
           <View
             {...this._panResponder.panHandlers}
-            // ref={(ref) => { this.marker = ref; }}
             style={{
               backgroundColor: '#222',
               padding: 10,
@@ -402,13 +395,10 @@ class EventDetail extends React.Component {
                 position: 'absolute',
                 justifyContent: 'center',
                 textAlign: 'center',
-                // width: 30,
-                // height: 30,
                 top: -25,
                 left: 0,
                 right: 0,
                 padding: 5,
-                // backgroundColor: '#ffffff99',
                 borderRadius: 20
               }}
               onPress={() => this.handleFull()}
@@ -436,7 +426,6 @@ class EventDetail extends React.Component {
             >
               <View
                 style={{
-                  // backgroundColor: 'rgba(0, 0, 0, 0.5)',
                   backgroundColor: '#ffffff99',
                   borderRadius: 5,
                   justifyContent: 'center'
@@ -458,67 +447,42 @@ class EventDetail extends React.Component {
               </View>
               <View style={{ flex: 1 }} />
             </View>
+            {/* <View
+              style={{
+                top : (WIDTH - 50) * 0.75 ,
+                position : 'absolute',
+                flexDirection: 'row',
+              }}
+            >
+              <TouchableOpacity
+                onPress={this.handleRemind}
+                style={{
+                  paddingLeft : 10,
+                  paddingRight : 10,
+                  padding : 5,
+                  borderRadius : 30,
+                  backgroundColor: remind === 'false' ? '#FF6A15' : '#222',
+                  flexDirection: 'row'
+                }}
+              >
+                <IconIonicons size={25} style={{ color: remind === 'false' ? '#fff' : '#c0c0c0' }} name="ios-notifications" />
+              </TouchableOpacity>
+            </View> */}
           </View>
           {
           Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" translucent />)
+          && (<StatusBar barStyle="light-content" hidden />)
         }
           <ScrollView
+            contentContainerStyle={{flexGrow: 1}}
             style={{
               flex: 1,
               borderRadius: 10
             }}
           >
-
+          <View>
             <View
               style={{
-              // margin: 5,
-                flex: 1,
-                paddingTop: 10,
-                // marginTop: 5,
-                // marginLeft: 5,
-                // marginRight: 5,
-                // padding: 5,
-                flexDirection: 'row'
-              }}
-            >
-              <View
-                style={{
-                  flex: 1
-                }}
-              />
-              <TouchableOpacity
-                onPress={this.handleRemind}
-                style={{
-                  marginRight: 15,
-                  borderRadius: 100,
-                  paddingLeft: 8,
-                  paddingRight: 8,
-                  paddingTop: 5,
-                  paddingBottom: 5,
-                  backgroundColor: remind === 'false' ? '#FF6A15' : '#222',
-                  flexDirection: 'row'
-                }}
-              >
-                <IconIonicons size={25} style={{ color: remind === 'false' ? '#fff' : '#c0c0c0' }} name="ios-alarm" />
-                {/* <IconIonicons size={22} style={{ color: '#fff' }} name="md-alarm" /> */}
-                <Text
-                  style={{
-                    color: '#fff',
-                    alignSelf: 'center',
-                    marginLeft: 5
-                  }}
-                >
-                  {remind === 'false' ? 'Stay Updated' : 'Already Set'}
-
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-              // margin: 5,
-                flex: 1,
-                // marginTop: 5,
                 marginLeft: 5,
                 marginRight: 5,
                 padding: 5,
@@ -527,7 +491,6 @@ class EventDetail extends React.Component {
             >
               <View
                 style={{
-                // backgroundColor: '#222',
                   marginRight: 10,
                   width: 50,
                   paddingTop: 5,
@@ -553,7 +516,6 @@ class EventDetail extends React.Component {
                     color: '#a0a0a0',
                   }}
                 >
-                  {/* { JSON.stringify( item.date ) } */}
                   { JSON.stringify(item.date.getDate()) }
                 </Text>
               </View>
@@ -782,7 +744,7 @@ Views
               </View>
             </View>
             {
-            item.faq > 0
+            item.faq.length > 0
             && (
             <View
               style={{
@@ -826,112 +788,153 @@ Views
 
             </View>
             )
-        }
-            <View
+          }
+          </View>
+
+          <View style={{flex : 1}} />
+        
+          <View
               style={{
-                flexDirection: 'row',
-                marginBottom: 80
+                flex: 1,
+                marginLeft: 5,
+                padding: 5,
+                justifyContent : 'center',
+                alignItems : 'center',
+                flexDirection: 'row'
               }}
             >
-              { item.interested === 'false' && (
+
               <TouchableOpacity
-                onPress={this.handleClick}
                 style={{
-                  padding: 15,
-                  margin: 10,
-                  marginLeft: 15,
-                  marginRight: 15,
+                  justifyContent: 'center',
+                  marginRight: 10,
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
                   borderRadius: 50,
-                  // backgroundColor: '#0056e5',
-                  borderColor: '#0056e5',
-                  borderWidth: 2,
-                  flex: 1
+                  backgroundColor : "#444"
+                }}
+                onPress={this.handleRemind}
+              >
+                <Icon2 style={{ alignSelf: 'center', color: remind === 'false' ? '#FF6A15' : '#fff', }} size={23} name = { remind === 'false' ? 'notifications' : "notifications-active" } />
+              </TouchableOpacity>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
                 }}
               >
-                {
-                              loading
-                              && <ActivityIndicator size="small" color="#fff" />
-                          }
-                {
-                              !loading
-                              && (
-                              <Text
-                                style={{
-                                  color: '#fafafa',
-                                  fontSize: 18,
-                                  fontFamily: 'Roboto',
-                                  textAlign: 'center'
-                                }}
-                              >
-                                <Icon style={{ color: 'pink' }} name="heart" size={18} />
-                                {' '}
-                                {' Interested '}
-                                {' '}
-                                <Icon style={{ color: 'pink' }} name="heart" size={18} />
-                              </Text>
-                              )
-                          }
-              </TouchableOpacity>
-              ) }
-              { item.interested === 'true' && item.going === 'false'
-                      && (
-                      <TouchableOpacity
-                        onPress={this.handleGoing}
-                        style={{
-                          padding: 15,
-                          marginLeft: 15,
-                          marginRight: 15,
-                          borderRadius: 50,
-                          // backgroundColor: '#fa3e3e',
-                          borderColor: '#fa3e3e',
-                          borderWidth: 2,
-                          flex: 1
-                        }}
-                      >
-                        {
-                              loading
-                              && <ActivityIndicator size="small" color="#fff" />
-                          }
-                        <Text
-                          style={{
-                            color: '#fff',
-                            fontSize: 18,
-                            fontFamily: 'Roboto',
-                            textAlign: 'center'
-                          }}
-                        >
-                          <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
-                          {
-                                  '  Register Now  '
-                          }
-                          <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
-                        </Text>
-                      </TouchableOpacity>
-                      ) }
-              { item.interested === 'true' && item.going === 'true'
-                      && (
-                      <TouchableOpacity
-                        style={{
-                          padding: 15,
-                          backgroundColor: '#c0c0c0',
-                          flex: 1
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: '#fff',
-                            fontSize: 18,
-                            fontFamily: 'Roboto',
-                            textAlign: 'center'
-                          }}
-                        >
-                              GOING
-                        </Text>
-                      </TouchableOpacity>
-                      ) }
+                <Text
+                  selectable
+                  style={{
+                    textAlign: 'left',
+                    fontSize: 14,
+                    marginRight : 8,
+                    color: '#a0a0a0',
+                  }}
+                >
+                  {remind === 'false' ? 'Click the bell icon to get notified for any future updates for this event.' : 'You are now subscribed for future updates for this event.'}
+                </Text>
+              </View>
+
             </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+            }}
+          >
+            { item.interested === 'false' && (
+            <TouchableOpacity
+              onPress={this.handleClick}
+              style={{
+                padding: 15,
+                backgroundColor: '#0056e5',
+                flex: 1
+              }}
+            >
+              {
+                            loading
+                            && <ActivityIndicator size="small" color="#fff" />
+                        }
+              {
+                            !loading
+                            && (
+                            <Text
+                              style={{
+                                color: '#fafafa',
+                                fontSize: 18,
+                                fontFamily: 'Roboto',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                              {' '}
+                              {'  Interested  '}
+                              {' '}
+                              <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                            </Text>
+                            )
+                        }
+            </TouchableOpacity>
+            ) }
+            { item.interested === 'true' && item.going === 'false'
+                    && (
+                    <TouchableOpacity
+                      onPress={this.handleGoing}
+                      style={{
+                        padding: 15,
+                        backgroundColor: '#fa3e3e',
+                        flex: 1
+                      }}
+                    >
+                      {
+                            loading
+                            && <ActivityIndicator size="small" color="#fff" />
+                        }
+                      <Text
+                        style={{
+                          color: '#fff',
+                          fontSize: 18,
+                          fontFamily: 'Roboto',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
+                        {
+                                '  Register Now  '
+                        }
+                        <Icon4 style={{ color: '#fa3e3e' }} name="bookmark" size={18} />
+                      </Text>
+                    </TouchableOpacity>
+                    ) }
+            { item.interested === 'true' && item.going === 'true'
+                    && (
+                    <TouchableOpacity
+                      style={{
+                        padding: 15,
+                        backgroundColor: '#c0c0c0',
+                        flex: 1
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: '#fff',
+                          fontSize: 18,
+                          fontFamily: 'Roboto',
+                          textAlign: 'center'
+                        }}
+                      >
+                            GOING
+                      </Text>
+                    </TouchableOpacity>
+                    ) }
+          </View>
+        
           </ScrollView>
         </Animated.View>
+      
       </SafeAreaView>
     );
   }

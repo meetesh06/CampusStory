@@ -352,7 +352,7 @@ class Interests extends React.Component {
             fontFamily: 'Roboto-Light',
             fontSize: 22,
             marginLeft: 10,
-            marginTop: 15,
+            marginTop: 20,
           }}
           >
             Select your interests
@@ -405,7 +405,7 @@ class Interests extends React.Component {
             fontFamily: 'Roboto-Light',
             fontSize: 22,
             marginLeft: 10,
-            marginTop: 15,
+            marginTop: 20,
           }}
           >
             {'Terms & Conditions'}
@@ -420,7 +420,7 @@ class Interests extends React.Component {
           }}
           />
           <InformationCard
-            touchable
+            touchable = {false}
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. All of your data shared on this platform will be safe and never shared with anyone without your permission."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}

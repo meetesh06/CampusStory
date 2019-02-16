@@ -1,7 +1,6 @@
 import { Navigation } from 'react-native-navigation';
 import Icon1 from 'react-native-vector-icons/Foundation';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
-// import Icon3 from 'react-native-vector-icons/MaterialIcons';
 
 export const goToInterestsSelector = () => Navigation.setRoot({
   root: {
@@ -141,19 +140,6 @@ export const goHome = async (first) => {
                     name: 'Discover Screen',
                     passProps: {
                       first
-                    },
-                    options: {
-                      topBar: {
-                        // hideOnScroll: true,
-                        // visible: true,
-                        // animate: true,
-                        // background: {
-                        //   color: '#222',
-                        //   component: {
-                        //     name: 'homeTopBar'
-                        //   }
-                        // }
-                      }
                     }
                   }
                 }
@@ -173,10 +159,6 @@ export const goHome = async (first) => {
                   textColor: '#c0c0c0',
                   selectedTextColor: '#FF6A15',
                   selectedIconColor: '#FF6A15'
-                },
-                topBar: {
-                  // visible: false,
-                  // drawBehind: true
                 }
               },
               children: [

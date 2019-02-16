@@ -2,6 +2,7 @@ import * as React from 'react';
 import { View, Dimensions, SafeAreaView } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import CategoryView from './CategoryView';
+import DiscoverFeed from './DiscoverFeed';
 import CategoryCard from '../components/CategoryCard';
 import { categoriesNew } from './helpers/values';
 
@@ -9,26 +10,28 @@ export default class Discover extends React.Component {
   state = {
     index: 0,
     routes: [
-      { key: 'cs', title: 'Campus Story' },
       { key: 'food', title: 'Food' },
-      { key: 'art', title: 'Art and Theatre' },
       { key: 'mad', title: 'Music and Dance' },
+      { key: 'art', title: 'Art and Theatre' },
+      { key: 'fun', title: 'Fun' },
       { key: 'society', title: 'Society' },
       { key: 'sports', title: 'Sports' },
-      { key: 'fun', title: 'Fun' },
     ],
   };
+
+  componentDidMount(){
+    console.log('DISCOVER MOUNTED');
+  }
 
   renderScene = ({ route }) => {
     const {
       index,
       routes
     } = this.state;
-    if (Math.abs(index - routes.indexOf(route)) > 2) {
-      return <View />;
+    if (Math.abs(index - routes.indexOf(route)) === 0) { /* LOADING ONLY THE VISIBLE TAB */
+      return <DiscoverFeed category={route.key} />;
     }
-    if (route.key === 'cs') return <CategoryView category={route.key} />;
-    return <CategoryView category={route.key} />;
+    return <View />;
   };
 
   render() {
