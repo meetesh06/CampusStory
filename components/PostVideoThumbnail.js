@@ -18,7 +18,7 @@ const PostImage = (props) => {
       }}
     >
       <Video
-        source={{ uri: `https://www.mycampusdock.com/${video}` }}
+        source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
         style={{
           backgroundColor: '#efefef',
           width: '100%',

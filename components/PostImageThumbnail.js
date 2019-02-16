@@ -24,7 +24,7 @@ const PostImageThumbnail = (props) => {
           height: '100%',
         }}
         resizeMode={FastImage.resizeMode.cover}
-        source={{ uri: `https://www.mycampusdock.com/${image}` }}
+        source={{ uri: encodeURI(`https://www.mycampusdock.com/${image}`) }}
       />
       <View
         style={{
