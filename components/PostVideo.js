@@ -47,7 +47,7 @@ class PostVideo extends React.Component {
             this.setState({muted : !this.state.muted});
           }}>
             <Video
-              source={{ uri: `https://www.mycampusdock.com/${video}` }}
+              source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
               onLoad={() => this.setState({ loading: false })}
               repeat = {this.state.count < 5 ? true : false}
               onEnd = {()=>this.setState({count : this.state.count + 1})}

@@ -17,6 +17,7 @@ import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
 import InterestedScreen from './screens/InterestedScreen';
+import NotificationsAllScreen from './screens/NotificationsAllScreen';
 import AboutScreen from './screens/AboutScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -59,11 +60,11 @@ const HeartIcon = (props) => (
   <TouchableOpacity
     style={{
       flex: 1,
-      backgroundColor : '#ffffff22', 
+      // backgroundColor : '#ffffff22', 
       width : 40,
       height : 40,
       alignItems : 'center',
-      borderRadius : 30,
+      // borderRadius : 30,
       justifyContent: 'center',
     }}
     onPress={
@@ -101,7 +102,7 @@ Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScree
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 Navigation.registerComponent('Interested Screen', () => InterestedScreen);
-Navigation.registerComponent('About Screen', () => AboutScreen);
+Navigation.registerComponent('Notifications All Screen', () => NotificationsAllScreen);
 // Navigation.registerComponent('Camera Screen', () => CameraScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {

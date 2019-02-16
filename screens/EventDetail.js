@@ -292,11 +292,12 @@ class EventDetail extends React.Component {
   handleChannelOpenNetwork = () => {
     // Alert.alert('Channel Open Network');
     const { item, componentId } = this.props;
-    Navigation.dismissOverlay(componentId);
-    Navigation.showModal({
+    // Navigation.dismissOverlay(componentId);
+    Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
         passProps: {
+          // id: '108TWe2DX76V'
           id: item.channel
         },
         options: {
@@ -813,7 +814,7 @@ Views
                   paddingTop: 5,
                   paddingBottom: 5,
                   borderRadius: 50,
-                  backgroundColor : "#444"
+                  backgroundColor : remind === 'false' ? '#444' : '#2E8B57'
                 }}
                 onPress={this.handleRemind}
               >

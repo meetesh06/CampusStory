@@ -74,11 +74,12 @@ class DiscoverPreview extends React.Component {
   }
 
   gotoChannel = (item) =>{
-    Navigation.showModal({
+    Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
         passProps: {
-          id: item.channel
+          id: item.channel,
+          modal: true
         },
         options: {
           bottomTabs: {

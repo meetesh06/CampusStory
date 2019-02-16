@@ -41,6 +41,7 @@ class Home extends React.Component {
     this.fetchEventsFromRealm = this.fetchEventsFromRealm.bind(this);
     this.fetchChannelsFromRealm = this.fetchChannelsFromRealm.bind(this);
     this.checkForChanges = this.checkForChanges.bind(this);
+    this.checkPermission = this.checkPermission.bind(this);
     this.handleStoryOpenNotification = this.handleStoryOpenNotification.bind(this);
   }
 
@@ -58,7 +59,14 @@ class Home extends React.Component {
     newUpdates: false
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.updateContent();
+    this.checkPermission();
+    // this.fetchChannelsFromRealm();
+    // if (this.props.first) this.checkForChanges();
+  }
+
+  checkPermission = async () => {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
     // // Build notification
@@ -111,14 +119,9 @@ class Home extends React.Component {
     const {
       updateContent,
       handleStoryOpenNotification,
-      handleEventOpenNotification,
-      fetchEventsFromRealm,
-      fetchChannelsFromRealm,
-      checkForChanges
+      handleEventOpenNotification
     } = this;
-    fetchEventsFromRealm();
-    fetchChannelsFromRealm();
-    if (this.props.first) checkForChanges();
+    
     shuffleArray(interests.split(','), value => this.setState({ interests: value }));
 
     this.notificationDisplayedListener = firebase
@@ -268,43 +271,43 @@ class Home extends React.Component {
     let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
 
-    const realm_manager = new RealmManager();
-    const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
-    const cs = Date.parse(new Date());
+    // const realm_manager = new RealmManager();
+    // const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
+    // const cs = Date.parse(new Date());
 
-    interests.forEach((value) => {
-      realm_manager.getItems([`ms > ${cs}`, 'going="false"', `category="${value}"`], 'Events', 'date', true, (result)=>{
-        this.setState({ [value]: result });
-      });
-    });
-
-    realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result) => {
-      this.setState({ eventList: result });
-    });
-
-    realm_manager.getItems(['going = "false"', `ms < ${ts} AND ms > ${cs}`], 'Events', 'date', true, (result)=>{
-      this.setState({ weekEventList: result });
-    });
-
-    // Realm.getRealm((realm) => {
-    //   const Events = realm.objects('Events').sorted('timestamp', true);
-    //   const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
-    //   const cs = Date.parse(new Date());
-    //   interests.forEach((value) => {
-    //     const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
-    //     processRealmObj(current, (result) => {
-    //       this.setState({ [value]: result });
-    //     });
-    //   });
-    //   const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
-    //   const weekEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms < ${ts} AND ms > ${cs}`).sorted('date', true);
-    //   processRealmObj(latestEvents, (result) => {
-    //     this.setState({ eventList: result });
-    //   });
-    //   processRealmObj(weekEvents, (result) => {
-    //     this.setState({ weekEventList: result });
+    // interests.forEach((value) => {
+    //   realm_manager.getItems([`ms > ${cs}`, 'going="false"', `category="${value}"`], 'Events', 'date', true, (result)=>{
+    //     this.setState({ [value]: result });
     //   });
     // });
+
+    // realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result) => {
+    //   this.setState({ eventList: result });
+    // });
+
+    // realm_manager.getItems(['going = "false"', `ms < ${ts} AND ms > ${cs}`], 'Events', 'date', true, (result)=>{
+    //   this.setState({ weekEventList: result });
+    // });
+
+    Realm.getRealm((realm) => {
+      const Events = realm.objects('Events').sorted('timestamp', true);
+      const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
+      const cs = Date.parse(new Date());
+      interests.forEach((value) => {
+        const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
+        processRealmObj(current, (result) => {
+          this.setState({ [value]: result });
+        });
+      });
+      const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
+      const weekEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms < ${ts} AND ms > ${cs}`).sorted('date', true);
+      processRealmObj(latestEvents, (result) => {
+        this.setState({ eventList: result });
+      });
+      processRealmObj(weekEvents, (result) => {
+        this.setState({ weekEventList: result });
+      });
+    });
   }
 
   fetchChannelsFromRealm = () => {
@@ -381,8 +384,8 @@ class Home extends React.Component {
       fetchChannelsFromRealm,
       checkForChanges
     } = this;
-    await fetchEventsFromRealm();
-    await fetchChannelsFromRealm();
+    fetchEventsFromRealm();
+    fetchChannelsFromRealm();
     await checkForChanges();
     this.setState({ refreshing: false, newUpdates: false });
   }

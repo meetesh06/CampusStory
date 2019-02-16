@@ -14,6 +14,9 @@ const {TOKEN} = constants;
 class StoryFeed extends React.PureComponent {
     constructor(props){
       super(props);
+      this.handleChannelClickStory = this.handleChannelClickStory.bind(this);
+      this.handleClose = this.handleClose.bind(this);
+      this.handlePreview = this.handlePreview.bind(this);
     }
 
     state = {
@@ -38,7 +41,7 @@ class StoryFeed extends React.PureComponent {
     }
 
     handleChannelClick = (id, name) => {
-      Navigation.showModal({
+      Navigation.showOverlay({
         component: {
           name: 'Channel Detail Screen',
           passProps: {
@@ -58,6 +61,57 @@ class StoryFeed extends React.PureComponent {
             }
           }
         }
+      });
+    }
+
+    handleChannelClickStory = (item) => {
+      console.log('press');
+      this.setState({ peek: false }, () => {
+        Navigation.showOverlay({
+          component: {
+            id: 'preview_overlay',
+            passProps: {
+              item,
+              peek: false
+            },
+            name: 'Discover Preview',
+            options: {
+              overlay: {
+                interceptTouchOutside: false
+              }
+            }
+          }
+        }).catch(err => console.log(err));
+      });
+    }
+
+    handleClose = () => {
+      const {
+        peek
+      } = this.state;
+      if (!peek) return;
+      Navigation.dismissOverlay('preview_overlay1');
+      // Navigation.dismissOverlay('preview_overlay');
+    }
+
+    handlePreview = (item) => {
+      console.log('long press');
+      this.setState({ peek: true }, () => {
+        Navigation.showOverlay({
+          component: {
+            id: 'preview_overlay1',
+            passProps: {
+              item,
+              peek: true
+            },
+            name: 'Discover Preview',
+            options: {
+              overlay: {
+                interceptTouchOutside: false
+              }
+            }
+          }
+        }).catch(err => console.log(e));
       });
     }
 
@@ -114,21 +168,6 @@ class StoryFeed extends React.PureComponent {
                       </TouchableOpacity>
                     );
                   }
-                  // if (item.type === 'post-video') {
-                  //   return (
-                  //     <TouchableOpacity
-                  //       style={{
-                  //         overflow: 'hidden'
-                  //       }}
-                  //       onPress={() => { this.handleChannelClickStory(item); }}
-                  //       onLongPress={() => this.handlePreview(item)}
-                  //       onPressOut={() => this.handleClose()}
-                  //       activeOpacity={0.2}
-                  //     >
-                  //       <PostVideoThumbnail video={item.media} />
-                  //     </TouchableOpacity>
-                  //   );
-                  // }
                   return null;
               }}
             />

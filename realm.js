@@ -69,6 +69,18 @@ const Firebase = {
   }
 };
 
+const Notifications = {
+  name: 'Notifications',
+  primaryKey: '_id',
+  properties: {
+    _id: 'string',
+    type: 'string',
+    timestamp: 'date',
+    message: 'string',
+    audience: 'string'
+  }
+};
+
 const Activity = {
   name: 'Activity',
   primaryKey: '_id',
@@ -101,7 +113,7 @@ export default {
   getRealm: (callback) => {
     if (realmdb === null) {
       return Realm.open({
-        schema: [Firebase, Events, Activity, Channels],
+        schema: [Firebase, Events, Activity, Channels, Notifications],
         deleteRealmIfMigrationNeeded: true
       })
         .then((realm) => {

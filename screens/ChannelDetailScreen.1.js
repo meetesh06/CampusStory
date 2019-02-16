@@ -1,39 +1,28 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-param-reassign */
 import React from 'react';
 import {
-  ActivityIndicator,
+  Platform,
   TouchableOpacity,
+  StatusBar,
   Dimensions,
   View,
-  Platform,
   Text,
-  StatusBar,
-  PanResponder,
-  Animated,
-  SafeAreaView,
   ScrollView
 } from 'react-native';
+import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
-import Icon1 from 'react-native-vector-icons/Entypo';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon4 from 'react-native-vector-icons/Octicons';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
-import axios from 'axios';
-import { Navigation } from 'react-native-navigation';
 import firebase from 'react-native-firebase';
+import { Navigation } from 'react-native-navigation';
 import Realm from '../realm';
 import Constants from '../constants';
 import { processRealmObj, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
 
-const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
-
 const { TOKEN } = Constants;
+
+const WIDTH = Dimensions.get('window').width;
 
 class ChannelDetailScreen extends React.Component {
   constructor(props) {
@@ -41,74 +30,15 @@ class ChannelDetailScreen extends React.Component {
     this.handleSubscribe = this.handleSubscribe.bind(this);
     this.fetchChannelRequest = this.fetchChannelRequest.bind(this);
     this.handleNotify = this.handleNotify.bind(this);
+  }
 
-    this.handleClose = this.handleClose.bind(this);
-    this.handleFull = this.handleFull.bind(this);
-    // animations
-    this.topHeight = new Animated.Value(HEIGHT);
-    this.opacity = new Animated.Value(0.3);
-    this.opacity1 = new Animated.Value(0);
-    this.partial = true;
-    this.state = {
-      // eslint-disable-next-line react/destructuring-assignment
-      item: null,
-      subscribed: false,
-      notify: false,
-      partial: true,
-      pan: new Animated.ValueXY()
-    };
-
-    // eslint-disable-next-line no-underscore-dangle
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
-
-      onPanResponderGrant: () => {
-        const {
-          pan
-        } = this.state;
-        const {
-          _value
-        } = pan.y;
-        pan.setOffset({ y: _value });
-        pan.setValue({ y: 0 });
-      },
-      onPanResponderMove: (e, gestureState) => {
-        const {
-          pan
-        } = this.state;
-        pan.setValue({ y: gestureState.dy });
-        this.opacity1.setValue(1 - gestureState.dy / HEIGHT);
-        this.opacity.setValue(1 - gestureState.dy / HEIGHT);
-      },
-      onPanResponderRelease: (e, { dx, dy }) => {
-        if (dy > 10) {
-          this.handleClose();
-        } else if(dy < -20) {
-          this.handleFull();
-        }
-        else if (dx < 5, dy < 5) {
-          if(this.state.partial) this.handleFull();
-        }
-      }
-    });
+  state = {
+    item: null,
+    subscribed: false,
+    notify: false
   }
 
   componentDidMount() {
-    Animated.parallel([
-      Animated.spring(this.topHeight, {
-        toValue: HEIGHT * 0.30,
-        duration: 200,
-        friction: 7
-      }),
-      Animated.timing(this.opacity1, {
-        toValue: 1 - (HEIGHT * 0.30 / HEIGHT),
-        duration: 400
-      })
-    ]).start();
-
     const { id } = this.props;
     const {
       fetchChannelRequest
@@ -235,48 +165,17 @@ class ChannelDetailScreen extends React.Component {
     });
   }
 
-  handleClose = () => {
-    const {
-      componentId
-    } = this.props;
-    Animated.parallel([
-      Animated.spring(this.topHeight, {
-        toValue: HEIGHT + this.topHeight._value,
-        duration: 200,
-        friction: 7
-      }),
-      Animated.timing(this.opacity, {
-        toValue: 0,
-        duration: 200
-      })
-    ]).start();
-    setTimeout(() => Navigation.dismissOverlay(componentId), 180);
-  }
-
-  handleFull = () => {
-    this.setState({ partial: false });
-    const {
-      pan
-    } = this.state;
-    pan.setOffset({ y: 0 });
-    Animated.spring(pan, {
-      toValue: -(HEIGHT * 0.30),
-      friction: 15
-    }).start();
-  }
   render() {
     const {
       item,
       subscribed,
-      notify,
-      pan
+      notify
     } = this.state;
-    const [translateY] = [pan.y];
     const { componentId } = this.props;
     return (
       <View
         style={{
-          // width: WIDTH,
+          backgroundColor: '#333',
           flex: 1
         }}
       >
@@ -285,35 +184,15 @@ class ChannelDetailScreen extends React.Component {
           && (<StatusBar barStyle="light-content" translucent />)
         }
 
-        <Animated.View
+        <ScrollView
           style={{
             flex: 1,
-            height: HEIGHT,
-            width: WIDTH,
-            backgroundColor: '#000000dd',
-            opacity: this.opacity1
-          }}
-        />
-
-        <Animated.View
-          style={{
-            flex: 1,
-            position: 'absolute',
-            top: this.topHeight,
-            height: HEIGHT,
-            backgroundColor: '#333',
-            transform: [{ translateY }]
           }}
         >
-        <View
-        {...this._panResponder.panHandlers}
-        >
-
           <View
             style={{
               backgroundColor: '#222',
               justifyContent: 'center',
-              width: WIDTH,
               padding: 10,
               height: (WIDTH - 20) * 0.75 + 20
             }}
@@ -334,6 +213,7 @@ class ChannelDetailScreen extends React.Component {
               )
             }
           </View>
+
           <View
             style={{
               position: 'absolute',
@@ -366,16 +246,21 @@ class ChannelDetailScreen extends React.Component {
               </Text>
             </View>
             <View style={{ flex: 1 }} />
-            
+            <TouchableOpacity
+              style={{
+                justifyContent: 'center',
+                textAlign: 'right',
+                width: 30,
+                height: 30,
+                padding: 5,
+                backgroundColor: '#ffffff99',
+                borderRadius: 20
+              }}
+              onPress={() => Navigation.dismissModal(componentId)}
+            >
+              <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
+            </TouchableOpacity>
           </View>
-        </View>
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-        >
-          
-          
           <Text
             style={{
               // marginTop: 20,
@@ -412,8 +297,6 @@ class ChannelDetailScreen extends React.Component {
             }}
           />
         </ScrollView>
-
-        </Animated.View>
         <View
           style={{
             backgroundColor: (subscribed || this.state.item === null || this.state.item === undefined) ? '#c0c0c0' : '#FF6A15',

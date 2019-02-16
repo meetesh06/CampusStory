@@ -42,7 +42,7 @@ class DiscoverFeed extends React.PureComponent {
 
   render(){
     return(
-      <View style={{flex : 1}}>
+      <View style={{flex : 1, backgroundColor: '#333'}}>
         <FlatList
           keyExtractor={(item, index) => `${index}`}
           data={this.state.channels}
