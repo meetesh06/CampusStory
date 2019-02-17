@@ -19,6 +19,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
 import firebase from 'react-native-firebase';
 import Constants from '../constants';
+import Urls from '../URLS';
 import { goHome } from './helpers/Navigation';
 import AdvertCard from '../components/AdvertCard';
 import CustomModal from '../components/CustomModal';
@@ -87,6 +88,7 @@ class Interests extends React.Component {
         store.putValue(CONFIG, config);
       } catch (error) {
         console.log('PERMISSION DENIED');
+        new SessionStore().pushLogs({type : 'error_firebase', line : new Error().stack, file : 'Interest.js', err : error});
         const config = store.getValue(CONFIG);
         config.firebase_enabled = false;
         config.platform = Platform.OS === 'android' ? 'android' : 'ios';
@@ -104,7 +106,6 @@ class Interests extends React.Component {
   }
 
   updateLocalState = async (college, interestsProcessed, token, data) => {
-    console.log('UPDATING LOCAL STORE');
     const store = new SessionStore();
     store.putValue(COLLEGE, college);
     store.putValue(INTERESTS, interestsProcessed);
@@ -112,6 +113,7 @@ class Interests extends React.Component {
     store.putValue(SET_UP_STATUS, true);
     store.putValue(MUTED, true);
     store.putValue(CONFIG, data);
+    await store.setSessionId();
     await store.setValueBulk();
     goHome(true);
   }
@@ -137,19 +139,21 @@ class Interests extends React.Component {
   }
 
   reset = () =>{
-    axios.post('https://www.mycampusdock.com/auth/reset-user', this.state.config.formData, {
+    const config = this.state.config;
+    axios.post(Urls.RESET_USER_URL, config.formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'x-access-token' : this.state.config.token
+        'x-access-token' : config.token
       }
     })
       .then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
           console.log('RESPONSE RESET', resultObj);
+          new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err : resultObj.mssg});
           try {
-            this.subsribeFB(this.state.config.temp, this.state.config.college, () => {
-              this.updateLocalState(this.state.config.college, this.state.config.interestsProcessed, resultObj.data, {});
+            this.subsribeFB(config.temp, config.college, () => {
+              this.updateLocalState(config.college, config.interestsProcessed, resultObj.data, {_id : config.id, token : resultObj.data});
             });
           } catch (error) {
             this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
@@ -160,6 +164,7 @@ class Interests extends React.Component {
         }
       }).catch((err) => {
         console.log(err);
+        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -221,7 +226,7 @@ class Interests extends React.Component {
     formData.append(INTERESTS, interestsProcessed);
     formData.append('others', JSON.stringify({}));
 
-    axios.post('https://www.mycampusdock.com/auth/get-general-token', formData, {
+    axios.post(Urls.GENERAL_TOKEN_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
@@ -229,16 +234,15 @@ class Interests extends React.Component {
       .then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
-          console.log('RESPONSE', resultObj);
           if(resultObj.exists){
-            this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data}}, ()=>{
+            this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data, id}}, ()=>{
               this.showBackupPrompt();
             });
           }
           else {
             try {
               this.subsribeFB(temp, college, () => {
-                updateLocalState(college, interestsProcessed, resultObj.data, {});
+                updateLocalState(college, interestsProcessed, resultObj.data, {_id : id, [COLLEGE] : college, [INTERESTS] : interestsProcessed});
               });
             } catch (error) {
               this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
@@ -249,7 +253,7 @@ class Interests extends React.Component {
           this.setState({ loading: false, error : 'Something went wrong on server :('});
         }
       }).catch((err) => {
-        console.log(err);
+        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -270,6 +274,7 @@ class Interests extends React.Component {
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {
             console.log(e);
+            new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err : e});
           }
         }
       });
@@ -300,7 +305,7 @@ class Interests extends React.Component {
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('dummy', ''); /* DO NOT DELETE */
-    axios.post('https://www.mycampusdock.com/users/get-college-list', formData, {
+    axios.post(Urls.COLLEGE_LIST_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
@@ -311,7 +316,10 @@ class Interests extends React.Component {
           this.setState({ collegeSelection: resultObj.data[0], colleges: resultObj.data });
         }
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
+      })
       .finally(() => {
         this.setState({ refreshing: false });
       });

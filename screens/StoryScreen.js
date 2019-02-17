@@ -22,7 +22,7 @@ import Realm from '../realm';
 import { processRealmObj, timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
 
-const { MUTED, VIEWS, VISITS } = Constants;
+const { MUTED, } = Constants;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 

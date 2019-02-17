@@ -7,6 +7,7 @@ import PostImageThumbnail from './PostImageThumbnail';
 import PostVideoThumbnail from './PostVideoThumbnail';
 import axios from 'axios';
 import constants from '../constants';
+import Urls from '../URLS';
 import { Navigation } from 'react-native-navigation';
 import {timelapse} from '../screens/helpers/functions'
 
@@ -26,13 +27,12 @@ class StoryFeed extends React.PureComponent {
 
     componentDidMount(){
       const { item } = this.props;
-      axios.post('https://www.mycampusdock.com/channels/get-story', {channel_id : item._id}, {
+      axios.post(Urls.GET_STORY_URL, {channel_id : item._id}, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': new SessionStore().getValue(TOKEN)
         }
       }).then((response) => {
-        console.log(response);
         if(!response.data.error){
           this.setState({feed : response.data.data});
         } else {
@@ -42,6 +42,7 @@ class StoryFeed extends React.PureComponent {
     }
 
     handleChannelClick = (id, name) => {
+      new SessionStore().pushVisits(id, 'OPEN');
       Navigation.showOverlay({
         component: {
           name: 'Channel Detail Screen',
@@ -66,7 +67,6 @@ class StoryFeed extends React.PureComponent {
     }
 
     handleChannelClickStory = (item, image) => {
-      console.log('press');
       this.setState({ peek: false }, () => {
         Navigation.showOverlay({
           component: {

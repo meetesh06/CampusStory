@@ -24,13 +24,13 @@ import {
   processRealmObjRecommended,
   shuffleArray
 } from './helpers/functions';
+import urls from '../URLS';
 
 const { TOKEN } = Constants;
 
 class Home extends React.PureComponent {
   constructor(props) {
     super(props);
-    // this.updateContent = this.updateContent.bind(this);
     this.updateRecommendedList = this.updateRecommendedList.bind(this);
     this.handleChannelClick = this.handleChannelClick.bind(this);
     this.handleUpdateData = this.handleUpdateData.bind(this);
@@ -71,7 +71,7 @@ class Home extends React.PureComponent {
     formData.append('category_list', JSON.stringify([category]));
     formData.append('channels_list', JSON.stringify(channelsList));
     formData.append('count', 10);
-    axios.post('https://www.mycampusdock.com/channels/top', formData, {
+    axios.post(urls.TOP_CHANNELS, formData, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': token
@@ -120,7 +120,7 @@ class Home extends React.PureComponent {
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('category', category);
-    axios.post('https://www.mycampusdock.com/channels/fetch-popular-activity', formData, {
+    axios.post(urls.FETCH_POPULAR_ACTIVITY, formData, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)

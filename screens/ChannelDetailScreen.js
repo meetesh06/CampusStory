@@ -24,6 +24,7 @@ import Constants from '../constants';
 import { processRealmObj, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -127,7 +128,7 @@ class ChannelDetailScreen extends React.Component {
       subscribed
     } = this.state;
     const { id } = this.props;
-    axios.post('https://www.mycampusdock.com/channels/user/fetch-channel-data', { _id: id }, {
+    axios.post(urls.FETCH_CHANNEL_DATA, { _id: id }, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)
@@ -226,7 +227,7 @@ handleSubscribe = () =>{
     const {
       _id
     } = item;
-    const URL = subscribed ? 'https://www.mycampusdock.com/channels/user/unfollow' : 'https://www.mycampusdock.com/channels/user/follow';
+    const URL = subscribed ? urls.UNFOLLOW_URL : urls.FOLLOW_URL;
     axios.post(URL, { channel_id:_id}, {
       headers: {
         'Content-Type': 'application/json',

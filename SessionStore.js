@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import Constants from './constants';
 import axios from 'axios';
+import urls from './URLS';
 
 const {
   SET_UP_STATUS,
@@ -13,7 +14,11 @@ const {
   CONFIG,
   UPDATES,
   VIEWS,
-  VISITS
+  VISITS,
+  SESSION_ID,
+  LOGS,
+  TRACKS,
+  APP_USAGE_TIME
 } = Constants;
 
 export default class SessionStore {
@@ -32,9 +37,21 @@ export default class SessionStore {
     [SET_UP_STATUS] : '',
     [COLLEGE] : '',
     [INTERESTS] : '',
+    [SESSION_ID] : '',
+    temp : {
+      [UPDATES] : [],
+      [VIEWS] : [],
+      [VISITS] : []
+    }
+  }
+
+  temp = {
     [UPDATES] : [],
     [VIEWS] : [],
-    [VISITS] : []
+    [VISITS] : [],
+    [APP_USAGE_TIME] : new Date().getTime(),
+    [LOGS] : [],
+    [TRACKS] : []
   }
 
   getValueFromStore = async (key)=>{
@@ -50,17 +67,31 @@ export default class SessionStore {
     this.state[key] = value;
   }
 
+  getValueTemp = (key) =>{
+    return this.temp[key];
+  }
+
+  putValueTemp = (key, value) =>{
+    this.temp[key] = value;
+  }
+
   putInStore = async (key, value) =>{
     await AsyncStorage.setItem(key, '' + value);
   }
 
-  format = (obj) =>{
+  deleteFromStore = async (key) =>{
+    await AsyncStorage.removeItem(key);
+  }
+
+  format = (obj, callback) =>{
     let res = [];
     let keys = Object.keys(obj);
     for(var i=0; i<keys.length; i++){
       res.push({_id : keys[i], count : obj[keys[i]].length})
+      if(i==keys.length - 1){
+        return callback(res);
+      }
     }
-    return res;
   }
 
   getValueBulk = async () =>{ // ['key1', 'key2']
@@ -69,94 +100,194 @@ export default class SessionStore {
     for(var i=0; i< resArrays.length; i++){
       this.state['' + resArrays[i][0]] = JSON.parse(resArrays[i][1]);
     }
+    this.temp[APP_USAGE_TIME] = new Date().getTime();
+  }
+
+  setSessionId = async () => {
+    let session = this.state[SESSION_ID];
+    const config = this.state[CONFIG] === null ? {} : this.state[CONFIG];
+    const id = config._id;
+    if(session === null || session === ''){
+      if(this.state.temp === null){
+        this.state.temp = {}
+      }
+      this.state.temp[UPDATES] = [];
+      this.state.temp[VIEWS] = [];
+      this.state.temp[VISITS] = [];
+      this.state[SESSION_ID] =  id === undefined || id === null ? new Date().getTime().toString() + '@temp' : new Date().getTime().toString() + '@' + id
+    } else {
+      let cs = new Date().getTime();
+      let ts = parseInt(session.split('@')[0]);
+      let diff = (cs - ts);
+      if(diff > (24 * 3600 * 1000)){
+        await this.deleteFromStore(SESSION_ID);
+        if(this.state.temp === null){
+          this.state.temp = {}
+        }
+        this.state.temp[UPDATES] = [];
+        this.state.temp[VIEWS] = [];
+        this.state.temp[VISITS] = [];
+        this.state[SESSION_ID] =  id === undefined || id === null ? new Date().getTime().toString() + '@temp' : new Date().getTime().toString() + '@' + id
+      }
+    }
   }
 
   setValueBulk = async () =>{ // [['key', value], ['key2', value]]
-    console.log('PUSHING');
     let arr = [];
     let keys = Object.keys(this.state);
     for(var i=0; i<keys.length; i++){
       arr.push([keys[i], JSON.stringify(this.state[keys[i]])]);
     }
     await AsyncStorage.multiSet(arr);
-    console.log('PUSHING');
     this.publishUpdates();
     this.publishViews();
     this.publishVisits();
-    console.log('DONE');
+    this.publishLogs();
+    this.publishTracks();
   }
 
   publishUpdates = () =>{
-    const formData = new FormData();
-    formData.append('activity_list', JSON.stringify(this.state[UPDATES]));
-    axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'x-access-token': this.state[TOKEN]
-      }
-    }).then((response) => {
-    }).catch(err => console.log(err));
+    if(this.temp[UPDATES].length > 0){
+      const formData = new FormData();
+      formData.append('activity_list', JSON.stringify(this.temp[UPDATES]));
+      axios.post(urls.UPDATE_READ, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': this.state[TOKEN]
+        }
+      }).then((response) => {
+      }).catch(err => console.log(err));
+    }
   }
 
   publishViews = () =>{
-    const formData = new FormData();
-    const views = this.format(this.state[VIEWS]);
-    formData.append('views', views);
-    console.log(views);
-    axios.post('https://www.mycampusdock.com/channels/update-story-views', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'x-access-token': this.state[TOKEN]
-      }
-    }).then((response) => {
-      console.log(response)
-    }).catch(err => console.log(err));
+    if(this.temp[VIEWS].length > 0){
+      const formData = new FormData();
+      this.format(this.temp[VIEWS], (views)=>{
+        formData.append('views', JSON.stringify(views));
+        formData.append('dummy', [{_id : 'something'}]);
+        axios.post(urls.UPDATE_STORY_VIEWS, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'x-access-token': this.state[TOKEN]
+          }
+        }).then((response) => {
+          console.log(response);
+        }).catch(err => console.log(err));
+      });
+    }
   }
 
   publishVisits = () =>{
-    const formData = new FormData();
-    const visits = this.format(this.state[VISITS]);
-    console.log(visits);
-    formData.append('visits', visits);
-    axios.post('https://www.mycampusdock.com/channels/update-channel-visits', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'x-access-token': this.state[TOKEN]
-      }
-    }).then((response) => {
-      console.log(response)
-    }).catch(err => console.log(err));
+    if(this.temp[VISITS].length > 0){
+      const formData = new FormData();
+      this.format(this.temp[VISITS], (visits)=>{
+        formData.append('visits', JSON.stringify(visits));
+        formData.append('dummy', [{_id : 'something'}]);
+        axios.post(urls.UPDATE_CHANNEL_VISITS, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'x-access-token': this.state[TOKEN]
+          }
+        }).then((response) => {
+          console.log(response);
+        }).catch(err => console.log(err));
+      });
+    }
+  }
+
+  publishLogs = () =>{
+    if(this.temp[LOGS].length > 0){
+      const formData = new FormData();
+      formData.append('logs', JSON.stringify(this.temp[LOGS]));
+      formData.append('session_id', JSON.stringify(this.state[SESSION_ID]));
+      formData.append('dummy', [{_id : 'something'}]);
+      axios.post(urls.PUT_LOGS, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': this.state[TOKEN]
+        }
+      }).then((response) => {
+        console.log(response);
+      }).catch(err => console.log(err));
+    }
+  }
+
+  publishTracks = () =>{
+    if(this.temp[TRACKS].length > 0){
+      const formData = new FormData();
+      formData.append('logs', JSON.stringify(this.temp[TRACKS]));
+      formData.append('session_id', JSON.stringify(this.state[SESSION_ID]));
+      formData.append('dummy', [{_id : 'something'}]);
+      axios.post(urls.PUT_TRACKS, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': this.state[TOKEN]
+        }
+      }).then((response) => {
+        console.log(response);
+      }).catch(err => console.log(err));
+    }
   }
 
   pushViews = (channel, element_id) =>{
-    let updates = this.state[VIEWS] === undefined || this.state[VIEWS] === null ? {} : this.state[VIEWS];
+    let updates = this.temp[VIEWS] === undefined || this.temp[VIEWS] === null ? {} : this.temp[VIEWS];
+    let updates_reserve = this.state.temp[VIEWS] === undefined || this.state.temp[VIEWS] === null ? {} : this.state.temp[VIEWS];
     const c = updates[channel];
+    const cr = updates_reserve[channel];
     if(c === undefined){
       updates[channel] = [];
     }
-    if(updates[channel].indexOf(element_id) === -1){
-      updates[channel].push(element_id);
+    if(cr === undefined){
+      updates_reserve[channel] = [];
     }
-    this.state[VIEWS] = updates;
+    if(updates_reserve[channel].indexOf(element_id) === -1){
+      updates[channel].push(element_id);
+      updates_reserve[channel].push(element_id);
+    }
+    this.temp[VIEWS] = updates;
+    this.state.temp[VIEWS] = updates_reserve;
   }
 
   pushVisits = (channel, element_id) =>{
-    let updates = this.state[VISITS] === null || this.state[VISITS] === undefined ? {} : this.state[VISITS];
+    let updates = this.temp[VISITS] === undefined || this.temp[VISITS] === null ? {} : this.temp[VISITS];
+    let updates_reserve = this.state.temp[VISITS] === undefined || this.state.temp[VISITS] === null ? {} : this.state.temp[VISITS];
     const c = updates[channel];
+    const cr = updates_reserve[channel];
     if(c === undefined){
       updates[channel] = [];
     }
-    if(updates[channel].indexOf(element_id) === -1){
-      updates[channel].push(element_id);
+    if(cr === undefined){
+      updates_reserve[channel] = [];
     }
-    this.state[VISITS] = updates;
+    if(updates_reserve[channel].indexOf(element_id) === -1){
+      updates[channel].push(element_id);
+      updates_reserve[channel].push(element_id);
+    }
+    this.temp[VISITS] = updates;
+    this.state.temp[VISITS] = updates_reserve;
   }
 
   pushUpdate = (element) =>{
-    let updates = this.state[UPDATES] === null || this.state[UPDATES] === undefined ? [] : this.state[UPDATES];
-    if(updates.indexOf(element) === -1){
+    let updates = this.temp[UPDATES] === null || this.temp[UPDATES] === undefined ? [] : this.temp[UPDATES];
+    let updates_reserve = this.state.temp[UPDATES] === null || this.state.temp[UPDATES] === undefined ? [] : this.state.temp[UPDATES];
+    if(updates_reserve.indexOf(element) === -1){
+      updates_reserve.push(element);
       updates.push(element);
     }
-    this.state[UPDATES] = updates;
+    this.temp[UPDATES] = updates;
+    this.state.temp[UPDATES] = updates_reserve;
+  }
+
+  pushLogs = (element) =>{
+    let logs = this.temp[LOGS] === null || this.temp[LOGS] === undefined ? [] : this.temp[LOGS];
+    logs.push(element);
+    this.temp[LOGS] = logs;
+  }
+
+  pushTrack = (element) =>{
+    let logs = this.temp[TRACKS] === null || this.temp[TRACKS] === undefined ? [] : this.temp[TRACKS];
+    logs.push(element);
+    this.temp[TRACKS] = logs;
   }
 };

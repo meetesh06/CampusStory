@@ -15,6 +15,7 @@ import axios from 'axios';
 import Constants from '../constants';
 import Realm from '../realm';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 const { TOKEN } = Constants;
@@ -81,7 +82,7 @@ class GoingDetails extends React.Component {
     if (!re.test(email.toLowerCase())) return Alert.alert('Please put valid email.');
     if (!re1.test(phone.toLowerCase())) return Alert.alert('Please put valid phone.');
     this.setState({ loading: true });
-    axios.post('https://www.mycampusdock.com/events/user/enroll', {
+    axios.post(urls.SET_ENROLLED, {
       _id, name, email, phone
     }, {
       headers: {

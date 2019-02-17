@@ -20,6 +20,7 @@ import EventNotification from '../components/EventNotification';
 import NormalNotification from '../components/NormalNotification';
 import Constants from '../constants';
 import { processRealmObj } from './helpers/functions';
+import urls from '../URLS';
 
 const { TOKEN } = Constants;
 const today = new Date();
@@ -85,7 +86,7 @@ class Profile extends React.Component {
           final[element._id] = lastUpdated;
         });
       });
-      axios.post('https://www.mycampusdock.com/notifications/user/fetch', { subs: JSON.stringify(final) }, {
+      axios.post(urls.FETCH_NOTIFICATIONS, { subs: JSON.stringify(final) }, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': new SessionStore().getValue(TOKEN)
@@ -117,7 +118,7 @@ class Profile extends React.Component {
       count
     } = this.state;
     this.setState({ count: count + 1 });
-    if (count > 16) {
+    if (count > 30) {
       Realm.getRealm((realm) => {
         realm.write(async () => {
           realm.deleteAll();

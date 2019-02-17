@@ -27,6 +27,7 @@ import Realm from '../realm';
 import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
 import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
+import urls from '../URLS';
 
 const { TOKEN, INTERESTS, CONFIG } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -62,6 +63,23 @@ class Home extends React.Component {
   componentDidMount() {
     this.updateContent();
     this.checkPermission();
+    this.fetchTrendingEvents();
+  }
+
+  fetchTrendingEvents = () =>{
+    axios.post(urls.FETCH_TRENDING_EVENTS, {}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(TOKEN)
+      }
+    }).then((response) => {
+        console.log(response);
+        if(!response.data.error){
+          this.setState({weekEventList : response.data.data});
+        } else {
+          console.log(response.data.error);
+        }
+    });
   }
 
   checkPermission = async () => {
@@ -151,7 +169,7 @@ class Home extends React.Component {
   }
 
   updateLists = async (lastUpdated, channelsList) => {
-    axios.post('https://www.mycampusdock.com/events/user/get-event-list', { last_updated: lastUpdated }, {
+    axios.post(urls.GET_EVENT_LIST, { last_updated: lastUpdated }, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)
@@ -200,7 +218,7 @@ class Home extends React.Component {
     const formData = new FormData();
     formData.append('channels_list', JSON.stringify(channelsList));
 
-    axios.post('https://www.mycampusdock.com/channels/fetch-activity-list', formData, {
+    axios.post(urls.FETCH_ACTIVITY_LIST, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'x-access-token': new SessionStore().getValue(TOKEN)
@@ -281,12 +299,8 @@ class Home extends React.Component {
         });
       });
       const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
-      const weekEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms < ${ts} AND ms > ${cs}`).sorted('date', true);
       processRealmObj(latestEvents, (result) => {
         this.setState({ eventList: result });
-      });
-      processRealmObj(weekEvents, (result) => {
-        this.setState({ weekEventList: result });
       });
     });
   }
@@ -372,6 +386,7 @@ class Home extends React.Component {
   }
 
   handleEventOpenNotification = (_id) => {
+    new SessionStore().pushTrack({type : 'open_event_notification', event : _id});
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
@@ -404,8 +419,8 @@ class Home extends React.Component {
   }
 
   handleEventPress = (item) => {
-    // const { componentId } = this.props;
     const { _id } = item;
+    new SessionStore().pushTrack({type : 'open_event', event : _id});
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
@@ -439,6 +454,7 @@ class Home extends React.Component {
   }
 
   handleStoryOpenNotification = (_id) => {
+    new SessionStore().pushTrack({type : 'open_story_notification'});
     Navigation.showOverlay({
       component: {
         name: 'Story Screen',
@@ -456,6 +472,7 @@ class Home extends React.Component {
     const { channels } = this.state;
     const { _id } = item;
     const old = [...channels];
+    new SessionStore().pushTrack({type : 'open_story', channel : _id});
     Navigation.showOverlay({
       component: {
         name: 'Story Screen',
@@ -474,7 +491,6 @@ class Home extends React.Component {
   }
 
   componentDidAppear() {
-    // console.log('TEST');
     this.fetchChannelsFromRealm();
     this.fetchEventsFromRealm();
     this.setState({ newUpdates: false });
@@ -611,7 +627,7 @@ class Home extends React.Component {
         {
           interests.map(value => (
             <View key={value}>
-              { this.state[value] !== undefined && this.state[value].length > 0
+              { this.state[value] !== undefined && this.state[value].length > 1
                 && (
                   <View>
                     <Text style={{

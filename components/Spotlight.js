@@ -47,6 +47,7 @@ const getMonthName = (num) => {
 
 const Spotlight = (props) => {
   const { item, onPress } = props;
+  console.log(item);
   const { media, title, date } = item;
   return (
     <View
@@ -59,7 +60,7 @@ const Spotlight = (props) => {
       <FastImage
         style={{ height: 250, flexDirection: 'column' }}
         source={{
-          uri: `https://www.mycampusdock.com/${JSON.parse(media)[0]}`,
+          uri: `https://www.mycampusdock.com/${media[0]}`,
           priority: FastImage.priority.high
         }}
         resizeMode={FastImage.resizeMode.cover}
@@ -109,7 +110,7 @@ const Spotlight = (props) => {
               borderRadius: 10,
               margin: 10
             }}
-            source={{ uri: `https://www.mycampusdock.com/${JSON.parse(media)[0]}` }}
+            source={{ uri: `https://www.mycampusdock.com/${media[0]}` }}
             resizeMode={FastImage.resizeMode.cover}
           />
         </TouchableOpacity>
@@ -150,7 +151,7 @@ const Spotlight = (props) => {
               fontWeight: '300'
             }}
           >
-            { `${date.getDate()}-${getMonthName(item.date.getMonth() + 1)}-${1900 + item.date.getYear()}, ${formatAMPM(item.date)}` }
+            { `${new Date(date).getDate()}-${getMonthName(new Date(date).getMonth() + 1)}-${1900 + new Date(date).getYear()}, ${formatAMPM(new Date(date))}` }
           </Text>
         </View>
       </View>

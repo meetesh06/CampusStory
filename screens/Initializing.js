@@ -30,8 +30,8 @@ class App extends React.Component {
   async componentDidMount() {
     try {
       const status = new SessionStore().getValue(SET_UP_STATUS);
-      console.log('Status', status);
       if (status === true) {
+        await new SessionStore().setSessionId();
         goHome(false);
       } else {
         this.setState({ loading: false });

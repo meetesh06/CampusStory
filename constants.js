@@ -8,7 +8,11 @@ const constants = {
   VIEWS : 'views',
   VISITS : 'visits',
   CONFIG : 'config',
-  UPDATES : 'updates'
+  UPDATES : 'updates',
+  SESSION_ID : 'sessions_id',
+  LOGS : 'logs',
+  TRACKS : 'tracks',
+  APP_USAGE_TIME : 'app_usage_time'
 };
 
 export default constants;

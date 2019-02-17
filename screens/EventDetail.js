@@ -28,6 +28,7 @@ import Realm from '../realm';
 import Constants from '../constants';
 import { getMonthName, formatAMPM, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -44,7 +45,7 @@ class EventDetail extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleFull = this.handleFull.bind(this);
     this.handleChannelOpenNetwork = this.handleChannelOpenNetwork.bind(this);
-    // animations
+    
     this.topHeight = new Animated.Value(HEIGHT);
     this.opacity = new Animated.Value(0.3);
     this.opacity1 = new Animated.Value(0);
@@ -115,7 +116,7 @@ class EventDetail extends React.Component {
     ]).start();
 
     const { interested, going, remind } = this.state;
-    axios.post('https://www.mycampusdock.com/events/user/fetch-event-data', { _id }, {
+    axios.post(urls.FETCH_EVENT_DATA, { _id }, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)
@@ -145,7 +146,6 @@ class EventDetail extends React.Component {
             el.interested = interested;
             el.going = going;
             el.remind = remind;
-            // console.log(el);
             try {
               realm.create('Events', el, true);
             } catch (e) {
@@ -164,7 +164,7 @@ class EventDetail extends React.Component {
     const { _id } = item;
     if (loading) return;
     this.setState({ loading: true });
-    axios.post('https://www.mycampusdock.com/events/user/interested', { _id }, {
+    axios.post(urls.SET_USER_INTERESTED, { _id }, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)

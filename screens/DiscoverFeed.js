@@ -8,6 +8,7 @@ import axios from 'axios';
 import Constants from '../constants';
 import StoryFeed from '../components/StoryFeed';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 
 const { TOKEN } = Constants;
 
@@ -22,13 +23,13 @@ class DiscoverFeed extends React.PureComponent {
 
   componentDidMount(){
     const { category } = this.props;
-    axios.post('https://www.mycampusdock.com/channels/get-category-channels', {category}, {
+    const private_channels = false;
+    axios.post(urls.GET_CATEGORY_CHANNEL_URL, {category, private : private_channels}, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log('DISCOVER', response);
       if(!response.data.error){
         this.setState({channels : response.data.data});
       } else {

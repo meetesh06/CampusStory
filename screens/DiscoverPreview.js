@@ -10,20 +10,13 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Realm from '../realm';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import FastImage from 'react-native-fast-image';
-import { timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
 import Constants from '../constants';
 const WIDTH = Dimensions.get('window').width;
-
-const {
-  VIEWS,
-  VISITS
-} = Constants;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
@@ -35,6 +28,7 @@ class DiscoverPreview extends React.Component {
   state = {
     channel : {media : '["dummy"]', name : 'dummy'}
   }
+
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const {item,image} = this.props;
@@ -123,7 +117,6 @@ class DiscoverPreview extends React.Component {
 
   render() {
     const {item, image} = this.props;
-    console.log(item);
     return (
       <View
         style={{

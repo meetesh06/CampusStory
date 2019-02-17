@@ -17,6 +17,7 @@ import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 
 const { TOKEN } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -119,7 +120,7 @@ class PreviewOverlayScreen extends React.Component {
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('activity_list', JSON.stringify(this.toUpdate));
-    axios.post('https://www.mycampusdock.com/channels/update-read', formData, {
+    axios.post(urls.UPDATE_READ, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'x-access-token': new SessionStore().getValue(TOKEN)

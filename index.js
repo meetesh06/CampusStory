@@ -19,7 +19,7 @@ import InterestedScreen from './screens/InterestedScreen';
 import NotificationsAllScreen from './screens/NotificationsAllScreen';
 import BackupScreen from './screens/BackupScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
-
+import Constants from './constants';
 import SessionStore from './SessionStore';
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -104,7 +104,8 @@ Navigation.registerComponent('Backup Screen', () => BackupScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
-  await new SessionStore().getValueBulk();
+  const store = new SessionStore();
+  await store.getValueBulk();
   this.init();
 });
 
@@ -120,15 +121,17 @@ init = () =>{
 
 onAppStateChanged = async (nextAppState) => {
   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){
-    /* forground */
-    console.log('Background - Forground');
+    console.log('Background - Forground'); /* forground */
   } else if(nextAppState === 'background') {
-    /* background */
-    console.log('Background');
+    console.log('Background'); /* background */
+    const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
+    const cs = new Date().getTime();
+    const timespent = (cs - ts) /1000;
+    new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
+    new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
     await new SessionStore().setValueBulk();
   } else if(nextAppState === 'active'){
-    /* from background to forground */
-    console.log('Forground');
+    console.log('Forground'); /* from background to forground */
   }
   this.state.appState = nextAppState;
 };
