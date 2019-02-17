@@ -115,6 +115,7 @@ class Interests extends React.Component {
     store.putValue(CONFIG, data);
     await store.setSessionId();
     await store.setValueBulk();
+    Navigation.dismissModal('backup_screen');
     goHome(true);
   }
 
@@ -122,6 +123,7 @@ class Interests extends React.Component {
     Navigation.showModal({
       component: {
         name: 'Backup Screen',
+        id: 'backup_screen',
         passProps: {
           reset : this.reset,
           proceed : this.proceed
@@ -169,7 +171,7 @@ class Interests extends React.Component {
       });
   }
 
-  proceed = () =>{
+  proceed = () => {
     try {
       this.subsribeFB(this.state.config.temp, this.state.config.college, () => {
         this.updateLocalState(this.state.config.college, this.state.config.interestsProcessed, this.state.config.data.token, this.state.config.data);

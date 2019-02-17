@@ -58,7 +58,7 @@ class StoryScreen extends React.Component {
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dy > 0) {
+        if (((gestureState.dy / HEIGHT) * 100) > 30) {
           // const {
           //   componentId
           // } = this.props;
@@ -75,13 +75,24 @@ class StoryScreen extends React.Component {
           ]).start();
           setTimeout(() => Navigation.dismissOverlay(componentId), 180);
         } else {
-          Animated.spring(
-            this.opacity,
-            {
+          const {
+            pan
+          } = this.state;
+          Animated.parallel([
+            Animated.spring(pan, {
+              toValue: 0,
+              friction: 10
+            }),
+            Animated.timing(this.opacity, {
               toValue: 1,
-              friction: 4
-            }
-          ).start();
+              duration: 200
+            })
+          ]).start();
+          //   Animated.timing(this.opacity, {
+          //     toValue: 1,
+          //     duration: 200
+          //   })
+          // ]).start();
         }
         const {
           current,
@@ -98,28 +109,28 @@ class StoryScreen extends React.Component {
           this.tapped();
         }
       },
-      onPanResponderTerminate: (evt, gestureState) => {
-        if (gestureState.dy / HEIGHT * 100 > 30) {
-          Animated.timing(
-            this.opacity,
-            {
-              toValue: 0,
-              easing: Easing.cubic,
-              duration: 300
-            }
-          ).start(() => {
-            Navigation.dismissOverlay(componentId);
-          });
-        } else {
-          Animated.spring(
-            this.opacity,
-            {
-              toValue: 1,
-              friction: 4
-            }
-          ).start();
-        }
-      },
+      // onPanResponderTerminate: (evt, gestureState) => {
+      //   if (gestureState.dy / HEIGHT * 100 > 30) {
+      //     Animated.timing(
+      //       this.opacity,
+      //       {
+      //         toValue: 0,
+      //         easing: Easing.cubic,
+      //         duration: 300
+      //       }
+      //     ).start(() => {
+      //       Navigation.dismissOverlay(componentId);
+      //     });
+      //   } else {
+      //     Animated.spring(
+      //       this.opacity,
+      //       {
+      //         toValue: 1,
+      //         friction: 4
+      //       }
+      //     ).start();
+      //   }
+      // },
       onShouldBlockNativeResponder: () => true,
     });
   }

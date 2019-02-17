@@ -80,14 +80,20 @@ class ChannelDetailScreen extends React.Component {
         this.opacity.setValue(1 - gestureState.dy / HEIGHT);
       },
       onPanResponderRelease: (e, { dx, dy }) => {
-        if (dy > 10) {
+        if (((dy / HEIGHT) * 100) > 30) {
           this.handleClose();
-        } else if(dy < -20) {
+        } else {
           this.handleFull();
         }
-        else if (dx < 5, dy < 5) {
-          if(this.state.partial) this.handleFull();
-        }
+
+        // if (dy > 10) {
+        //   this.handleClose();
+        // } else if(dy < -20) {
+        //   this.handleFull();
+        // }
+        // else if (dx < 5, dy < 5) {
+        //   if(this.state.partial) this.handleFull();
+        // }
       }
     });
   }
@@ -280,15 +286,30 @@ handleSubscribe = () =>{
 
   handleFull = () => {
     this.setState({ partial: false });
+    this.partial = false;
     const {
       pan
     } = this.state;
-    pan.setOffset({ y: 0 });
+    const offset = pan.y._offset;
+    // pan.setOffset({ y: 0 });
     Animated.spring(pan, {
-      toValue: -(HEIGHT * 0.30),
-      friction: 15
-    }).start();
+      toValue: -(HEIGHT * 0.30) - offset,
+      friction: 8
+    }).start(() => pan.setOffset({ y: -(HEIGHT * 0.30) }));
   }
+
+  // handleFull = () => {
+  //   this.setState({ partial: false });
+  //   const {
+  //     pan
+  //   } = this.state;
+  //   pan.setOffset({ y: 0 });
+  //   Animated.spring(pan, {
+  //     toValue: -(HEIGHT * 0.30),
+  //     friction: 15
+  //   }).start();
+  // }
+
   render() {
     const {
       item,
@@ -501,6 +522,7 @@ handleSubscribe = () =>{
               paddingLeft : 5,
               backgroundColor : subscribed ? '#777' : '#FF6A15',
               paddingRight : 5,
+              marginBottom: 50,
               flex: 1
             }}
           >
