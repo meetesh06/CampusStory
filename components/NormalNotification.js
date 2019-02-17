@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-// import FastImage from 'react-native-fast-image';
 import { Navigation } from 'react-native-navigation';
+import { timelapse} from '../screens/helpers/functions';
 
 class NormalNotification extends React.Component {
   handlePress = () => {
@@ -38,8 +38,6 @@ class NormalNotification extends React.Component {
       <View>
         <View
           style={{
-            // backgroundColor: '#555',
-            // margin: 10,
             borderRadius: 10,
             padding: 5
           }}
@@ -57,38 +55,37 @@ class NormalNotification extends React.Component {
             </Text>
           </TouchableOpacity>
           <FlatList
-            // horizontal
             keyExtractor={(item, index) => `${index}`}
             data={updates}
             renderItem={(value) => (
               <TouchableOpacity
                 style={{
                   backgroundColor: '#f0f0f0',
-                  margin: 5,
-                  // width: 200,
-                  // height: 50,
-                  borderRadius: 5
+                  borderRadius: 5,
+                  margin : 8,
+                  marginBottom : 3, 
+                  marginTop : 3,
                 }}
+                onPress = {()=>this.props.onPressNotification()}
               >
                 <Text
-                numberOfLines={3}
+                numberOfLines={5}
                 style={{
                   flex: 1,
                   fontFamily: 'Roboto',
                   color: '#000',
-                  margin: 10
+                  margin: 10,
+                  fontSize : 14
                 }}
                 >
                   {value.item.message}
-                  {/* TEST */}
                 </Text>
                 <Text style={{
-                  textAlign: 'right', fontFamily: 'Roboto', fontSize: 10, color: '#333', marginRight: 10, marginBottom: 10
+                  textAlign: 'right', fontFamily: 'Roboto', fontSize: 10, color: '#555', marginRight: 10, marginBottom: 10
                 }}
                 >
-                  {' '}
-                  {JSON.stringify(value.item.timestamp)}
-                  {' '}
+                  {timelapse(new Date(value.item.timestamp))}
+                  {' ago'}
                 </Text>
               </TouchableOpacity>
             )}

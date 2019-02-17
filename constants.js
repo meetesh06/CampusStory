@@ -5,6 +5,8 @@ const constants = {
   INTERESTS: 'interests',
   TOKEN: 'token',
   MUTED : 'muted',
+  VIEWS : 'views',
+  VISITS : 'visits',
   CONFIG : 'config',
   UPDATES : 'updates'
 };

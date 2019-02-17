@@ -12,19 +12,17 @@ import {
   View,
   Text
 } from 'react-native';
-// import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
 import FastImage from 'react-native-fast-image';
-// import Icon from 'react-native-vector-icons/AntDesign';
 import Constants from '../constants';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import Realm from '../realm';
-import { processRealmObj, formatDate, timelapse } from './helpers/functions';
+import { processRealmObj, timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
 
-const { MUTED } = Constants;
+const { MUTED, VIEWS, VISITS } = Constants;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
@@ -90,10 +88,10 @@ class StoryScreen extends React.Component {
           stories
         } = this.state;
         if (gestureState.x0 > 0 && gestureState.x0 < WIDTH / 4) {
-          if (current === stories.length - 1) this.close();
+          if (current === stories.length - 1) console.log('DO NOTHING')
           else this.setState({ current: current + 1 }, () => this.updateRead());
         } else if (gestureState.x0 > (WIDTH * 3) / 4) {
-          if (current === 0) this.close();
+          if (current === 0)this.close();
           else this.setState({ current: current - 1 });
         // eslint-disable-next-line no-sequences
         } else if (gestureState.dx < 5, gestureState.dy < 5) {
@@ -200,6 +198,7 @@ class StoryScreen extends React.Component {
     } = currentObj;
     const store = new SessionStore();
     store.pushUpdate(_id);
+    store.pushViews(this.state.channel._id, _id);
     Realm.getRealm((realm) => {
       realm.write(() => {
         realm.create('Activity', { _id, read: 'true' }, true);
@@ -208,6 +207,16 @@ class StoryScreen extends React.Component {
   }
 
   gotoChannel = (item) => {
+    const {
+      stories,
+      current
+    } = this.state;
+    const currentObj = stories[current];
+    if (currentObj === undefined) return;
+    const {
+      _id
+    } = currentObj;
+    new SessionStore().publishVisits(item.channel, _id);
     Navigation.showModal({
       component: {
         name: 'Channel Detail Screen',

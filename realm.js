@@ -49,6 +49,7 @@ const Channels = {
     followers: 'string',
     description: 'string',
     creator: 'string',
+    private : 'bool?',
     channel_already: 'string',
     category_found: 'string',
     category: 'string',

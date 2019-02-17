@@ -23,7 +23,6 @@ const PostImage = (props) => {
           backgroundColor: '#efefef',
           width: '100%',
           height: '100%',
-          borderRadius : 10,
           margin : 5
         }}
         resizeMode="cover"

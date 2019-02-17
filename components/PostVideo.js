@@ -9,6 +9,7 @@ import constants from '../constants';
 
 const WIDTH = Dimensions.get('window').width;
 const {MUTED} = constants;
+
 class PostVideo extends React.Component {
 
   constructor(props) {
@@ -16,7 +17,6 @@ class PostVideo extends React.Component {
     this.state = {
       loading: true,
       buffering: false,
-      count : 0,
       muted : this.props.muted === undefined ? new SessionStore().getValue(MUTED) : this.props.muted
     }
   }
@@ -49,8 +49,6 @@ class PostVideo extends React.Component {
             <Video
               source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
               onLoad={() => this.setState({ loading: false })}
-              repeat = {this.state.count < 5 ? true : false}
-              onEnd = {()=>this.setState({count : this.state.count + 1})}
               muted = {this.state.muted}
               // eslint-disable-next-line react/no-unused-state
               onBuffer={val => this.setState({ buffering: val.isBuffering })}

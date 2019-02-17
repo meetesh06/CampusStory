@@ -3,7 +3,6 @@ import { Navigation } from 'react-native-navigation';
 import React from 'react';
 import { TouchableOpacity, Platform, AppState, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
 import Initializing from './screens/Initializing';
 import Interests from './screens/Interests';
 import Home from './screens/Home';
@@ -18,11 +17,9 @@ import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
 import InterestedScreen from './screens/InterestedScreen';
 import NotificationsAllScreen from './screens/NotificationsAllScreen';
-import AboutScreen from './screens/AboutScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import BackupScreen from './screens/BackupScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
 
-// import CameraScreen from './screens/CameraScreen';
 import SessionStore from './SessionStore';
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -103,7 +100,7 @@ Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 Navigation.registerComponent('Interested Screen', () => InterestedScreen);
 Navigation.registerComponent('Notifications All Screen', () => NotificationsAllScreen);
-// Navigation.registerComponent('Camera Screen', () => CameraScreen);
+Navigation.registerComponent('Backup Screen', () => BackupScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
@@ -127,6 +124,7 @@ onAppStateChanged = async (nextAppState) => {
     console.log('Background - Forground');
   } else if(nextAppState === 'background') {
     /* background */
+    console.log('Background');
     await new SessionStore().setValueBulk();
   } else if(nextAppState === 'active'){
     /* from background to forground */

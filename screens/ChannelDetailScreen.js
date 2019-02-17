@@ -2,26 +2,20 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import {
-  ActivityIndicator,
   TouchableOpacity,
   Dimensions,
   View,
   Platform,
   Text,
   StatusBar,
+  Alert,
   PanResponder,
   Animated,
-  SafeAreaView,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
-import Icon1 from 'react-native-vector-icons/Entypo';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon4 from 'react-native-vector-icons/Octicons';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
 import firebase from 'react-native-firebase';
@@ -29,6 +23,7 @@ import Realm from '../realm';
 import Constants from '../constants';
 import { processRealmObj, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -164,7 +159,6 @@ class ChannelDetailScreen extends React.Component {
             }
           });
         });
-        // console.log(data[0]);
         this.setState({ item: data[0] });
       }
     }).catch(err => console.log(err));
@@ -204,7 +198,26 @@ class ChannelDetailScreen extends React.Component {
     });
   }
 
-  handleSubscribe = () => {
+handleSubscribe = () =>{
+  if(this.state.subscribed)
+  Alert.alert(
+    'Remove Subscription',
+    'Are you sure you want to unsubscribe from this channel?',
+    [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Unsubscribe', onPress: () => this.clickSubscribe()},
+    ],
+    {cancelable: true},
+  );
+  else
+  this.clickSubscribe();
+}
+
+  clickSubscribe = () => {
     const {
       item,
       subscribed
@@ -213,26 +226,37 @@ class ChannelDetailScreen extends React.Component {
     const {
       _id
     } = item;
-    Realm.getRealm((realm) => {
-      realm.write(() => {
-        if (!subscribed) {
-          try {
-            realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
-            this.setState({ subscribed: true });
-          } catch (e) {
-            console.log(e);
-          }
-        } else {
-          try {
-            const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
-            realm.delete(element);
-            this.setState({ subscribed: false, notify: false });
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      });
+    const URL = subscribed ? 'https://www.mycampusdock.com/channels/user/unfollow' : 'https://www.mycampusdock.com/channels/user/follow';
+    axios.post(URL, { channel_id:_id}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(TOKEN)
+      }
+    }).then((response) => {
+      if(!response.data.error){
+        Realm.getRealm((realm) => {
+          realm.write(() => {
+            if (!subscribed) {
+              try {
+                realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
+                this.setState({ subscribed: true });
+              } catch (e) {
+                console.log(e);
+              }
+            } else {
+              try {
+                const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
+                realm.delete(element);
+                this.setState({ subscribed: false, notify: false });
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          });
+        });
+      }
     });
+    
   }
 
   handleClose = () => {
@@ -276,7 +300,6 @@ class ChannelDetailScreen extends React.Component {
     return (
       <View
         style={{
-          // width: WIDTH,
           flex: 1
         }}
       >
@@ -328,7 +351,6 @@ class ChannelDetailScreen extends React.Component {
                   borderRadius: 10
                 }}
                 source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
-                // source={{ uri: 'https://mycampusdock.com/undefined' }}
                 resizeMode={FastImage.resizeMode.cover}
               />
               )
@@ -337,16 +359,12 @@ class ChannelDetailScreen extends React.Component {
           <View
             style={{
               position: 'absolute',
-              // top: 5,
               flexDirection: 'row',
-              // right: 15,
-              // backgroundColor: 'red',
               padding: 15
             }}
           >
             <View
               style={{
-                // backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 backgroundColor: '#ffffff99',
                 borderRadius: 5,
                 justifyContent: 'center'
@@ -370,6 +388,7 @@ class ChannelDetailScreen extends React.Component {
           </View>
         </View>
         <ScrollView
+        contentContainerStyle = {{flexGrow : 1}}
           style={{
             flex: 1,
           }}
@@ -378,54 +397,108 @@ class ChannelDetailScreen extends React.Component {
           
           <Text
             style={{
-              // marginTop: 20,
               textAlign: 'center',
               fontSize: 20,
+              color : '#fff',
               fontFamily: 'Roboto-Light'
             }}
           >
             {item !== null && item !== undefined && item.name !== undefined && item.name}
           </Text>
+          <View style={{
+            backgroundColor: '#c5c5c5', 
+            borderRadius: 10, 
+            height: 2, 
+            width: 120, 
+            marginTop: 5, 
+            alignSelf: 'center',
+          }}
+          />
+          
+          <View style={{
+            backgroundColor: '#444',
+            margin: 10,
+            borderRadius: 10,
+          }}>
+          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#b0b0b0'}}>Description</Text>
           <Text
             style={{
-              // marginTop: 10,
               fontFamily: 'Roboto-Light',
-              fontSize: 14,
-              padding: 10,
-              backgroundColor: '#444',
-              margin: 10,
-              borderRadius: 10,
-              minHeight: 50,
+              fontSize: 15,
+              margin : 10,
               overflow: 'hidden',
               textAlign: 'center',
-              color: '#f0f0f0'
+              color: '#fff'
             }}
           >
             {item !== null && item !== undefined && item.description !== undefined && item.description}
           </Text>
+          </View>
 
-          <Text style={{ fontSize: 10, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
+          <Text style={{ fontSize: 11, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
+          
+          <View style={{flex : 1}} />
           <View
             style={{
               marginTop: 20,
               flexDirection: 'row'
             }}
           />
-        </ScrollView>
-
-        </Animated.View>
+          <View>
+        
+        { subscribed &&
         <View
-          style={{
-            backgroundColor: (subscribed || this.state.item === null || this.state.item === undefined) ? '#c0c0c0' : '#FF6A15',
-            flexDirection: 'row'
-          }}
-        >
+              style={{
+                marginLeft: 10,
+                margin : 5,
+                padding: 5,
+                justifyContent : 'center',
+                alignItems : 'center',
+                flexDirection: 'row'
+              }}
+            >
+
+              <TouchableOpacity
+                style={{
+                  justifyContent: 'center',
+                  marginRight: 10,
+                  width: 50,
+                  height: 50,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRadius: 50,
+                  backgroundColor : notify === false ? '#444' : '#2E8B57'
+                }}
+                onPress={this.handleNotify}
+              >
+                <Icon2 style={{ alignSelf: 'center', color: notify === false ? '#FF6A15' : '#fff', }} size={23} name = { notify === false ? 'notifications' : "notifications-active" } />
+              </TouchableOpacity>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: 'left',
+                    fontSize: 14,
+                    marginRight : 8,
+                    color: '#a0a0a0',
+                  }}
+                >
+                  {notify === false ? 'Click the bell icon to get notified for any future updates for this channel.' : 'You are now subscribed for future updates for this channel.'}
+                </Text>
+              </View>
+            </View>
+          }
           <TouchableOpacity
             disabled={ this.state.item === null || this.state.item === undefined }
             onPress={this.handleSubscribe}
             style={{
               padding: 15,
-              paddingLeft : 5, 
+              paddingLeft : 5,
+              backgroundColor : subscribed ? '#777' : '#FF6A15',
               paddingRight : 5,
               flex: 1
             }}
@@ -433,46 +506,20 @@ class ChannelDetailScreen extends React.Component {
             <Text
               style={{
                 color: '#fff',
-                fontSize: 18,
+                fontSize: 20,
                 fontFamily: 'Roboto',
                 textAlign: 'center'
               }}
             >
-              { !subscribed && 'SUBSCRIBE'}
-              { subscribed && 'UNSUBSCRIBE'}
+              { !subscribed ? 'SUBSCRIBE' : 'UNSUBSCRIBE'}
+              {item !== null && item !== undefined && ' (' + item.followers + ')'}
+              
             </Text>
           </TouchableOpacity>
-          {
-                      subscribed
-                      && (
-                      <TouchableOpacity
-                        onPress={this.handleNotify}
-                        style={{
-                          padding: 15,
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          backgroundColor: notify ? '#0a9ad3' : '#c0c0c0',
-                          flex: 1
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: '#fff',
-                            fontSize: 18,
-                            fontFamily: 'Roboto',
-                            textAlign: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        >
-                          {'GET NOTIFIED  '}
-                          <IconMaterial name = {notify ? 'notifications-active' : 'notifications-off'} size={20} style={{ marginLeft: 10, marginTop: 2 }} />
-                        </Text>
-                      </TouchableOpacity>
-                      
-                      )
-                  }
-
         </View>
+      
+        </ScrollView>
+        </Animated.View>
       </View>
     );
   }

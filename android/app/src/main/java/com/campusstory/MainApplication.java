@@ -13,7 +13,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.brentvatne.react.ReactVideoPackage;
-
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +26,7 @@ import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.ninty.system.setting.SystemSettingPackage;
 
 public class MainApplication extends NavigationApplication {
     
@@ -55,7 +56,9 @@ public class MainApplication extends NavigationApplication {
             new RealmReactPackage(),
             new RNCWebViewPackage(),
             new RNFirebaseNotificationsPackage(),
-            new ReactVideoPackage()
+            new ReactVideoPackage(),
+            new RNDeviceInfo(),
+            new SystemSettingPackage()
         );
     }
   

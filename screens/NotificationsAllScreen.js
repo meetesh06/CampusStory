@@ -98,7 +98,6 @@ class NotificationsAllScreen extends React.Component {
               }}
               >
                 {JSON.stringify(value.item.message)}
-                {/* TEST */}
               </Text>
               <Text style={{
                 textAlign: 'right', fontFamily: 'Roboto', fontSize: 10, color: '#333', marginRight: 10, marginBottom: 10

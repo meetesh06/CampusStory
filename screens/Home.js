@@ -62,30 +62,11 @@ class Home extends React.Component {
   componentDidMount() {
     this.updateContent();
     this.checkPermission();
-    // this.fetchChannelsFromRealm();
-    // if (this.props.first) this.checkForChanges();
   }
 
   checkPermission = async () => {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
-    // // Build notification
-    // const notification = new firebase.notifications.Notification()
-    //   .setNotificationId('notificationId')
-    //   .setTitle('My notification title')
-    //   .setBody('My notification body')
-    //   .setData({
-    //     key1: 'value1',
-    //     key2: 'value2',
-    //   });
-
-    // // Schedule the notification for 1 minute in the future
-    // const date = new Date();
-    // date.setMinutes(date.getMinutes() + 1);
-
-    // firebase.notifications().scheduleNotification(notification, {
-    //   fireDate: date.getTime(),
-    // });
 
     if (!enabled) {
       console.log('REQUESTING PERMISSION');

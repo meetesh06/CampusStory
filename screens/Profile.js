@@ -35,52 +35,11 @@ class Profile extends React.Component {
   state = {
     current: today,
     refreshing: false,
-    notifications: []
-    // notifications: [
-    //   {
-    //     type: 'event',
-    //     _id: '4Vw8X8bmZ5QR-TyS24xCh8k96',
-    //     updates: [
-    //       { title: 'Update1', timestamp: new Date().toUTCString() },
-    //       { title: 'Update2', timestamp: new Date().toUTCString() },
-    //       { title: 'Update3', timestamp: new Date().toUTCString() },
-    //     ]
-    //   },
-    //   {
-    //     type: 'normal', title: 'Hush', description: '25% off with DOPE75', timestamp: new Date().toUTCString()
-    //   },
-    //   {
-    //     type: 'event',
-    //     _id: '4Vw8X8bmZ5QR-TyS24xCh8k96',
-    //     updates: [
-    //       { title: 'Update1', timestamp: new Date().toUTCString() },
-    //       { title: 'Update2', timestamp: new Date().toUTCString() },
-    //       { title: 'Update3', timestamp: new Date().toUTCString() },
-    //     ]
-    //   },
-    //   {
-    //     type: 'event',
-    //     _id: '4Vw8X8bmZ5QR-TyS24xCh8k96',
-    //     updates: [
-    //       { title: 'Update1', timestamp: new Date().toUTCString() },
-    //       { title: 'Update2', timestamp: new Date().toUTCString() },
-    //       { title: 'Update3', timestamp: new Date().toUTCString() },
-    //     ]
-    //   },
-    //   {
-    //     type: 'event',
-    //     _id: '4Vw8X8bmZ5QR-TyS24xCh8k96',
-    //     updates: [
-    //       { title: 'Update1', timestamp: new Date().toUTCString() },
-    //       { title: 'Update2', timestamp: new Date().toUTCString() },
-    //       { title: 'Update3', timestamp: new Date().toUTCString() },
-    //     ]
-    //   }
-    // ]
+    notifications: [],
+    count : 0
   }
 
   componentDidMount() {
-    // this.handleUpdateData();
     this.navigationEventListener = Navigation.events().bindComponent(this);
   }
 
@@ -153,6 +112,7 @@ class Profile extends React.Component {
   }
 
   handleLogout = async () => {
+    console.log('CLIKING');
     const {
       count
     } = this.state;
@@ -184,62 +144,9 @@ class Profile extends React.Component {
           backgroundColor: '#333'
         }}
       >
-        {/* <View
-          style={{
-            height: 80,
-            backgroundColor: '#222',
-            flexDirection: 'row'
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              padding: 10
-            }}
-            onPress={() => {
-              Navigation.showModal({
-                component: {
-                  name: 'About Screen'
-                }
-              });
-            }}
-          >
-            <Icon style={{ alignSelf: 'center', color: '#FF6A15' }} size={25} name="questioncircle" />
-          </TouchableOpacity>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center'
-            }}
-          >
-            <Icon style={{ alignSelf: 'center', color: '#f0f0f0' }} size={30} name="calendar" />
-            <Text
-              style={{
-                marginTop: 5,
-                textAlign: 'center',
-                color: '#f0f0f0'
-              }}
-            >
-              12 OCT 2019
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              padding: 10
-            }}
-            onPress={() => {
-              Navigation.showModal({
-                component: {
-                  name: 'About Screen'
-                }
-              });
-            }}
-          >
-            <Icon1 style={{ alignSelf: 'center', color: '#FF6A15' }} size={25} name="settings" />
-          </TouchableOpacity>
-
-        </View> */}
+        <TouchableOpacity onPress ={this.handleLogout}>
+          <Text style={{color : '#fff'}}>LOGOUT</Text>
+        </TouchableOpacity>
         <FlatList
           refreshControl={(
             <RefreshControl
@@ -265,8 +172,9 @@ class Profile extends React.Component {
               return (
                 <NormalNotification
                   _id={item._id}
-                  title="Latest In College"
+                  title="Latest Updates"
                   updates={item.updates}
+                  onPressNotification = {this.handleLogout}
                   timestamp={item.updates[0].timestamp}
                 />
               );

@@ -3,8 +3,9 @@ import { View, Text, TouchableOpacity, FlatList, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Realm from '../realm';
 import { processRealmObj } from '../screens/helpers/functions';
-// import FastImage from 'react-native-fast-image';
+import FastImage from 'react-native-fast-image';
 import { Navigation } from 'react-native-navigation';
+import { timelapse} from '../screens/helpers/functions';
 
 class EventNotification extends React.Component {
   state = {
@@ -56,15 +57,12 @@ class EventNotification extends React.Component {
     const {
       updates
     } = this.props;
-    // console.log(updates);
     return (
       <View>
         {
           item !== null && (
             <View
               style={{
-                // backgroundColor: '#555',
-                // margin: 10,
                 borderRadius: 10,
                 padding: 5
               }}
@@ -83,7 +81,6 @@ class EventNotification extends React.Component {
 
               </TouchableOpacity>
               <FlatList
-                // horizontal
                 keyExtractor={(item, index) => `${index}`}
                 data={updates}
                 renderItem={(value) => (
@@ -91,10 +88,9 @@ class EventNotification extends React.Component {
                     style={{
                       backgroundColor: '#f0f0f0',
                       margin: 5,
-                      // width: 200,
-                      // height: 50,
                       borderRadius: 5
                     }}
+                    onPress = {this.props.onPressNotification}
                   >
                     <Text
                     numberOfLines={3}
@@ -106,24 +102,18 @@ class EventNotification extends React.Component {
                     }}
                     >
                       {value.item.message}
-                      {/* TEST */}
                     </Text>
                     <Text style={{
                       textAlign: 'right', fontFamily: 'Roboto', fontSize: 10, color: '#333', marginRight: 10, marginBottom: 10
                     }}
                     >
                       {' '}
-                      {JSON.stringify(value.item.timestamp)}
-                      {' '}
+                      {timelapse(new Date(value.item.timestamp))}
+                      {' ago'}
                     </Text>
                   </TouchableOpacity>
                 )}
               />
-              {
-                // updates.slice(0, all ? updates.length : 2).map((value, index) => (
-                  
-                // ))
-              }
             </View>
           )
         }

@@ -41,5 +41,8 @@ target 'CampusStory' do
   pod 'react-native-video/VideoCaching', :path => '../node_modules/react-native-video/react-native-video.podspec'
 
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+  pod 'RCTSystemSetting', :path => '../node_modules/react-native-system-setting'
+
+  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
 end

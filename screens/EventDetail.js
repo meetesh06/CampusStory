@@ -827,7 +827,6 @@ Views
                 }}
               >
                 <Text
-                  selectable
                   style={{
                     textAlign: 'left',
                     fontSize: 14,

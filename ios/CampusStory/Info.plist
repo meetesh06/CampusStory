@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Roboto-Light.ttf</string>
@@ -68,11 +68,11 @@
 	<string>LaunchScreen</string>
 	<key>npm install react-native-camera-kit --save
 </key>
-	<string></string>
+	<string/>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Campus Story to capture image for sharing</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

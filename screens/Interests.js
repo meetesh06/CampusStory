@@ -14,6 +14,7 @@ import {
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
 import firebase from 'react-native-firebase';
@@ -25,7 +26,10 @@ import Realm from '../realm';
 import InformationCard from '../components/InformationCard';
 import { categoriesNoHottest } from './helpers/values';
 import SessionStore from '../SessionStore';
+import DeviceInfo from 'react-native-device-info';
+import { Navigation } from 'react-native-navigation';
 
+const uniqueId = DeviceInfo.getUniqueID();
 const one = []; const two = []; let i;
 for (i = 0; i < categoriesNoHottest.length; i += 1) {
   if (i < categoriesNoHottest.length / 2) {
@@ -54,7 +58,8 @@ class Interests extends React.Component {
         _id: '', media: 'general/college.webp', name: '', location: ''
       },
       interests: {},
-      colleges: [{ name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }]
+      colleges: [{ name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }, { name: '', media: '', _id: '' }],
+      error : null
     };
     this.handleInterestSelection = this.handleInterestSelection.bind(this);
     this.handleNextScreen = this.handleNextScreen.bind(this);
@@ -71,10 +76,8 @@ class Interests extends React.Component {
     const store = new SessionStore();
     const enabled = await firebase.messaging().hasPermission();
     if (!enabled) {
-      console.log('REQUESTING PERMISSION');
       try {
         await firebase.messaging().requestPermission();
-        console.log('PERMISSION GRANTED');
         let config = store.getValue(CONFIG);
         config = config === null ? [] : config;
         config.firebase_enabled = true;
@@ -100,17 +103,84 @@ class Interests extends React.Component {
     }
   }
 
-  updateLocalState = async (college, interestsProcessed, token) => {
+  updateLocalState = async (college, interestsProcessed, token, data) => {
+    console.log('UPDATING LOCAL STORE');
     const store = new SessionStore();
     store.putValue(COLLEGE, college);
     store.putValue(INTERESTS, interestsProcessed);
     store.putValue(TOKEN, token);
     store.putValue(SET_UP_STATUS, true);
     store.putValue(MUTED, true);
-    store.putValue(CONFIG, {});
+    store.putValue(CONFIG, data);
     await store.setValueBulk();
     goHome(true);
   }
+
+  showBackupPrompt = () =>{
+    Navigation.showModal({
+      component: {
+        name: 'Backup Screen',
+        passProps: {
+          reset : this.reset,
+          proceed : this.proceed
+        },
+        options: {
+          modalPresentationStyle: 'overCurrentContext',
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
+        }
+      }
+    });
+  }
+
+  reset = () =>{
+    axios.post('https://www.mycampusdock.com/auth/reset-user', this.state.config.formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-access-token' : this.state.config.token
+      }
+    })
+      .then((result) => {
+        const resultObj = result.data;
+        if (!resultObj.error) {
+          console.log('RESPONSE RESET', resultObj);
+          try {
+            this.subsribeFB(this.state.config.temp, this.state.config.college, () => {
+              this.updateLocalState(this.state.config.college, this.state.config.interestsProcessed, resultObj.data, {});
+            });
+          } catch (error) {
+            this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+          }
+        }
+        else {
+          this.setState({ loading: false, error : 'Something went wrong on server :('});
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
+      });
+  }
+
+  proceed = () =>{
+    try {
+      this.subsribeFB(this.state.config.temp, this.state.config.college, () => {
+        this.updateLocalState(this.state.config.college, this.state.config.interestsProcessed, this.state.config.data.token, this.state.config.data);
+      });
+    } catch (error) {
+      this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+    }
+  }
+
+  UUID = (length) =>{
+    var text = "";
+    var possible = "0123456789ABCD7EFGHIJ6KLMNO8PQRSTUVW8XYZabcd8efghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+  };
 
   handleNextScreen = async () => {
     const {
@@ -141,10 +211,12 @@ class Interests extends React.Component {
       );
       return;
     }
-    this.setState({ loading: true });
+    this.setState({ loading: true, error : null});
     interestsProcessed = interestsProcessed.join();
     // eslint-disable-next-line no-undef
+    const id = uniqueId === undefined || uniqueId === null || uniqueId === '' || uniqueId.length < 2 ? this.UUID(10) : uniqueId;
     const formData = new FormData();
+    formData.append('id', id);
     formData.append(COLLEGE, college);
     formData.append(INTERESTS, interestsProcessed);
     formData.append('others', JSON.stringify({}));
@@ -157,30 +229,28 @@ class Interests extends React.Component {
       .then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
-          try {
-            this.subsribeFB(temp, college, () => {
-              updateLocalState(college, interestsProcessed, resultObj.data);
+          console.log('RESPONSE', resultObj);
+          if(resultObj.exists){
+            this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data}}, ()=>{
+              this.showBackupPrompt();
             });
-          } catch (error) {
-            console.log(error);
-            Alert.alert(
-              'An unknown error occured'
-            );
           }
-        } else {
-          console.log('SERVER REPLY ERROR');
-          Alert.alert(
-            "'An unknown error occured',"
-          );
-          this.setState({ loading: false });
+          else {
+            try {
+              this.subsribeFB(temp, college, () => {
+                updateLocalState(college, interestsProcessed, resultObj.data, {});
+              });
+            } catch (error) {
+              this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+            }
+          }
         }
-      })
-      .catch((err) => {
-        console.log('DOPE ', err);
-        Alert.alert(
-          err.toString()
-        );
-        this.setState({ loading: false });
+        else {
+          this.setState({ loading: false, error : 'Something went wrong on server :('});
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
 
@@ -212,7 +282,6 @@ class Interests extends React.Component {
       interests
     } = this.state;
     const current = { ...interests };
-    // if (current.hasOwnProperty(value)) {
     if (Object.prototype.hasOwnProperty.call(current, value)) {
       delete current[value];
     } else {
@@ -234,7 +303,6 @@ class Interests extends React.Component {
     axios.post('https://www.mycampusdock.com/users/get-college-list', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        //   'x-access-token': this.props.auth.user_token
       }
     })
       .then((result) => {
@@ -245,7 +313,6 @@ class Interests extends React.Component {
       })
       .catch(err => console.log(err))
       .finally(() => {
-        // if(this.mounted)
         this.setState({ refreshing: false });
       });
   }
@@ -308,8 +375,6 @@ class Interests extends React.Component {
               paddingRight: 5,
               marginLeft: 10,
               marginRight: 10,
-              // marginTop: 5,
-              // marginBottom: 5,
               flexDirection: 'row'
             }}
           >
@@ -428,6 +493,8 @@ class Interests extends React.Component {
             style_title={{ color: '#d0d0d0' }}
             style_content={{ color: '#c0c0c0', }}
           />
+
+          {this.state.error && <Text style={{ fontSize: 14, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center', margin : 5}}><IconAnt name = 'infocirlceo' size = {15} /> {this.state.error}</Text> }
           <View
             style={{
               alignSelf: 'center',

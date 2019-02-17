@@ -24,7 +24,7 @@ const PostImage = (props) => {
           width: WIDTH,
           height: 500
         }}
-        resizeMode={FastImage.resizeMode.cover}
+        resizeMode={FastImage.resizeMode.contain}
         source={{ uri: encodeURI(`https://www.mycampusdock.com/${image}`) }}
       />
       <Text

@@ -8,6 +8,7 @@ import PostVideoThumbnail from './PostVideoThumbnail';
 import axios from 'axios';
 import constants from '../constants';
 import { Navigation } from 'react-native-navigation';
+import {timelapse} from '../screens/helpers/functions'
 
 const {TOKEN} = constants;
 
@@ -64,7 +65,7 @@ class StoryFeed extends React.PureComponent {
       });
     }
 
-    handleChannelClickStory = (item) => {
+    handleChannelClickStory = (item, image) => {
       console.log('press');
       this.setState({ peek: false }, () => {
         Navigation.showOverlay({
@@ -72,6 +73,7 @@ class StoryFeed extends React.PureComponent {
             id: 'preview_overlay',
             passProps: {
               item,
+              image,
               peek: false
             },
             name: 'Discover Preview',
@@ -94,7 +96,7 @@ class StoryFeed extends React.PureComponent {
       // Navigation.dismissOverlay('preview_overlay');
     }
 
-    handlePreview = (item) => {
+    handlePreview = (item,image) => {
       console.log('long press');
       this.setState({ peek: true }, () => {
         Navigation.showOverlay({
@@ -102,6 +104,7 @@ class StoryFeed extends React.PureComponent {
             id: 'preview_overlay1',
             passProps: {
               item,
+              image,
               peek: true
             },
             name: 'Discover Preview',
@@ -119,7 +122,7 @@ class StoryFeed extends React.PureComponent {
       const { item } = this.props;
       const image = item.media[0];
       return(
-          <View style={{flex : 1, marginTop : 10}}>
+          <View style={{flex : 1, marginTop : 10,}}>
             <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
             <FastImage
               style={{
@@ -133,6 +136,7 @@ class StoryFeed extends React.PureComponent {
               source={{ uri: `https://www.mycampusdock.com/${image}` }}
             />
             <Text style={{color : '#f0f0f0', fontSize : 15, margin : 5}}>{item.name}</Text>
+            <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
             </TouchableOpacity>
 
             <FlatList
@@ -144,8 +148,8 @@ class StoryFeed extends React.PureComponent {
                   if (item.type === 'post') {
                     return (
                       <TouchableOpacity
-                        onPress={() => this.handleChannelClickStory(item)}
-                        onLongPress={() => this.handlePreview(item)}
+                        onPress={() => this.handleChannelClickStory(item, image)}
+                        onLongPress={() => this.handlePreview(item, image)}
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}
                       >

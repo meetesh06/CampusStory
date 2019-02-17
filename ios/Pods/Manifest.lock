@@ -93,6 +93,8 @@ PODS:
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
   - Protobuf (3.6.1)
+  - RCTSystemSetting (1.7.2):
+    - React
   - React (0.57.8):
     - React/Core (= 0.57.8)
   - react-native-fast-image (5.1.2):
@@ -142,6 +144,8 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNDeviceInfo (0.21.5):
+    - React
   - SDWebImage/Core (4.4.3)
   - SDWebImage/GIF (4.4.3):
     - FLAnimatedImage (~> 1.0)
@@ -156,6 +160,7 @@ DEPENDENCIES:
   - Firebase/Core (~> 5.15.0)
   - Firebase/Messaging (~> 5.15.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - RCTSystemSetting (from `../node_modules/react-native-system-setting`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
   - react-native-video/VideoCaching (from `../node_modules/react-native-video/react-native-video.podspec`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -166,6 +171,7 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - SDWebImage/WebP
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -193,6 +199,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
+  RCTSystemSetting:
+    :path: "../node_modules/react-native-system-setting"
   React:
     :path: "../node_modules/react-native"
   react-native-fast-image:
@@ -201,6 +209,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-video/react-native-video.podspec"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -222,14 +232,16 @@ SPEC CHECKSUMS:
   libwebp: 0f01098c6c17175391af621b2f14150f3ca16e16
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  react-native-fast-image: cba3d9bf9c2cf8ddb643d887a686c53a5dd90a2c
-  react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
-  react-native-webview: a42108b827082f8f0333529b0772102031d5960d
+  RCTSystemSetting: 9279ff44c49bb4fb0a5d335a0851852c8f3eda99
+  React: adbac0757ce35e92fbd447ab98c810209d27d9b0
+  react-native-fast-image: ec7e5a2420a9e63cf9b2925fce7babc580ea8e05
+  react-native-video: afdbf53bb44a700d1dcfc679790710469571d0f9
+  react-native-webview: 79503ddc8f81931a2ab63df573d2f17267d20f64
+  RNDeviceInfo: e7c5fcde13d40e161d8a27f6c5dc69c638936002
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  yoga: 74cdf036c30820443b25ade59916236b1e95ee93
 
-PODFILE CHECKSUM: 8edf3f2f27f976a9b0c49cea4f419b4e27096ac7
+PODFILE CHECKSUM: b4c3bb427661958ac7cd61ac5b717aa40f55bf19
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0

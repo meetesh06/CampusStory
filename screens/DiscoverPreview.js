@@ -15,10 +15,15 @@ import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import FastImage from 'react-native-fast-image';
-import { processRealmObj } from './helpers/functions';
+import { timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
-
+import Constants from '../constants';
 const WIDTH = Dimensions.get('window').width;
+
+const {
+  VIEWS,
+  VISITS
+} = Constants;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
@@ -32,19 +37,11 @@ class DiscoverPreview extends React.Component {
   }
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    const {item} = this.props;
+    const {item,image} = this.props;
     const store = new SessionStore();
     store.pushUpdate(item._id);
-    Realm.getRealm((realm) => {
-      const channel = realm.objects('Channels').filtered(`_id="${item.channel}"`);
-      processRealmObj(channel, (result)=>{
-        if(result.length > 0){
-          this.setState({channel : result[0]});
-        } else {
-          this.setState({ channel : { name : item.channel_name, media : '["dummy"]'}});
-        }
-      });
-    });
+    store.pushViews(item.channel, item._id);
+    this.setState({ channel : { name : item.channel_name, media : image}});
     try {
       Animated.spring(
         this.position,
@@ -74,6 +71,7 @@ class DiscoverPreview extends React.Component {
   }
 
   gotoChannel = (item) =>{
+    new SessionStore().pushVisits(item.channel, item._id);
     Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
@@ -124,7 +122,8 @@ class DiscoverPreview extends React.Component {
   }
 
   render() {
-    const {item} = this.props;
+    const {item, image} = this.props;
+    console.log(item);
     return (
       <View
         style={{
@@ -161,10 +160,11 @@ class DiscoverPreview extends React.Component {
               style={{
                 width : 36, height : 36, borderRadius : 20
               }}
-              source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
+
+              source={{ uri: `https://www.mycampusdock.com/${image}` }}
               resizeMode={FastImage.resizeMode.cover}
             />
-            <Text style={{fontSize : 15, color : '#dfdfdf', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{this.state.channel.name}</Text>
+            <Text style={{fontSize : 15, color : '#dfdfdf', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{item.channel_name}</Text>
           </TouchableOpacity>
           
           <View style={{flex : 1}} />

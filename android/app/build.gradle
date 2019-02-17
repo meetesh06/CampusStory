@@ -142,6 +142,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-device-info')
     compile project(':react-native-webview')
     implementation project(':realm')
     implementation project(':react-native-firebase')
@@ -162,6 +163,7 @@ dependencies {
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar' // <-- Add this line if you wish to use badge on Android
     
     compile project(':react-native-video')
+    compile project(':react-native-system-setting')
 
 //    compile project(":rncamerakit")
 
