@@ -124,7 +124,36 @@ class InterestedScreen extends React.Component {
           backgroundColor: '#333'
         }}
       >
-        <TouchableOpacity
+        <View
+          style={{
+            justifyContent: 'center',
+            marginBottom: 10,
+            marginTop: 10,
+            flexDirection: 'row'
+          }}
+        >
+          <Text
+            numberOfLines={1}
+            style={{
+              color: '#fff',
+              fontSize: 20,
+              marginLeft: 10
+            }}
+          >
+            Interested Events
+          </Text>
+          <TouchableOpacity
+            style={{
+              flex: 1
+            }}
+            onPress={() => {
+              Navigation.dismissModal(this.props.componentId)
+            }}
+          >
+            <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
+          </TouchableOpacity>
+        </View>
+        {/* <TouchableOpacity
           style={{
             justifyContent: 'center',
             padding : 10
@@ -135,7 +164,7 @@ class InterestedScreen extends React.Component {
           }}
         >
           <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15', margin : 5 }} name="closecircle" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <ScrollView
           style={{
             flex: 1

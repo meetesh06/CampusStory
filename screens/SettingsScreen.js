@@ -1,10 +1,7 @@
 /* eslint-disable global-require */
 import React from 'react';
 import {
-  ScrollView,
-  RefreshControl,
-  FlatList,
-  AsyncStorage,
+  View,
   TouchableOpacity,
   Text,
   SafeAreaView
@@ -22,19 +19,35 @@ class SettingsScreen extends React.Component {
           backgroundColor: '#333'
         }}
       >
-        <TouchableOpacity
+        <View
           style={{
-            // flex: 1,
             justifyContent: 'center',
-            height: 50,
-            // backgroundColor: 'red'
-          }}
-          onPress={() => {
-            Navigation.dismissModal(this.props.componentId)
+            marginBottom: 10,
+            marginTop: 10,
+            flexDirection: 'row'
           }}
         >
-          <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
-        </TouchableOpacity>
+          <Text
+            numberOfLines={1}
+            style={{
+              color: '#fff',
+              fontSize: 20,
+              marginLeft: 10
+            }}
+          >
+            Settings
+          </Text>
+          <TouchableOpacity
+            style={{
+              flex: 1
+            }}
+            onPress={() => {
+              Navigation.dismissModal(this.props.componentId)
+            }}
+          >
+            <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }

@@ -3,6 +3,8 @@ import { Navigation } from 'react-native-navigation';
 import React from 'react';
 import { TouchableOpacity, Platform, AppState, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/AntDesign';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Initializing from './screens/Initializing';
 import Interests from './screens/Interests';
 import Home from './screens/Home';
@@ -18,7 +20,7 @@ import EventRegister from './screens/EventRegister';
 import InterestedScreen from './screens/InterestedScreen';
 import NotificationsAllScreen from './screens/NotificationsAllScreen';
 import BackupScreen from './screens/BackupScreen';
-import Icon from 'react-native-vector-icons/AntDesign';
+import SettingsScreen from './screens/SettingsScreen';
 import Constants from './constants';
 import SessionStore from './SessionStore';
 
@@ -51,8 +53,6 @@ const homeTopBar = () => (
   </View>
 );
 
-
-
 const HeartIcon = (props) => (
   <TouchableOpacity
     style={{
@@ -83,6 +83,36 @@ const HeartIcon = (props) => (
   </TouchableOpacity>
 );
 
+const SettingsIcon = (props) => (
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      // backgroundColor : '#ffffff22', 
+      width : 40,
+      height : 40,
+      alignItems : 'center',
+      // borderRadius : 30,
+      justifyContent: 'center',
+    }}
+    onPress={
+      () => {
+        Navigation.showModal({
+          component: {
+            name: 'Settings Screen',
+            options: {
+              topBar: {
+                visible: false
+              }
+            }
+          }
+        });
+      }
+    }
+  >
+    <Icon1 size={18} style={{ color: '#FF6A15' }} name="settings"/>
+  </TouchableOpacity>
+);
+
 Navigation.registerComponent('Initializing Screen', () => Initializing);
 Navigation.registerComponent('Interests Selection Screen', () => Interests);
 Navigation.registerComponent('Home Screen', () => Home);
@@ -94,13 +124,15 @@ Navigation.registerComponent('Story Screen', () => StoryScreen);
 Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('app.HeartIcon', () => HeartIcon);
-Navigation.registerComponent('app.goBackButton', () => goBackButton);
+Navigation.registerComponent('app.SettingsIcon', () => SettingsIcon);
+// Navigation.registerComponent('app.goBackButton', () => goBackButton);
 Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 Navigation.registerComponent('Interested Screen', () => InterestedScreen);
 Navigation.registerComponent('Notifications All Screen', () => NotificationsAllScreen);
 Navigation.registerComponent('Backup Screen', () => BackupScreen);
+Navigation.registerComponent('Settings Screen', () => SettingsScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);

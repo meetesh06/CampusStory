@@ -49,8 +49,9 @@ class NotificationsAllScreen extends React.Component {
         <View
           style={{
             justifyContent: 'center',
-            height: 50,
+            // height: 50,
             marginTop: 10,
+            marginBottom: 10,
             flexDirection: 'row'
           }}
         >
@@ -74,7 +75,6 @@ class NotificationsAllScreen extends React.Component {
           >
             <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
           </TouchableOpacity>
-
         </View>
         <FlatList
           // horizontal

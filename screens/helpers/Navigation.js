@@ -198,7 +198,14 @@ export const goHome = async (first) => {
                         title: {
                           text: 'Updates',
                           color: '#fff'
-                        }
+                        },
+                        rightButtons: [
+                          {
+                            id: 'Settings',
+                            component: {
+                              name: 'app.SettingsIcon'
+                            }
+                          }]
                       }
                     }
                   }

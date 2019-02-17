@@ -159,7 +159,10 @@ class StoryScreen extends React.Component {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const { _id } = this.props;
     Realm.getRealm((realm) => {
-      const Activity = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      d.setHours(0,0,0,0);
+      const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
       const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
       const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
       const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
