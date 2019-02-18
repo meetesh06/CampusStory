@@ -28,7 +28,7 @@ class InformationCard extends React.Component {
                 }, this.props.style_card]}
             >
             {this.props.icon}
-            <View style={{backgroundColor : "#rgba(0, 0, 0, 0.2)", flex : 1}}>
+            <View style={{backgroundColor : 'rgba(0, 0, 0, 0.2)', borderTopRightRadius: 10, borderBottomRightRadius : 10, flex : 1}}>
                 <Text
                     style={[{
                         marginTop: 10,

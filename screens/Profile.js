@@ -2,16 +2,10 @@
 import React from 'react';
 import {
   SafeAreaView,
-  AsyncStorage,
   FlatList,
-  TouchableOpacity,
-  View,
   RefreshControl,
-  Text
 } from 'react-native';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/AntDesign';
-import Icon1 from 'react-native-vector-icons/MaterialIcons';
 import { Navigation } from 'react-native-navigation';
 import SessionStore from '../SessionStore';
 import Realm from '../realm';
@@ -121,8 +115,8 @@ class Profile extends React.Component {
     if (count > 30) {
       Realm.getRealm((realm) => {
         realm.write(async () => {
+          await new SessionStore().reset();
           realm.deleteAll();
-          await AsyncStorage.clear();
           goInitializing();
         });
       });
@@ -145,9 +139,6 @@ class Profile extends React.Component {
           backgroundColor: '#333'
         }}
       >
-        <TouchableOpacity onPress ={this.handleLogout}>
-          <Text style={{color : '#fff'}}>LOGOUT</Text>
-        </TouchableOpacity>
         <FlatList
           refreshControl={(
             <RefreshControl
@@ -160,7 +151,7 @@ class Profile extends React.Component {
           data={notifications}
           extraData={notifications}
           renderItem={({ item, index }) => {
-            if (item.type === 'event') {
+            if(item.type === 'event') {
               return (
                 <EventNotification
                   _id={item._id}
@@ -168,8 +159,7 @@ class Profile extends React.Component {
                 />
               );
             }
-            if (item.type === 'college') {
-              console.log(item);
+            if(item.type === 'college') {
               return (
                 <NormalNotification
                   _id={item._id}

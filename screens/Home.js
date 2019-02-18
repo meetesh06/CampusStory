@@ -18,7 +18,6 @@ import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
 import FastImage from 'react-native-fast-image';
 import SessionStore from '../SessionStore';
-import RealmManager from '../RealmManager';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import EventCardBig from '../components/EventCardBig';
@@ -144,16 +143,10 @@ class Home extends React.Component {
       });
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
-      // App was opened by a notification
-      // Get the action triggered by the notification being opened
-      // const { action } = notificationOpen;
-      // Get information about the notification that was opened
       const { notification } = notificationOpen;
       const { _data } = notification;
       const data = JSON.parse(_data.content);
       const { _id, type } = data;
-      // console.log(notification);
-      // Alert.alert(JSON.stringify(`${type} ${_id}`));
       await updateContent();
       switch (type) {
         case 'post':
@@ -213,7 +206,6 @@ class Home extends React.Component {
         else this.setState({ newUpdates: true });
       }
     }).catch(err => console.log(err));
-
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('channels_list', JSON.stringify(channelsList));
@@ -270,24 +262,6 @@ class Home extends React.Component {
     let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
 
-    // const realm_manager = new RealmManager();
-    // const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
-    // const cs = Date.parse(new Date());
-
-    // interests.forEach((value) => {
-    //   realm_manager.getItems([`ms > ${cs}`, 'going="false"', `category="${value}"`], 'Events', 'date', true, (result)=>{
-    //     this.setState({ [value]: result });
-    //   });
-    // });
-
-    // realm_manager.getItems(['going = "false"', `ms > ${cs}`], 'Events', 'date', true, (result) => {
-    //   this.setState({ eventList: result });
-    // });
-
-    // realm_manager.getItems(['going = "false"', `ms < ${ts} AND ms > ${cs}`], 'Events', 'date', true, (result)=>{
-    //   this.setState({ weekEventList: result });
-    // });
-
     Realm.getRealm((realm) => {
       const Events = realm.objects('Events').sorted('timestamp', true);
       const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
@@ -306,22 +280,6 @@ class Home extends React.Component {
   }
 
   fetchChannelsFromRealm = () => {
-    // console.log('OUR TEST BEGIN');
-    // const realm_manager = new RealmManager();
-    // realm_manager.getItems(['channel="true"'], 'Firebase', null, false, (Subs)=>{
-    //   let final = [];
-    //   Subs.forEach((value) =>{
-    //     const {_id} = value;
-    //     realm_manager.getItemById(_id, 'Channels', (current)=>{
-    //       if(current.updates === 'true') final.unshift(current);
-    //       else final.push(current)
-    //     });
-    //   });
-    //   realm_manager.process_two(final, (channels) =>{
-    //     this.setState({ channels });
-    //   });
-    // });
-
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"');
       processRealmObj(Subs, (result) => {
@@ -342,7 +300,6 @@ class Home extends React.Component {
 
   checkForChanges = async () => {
     const {
-      // processRealmObj,
       updateLists
     } = this;
     let lastUpdated;

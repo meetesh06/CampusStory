@@ -10,56 +10,52 @@ class CustomModal extends React.Component {
 				college: ''
     }
     render() {
-			// console.log(this.props.data);
         return(
-            <View style={{ bottom: this.props.visible ? 0 : -HEIGHT, width: WIDTH, height: HEIGHT, flex: 1, backgroundColor: '#fffffff0', position: 'absolute', justifyContent: 'center' }}>
-								<View style={{ marginTop: 180 }}>
-									<FlatList 
-										horizontal={false}
-										style={{ height: HEIGHT }}
-										// extraData={this.state.college}
-										keyExtractor={(item, index) => index+""}
-										data={this.props.data} 
-										renderItem={({item}) => 
-										<TouchableOpacity
-											onPress={() => this.props.newSelection(item)}
-											style={{
-												backgroundColor: '#e0e0e0', 
-												borderRadius: 10, 
-												overflow: 'hidden', 
-												paddingTop: 5,
-												paddingBottom: 5,
-												paddingLeft: 5,
-												paddingRight: 5,
-												margin: 5,
-												flexDirection: 'row'
-											}}
-										>
-											<FastImage
-												style={{  width: 100, height: 80, borderRadius: 15 }}
-												source={{ uri: "https://www.mycampusdock.com/" + item.media }}
-												resizeMode={ FastImage.resizeMode.contain }
-											/>
-											<View style={{ flex: 1, marginLeft: 10, marginTop: 5}}>
-												<Text
-													style={{ fontFamily: 'Roboto' }}
-												>
-													{item.name}
-												</Text>
-												<Text
-													style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 15 }}
-												>
-													{item.location}
-												</Text>
-					
-											</View>
-										</TouchableOpacity>
-										}
-									/>
+            <View style={{ bottom: this.props.visible ? 0 : -HEIGHT, width: WIDTH, height: HEIGHT, flex: 1, backgroundColor: '#333', position: 'absolute', justifyContent: 'center' }}>
+				<View style={{ marginTop: 180 }}>
+					<FlatList 
+						horizontal={false}
+						style={{ height: HEIGHT }}
+						keyExtractor={(item, index) => index+""}
+						data={this.props.data} 
+						renderItem={({item}) => 
+						<TouchableOpacity
+							onPress={() => this.props.newSelection(item)}
+							style={{
+								backgroundColor: '#e0e0e0', 
+								borderRadius: 10, 
+								overflow: 'hidden', 
+								paddingTop: 5,
+								paddingBottom: 5,
+								paddingLeft: 5,
+								paddingRight: 5,
+								margin: 5,
+								flexDirection: 'row'
+							}}
+						>
+							<FastImage
+								style={{  width: 100, height: 80, borderRadius: 15 }}
+								source={{ uri: "https://www.mycampusdock.com/" + item.media }}
+								resizeMode={ FastImage.resizeMode.contain }
+							/>
+							<View style={{ flex: 1, marginLeft: 10, marginTop: 5}}>
+								<Text
+									style={{ fontFamily: 'Roboto' }}
+								>
+									{item.name}
+								</Text>
+								<Text
+									style={{ fontFamily: 'Roboto-Light', marginTop: 5, fontSize: 15 }}
+								>
+									{item.location}
+								</Text>
+	
+							</View>
+						</TouchableOpacity>
+						}
+					/>
 
-								</View>
-								
-								
+				</View>			
             </View>
         );
 

@@ -92,17 +92,6 @@ class EventDetail extends React.Component {
         } else {
           this.handleFull();
         }
-        // else if (dx < 5, dy < 5) {
-        //   if(this.state.partial) this.handleFull();
-        // }
-        // if (dy > 10) {
-        //   this.handleClose();
-        // } else if (dy < -20) {
-        //   this.handleFull();
-        // }
-        // else if (dx < 5, dy < 5) {
-        //   if(this.state.partial) this.handleFull();
-        // }
       }
     });
   }
@@ -113,12 +102,12 @@ class EventDetail extends React.Component {
 
     Animated.parallel([
       Animated.spring(this.topHeight, {
-        toValue: HEIGHT * 0.30,
+        toValue: HEIGHT * 0.40,
         duration: 200,
         friction: 7
       }),
       Animated.timing(this.opacity1, {
-        toValue: 1 - (HEIGHT * 0.30 / HEIGHT),
+        toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
         duration: 400
       })
     ]).start();
@@ -220,11 +209,10 @@ class EventDetail extends React.Component {
       pan
     } = this.state;
     const offset = pan.y._offset;
-    // pan.setOffset({ y: 0 });
     Animated.spring(pan, {
-      toValue: -(HEIGHT * 0.30) - offset,
+      toValue: -(HEIGHT * 0.40) - offset,
       friction: 8
-    }).start(() => pan.setOffset({ y: -(HEIGHT * 0.30) }));
+    }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 
   updateStatus = () => {
@@ -300,14 +288,11 @@ class EventDetail extends React.Component {
   }
 
   handleChannelOpenNetwork = () => {
-    // Alert.alert('Channel Open Network');
     const { item, componentId } = this.props;
-    // Navigation.dismissOverlay(componentId);
     Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
         passProps: {
-          // id: '108TWe2DX76V'
           id: item.channel
         },
         options: {
@@ -804,11 +789,15 @@ Views
 
           <View style={{flex : 1}} />
         
+          {
+            item.interested === 'true' && 
           <View
               style={{
                 flex: 1,
                 marginLeft: 5,
                 padding: 5,
+                marginTop : 20,
+                marginBottom : 8,
                 justifyContent : 'center',
                 alignItems : 'center',
                 flexDirection: 'row'
@@ -821,6 +810,7 @@ Views
                   marginRight: 10,
                   width: 50,
                   height: 50,
+                  
                   paddingTop: 5,
                   paddingBottom: 5,
                   borderRadius: 50,
@@ -828,7 +818,7 @@ Views
                 }}
                 onPress={this.handleRemind}
               >
-                <Icon2 style={{ alignSelf: 'center', color: remind === 'false' ? '#FF6A15' : '#fff', }} size={23} name = { remind === 'false' ? 'notifications' : "notifications-active" } />
+                <Icon2 style={{ alignSelf: 'center', color: remind === 'false' ? '#777' : '#fff', }} size={23} name = { remind === 'false' ? 'notifications' : "notifications-active" } />
               </TouchableOpacity>
               <View
                 style={{
@@ -844,16 +834,16 @@ Views
                     color: '#a0a0a0',
                   }}
                 >
-                  {remind === 'false' ? 'Click the bell icon to get notified for any future updates for this event.' : 'You are now subscribed for future updates for this event.'}
+                  {remind === 'false' ? 'Click the bell icon to get notified for all future updates for this event.' : 'You are now subscribed for all future updates for this event.'}
                 </Text>
               </View>
 
             </View>
-
+          }
           <View
             style={{
               flexDirection: 'row',
-              marginBottom: 50
+              marginBottom:  Platform.OS === 'ios' ? 0 : 50
             }}
           >
             { item.interested === 'false' && (
@@ -861,7 +851,7 @@ Views
               onPress={this.handleClick}
               style={{
                 padding: 15,
-                backgroundColor: '#0056e5',
+                backgroundColor: '#666',
                 flex: 1
               }}
             >
@@ -880,11 +870,11 @@ Views
                                 textAlign: 'center'
                               }}
                             >
-                              <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                              <Icon style={{ color: '#ddd' }} name="heart" size={18} />
                               {' '}
                               {'  Interested  '}
                               {' '}
-                              <Icon style={{ color: 'pink' }} name="heart" size={18} />
+                              <Icon style={{ color: '#ddd' }} name="heart" size={18} />
                             </Text>
                             )
                         }
@@ -925,7 +915,7 @@ Views
                     <TouchableOpacity
                       style={{
                         padding: 15,
-                        backgroundColor: '#c0c0c0',
+                        backgroundColor: '#222222',
                         flex: 1
                       }}
                     >

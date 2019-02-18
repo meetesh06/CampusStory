@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
+import IconAnt from 'react-native-vector-icons/AntDesign';
 
 class BackupScreen extends React.Component {
   constructor(props){
@@ -76,6 +77,17 @@ class BackupScreen extends React.Component {
           </TouchableOpacity>
           </View>
         </View>
+      </View>
+
+      <View style={{position : 'absolute', top : 120, alignSelf : 'center'}}>
+        <IconMaterial name='cloud-download' size={220} style={{color : "#444",}}/>
+      </View>
+      
+      <View style={{position : 'absolute', bottom : 30, alignSelf : 'center'}}>
+          <Text style={{margin : 5, color : '#777', fontSize : 14}}>
+            {<IconAnt name='infocirlceo' size = {14} style={{color : '#777'}}/>}
+            {'  Removing permanently deletes the backup!'}
+          </Text>
       </View>
       </SafeAreaView>
     );

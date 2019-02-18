@@ -34,7 +34,7 @@ export default class SessionStore {
     [MUTED] : false,
     [TOKEN] : 'something',
     [CONFIG] : {},
-    [SET_UP_STATUS] : '',
+    [SET_UP_STATUS] : false,
     [COLLEGE] : '',
     [INTERESTS] : '',
     [SESSION_ID] : '',
@@ -92,6 +92,32 @@ export default class SessionStore {
         return callback(res);
       }
     }
+  }
+
+  reset = async () =>{
+    this.state = {
+      [MUTED] : false,
+      [TOKEN] : 'something',
+      [CONFIG] : {},
+      [SET_UP_STATUS] : false,
+      [COLLEGE] : '',
+      [INTERESTS] : '',
+      [SESSION_ID] : '',
+      temp : {
+        [UPDATES] : [],
+        [VIEWS] : [],
+        [VISITS] : []
+      }
+    }
+    this.temp = {
+      [UPDATES] : [],
+      [VIEWS] : [],
+      [VISITS] : [],
+      [APP_USAGE_TIME] : new Date().getTime(),
+      [LOGS] : [],
+      [TRACKS] : []
+    }
+    await AsyncStorage.clear();
   }
 
   getValueBulk = async () =>{ // ['key1', 'key2']

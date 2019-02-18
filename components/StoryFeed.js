@@ -163,7 +163,7 @@ class StoryFeed extends React.PureComponent {
                         style={{
                           overflow: 'hidden'
                         }}
-                        onPress={() => { this.handleChannelClickStory(item); }}
+                        onPress={() => { this.handleChannelClickStory(item, image); }}
                         onLongPress={() => this.handlePreview(item)}
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}
@@ -179,7 +179,7 @@ class StoryFeed extends React.PureComponent {
                         style={{
                           overflow: 'hidden'
                         }}
-                        onPress={() => { this.handleChannelClickStory(item); }}
+                        onPress={() => { this.handleChannelClickStory(item, image); }}
                         onLongPress={() => this.handlePreview(item)}
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}

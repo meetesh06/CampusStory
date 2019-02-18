@@ -183,11 +183,11 @@ const EventCardBig = (props) => {
         size={20}
         name={interested === 'true' ? 'heart' : 'hearto'}
         style={{
-          color: interested === 'true' ? '#FF6A15' : '#fff',
+          color: interested === 'true' ? '#fa3e3e' : '#fff',
           alignSelf: 'center',
           position: 'absolute',
           bottom: 15,
-          right: 15
+          right: 20
         }}
       />
     </TouchableOpacity>

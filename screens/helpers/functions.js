@@ -1,3 +1,7 @@
+import Realm from '../../realm';
+import SessionStore from '../../SessionStore';
+import { goInitializing } from './Navigation';
+
 export function processRealmObj(RealmObject, callback) {
   const result = Object.keys(RealmObject).map(key => ({ ...RealmObject[key] }));
   callback(result);
@@ -46,6 +50,16 @@ export function getMonthName(num) {
     default:
       return 'FUCK';
   }
+}
+
+export async function logout() {
+  Realm.getRealm((realm) => {
+    realm.write(async () => {
+      realm.deleteAll();
+      await new SessionStore().reset();
+      goInitializing();
+    });
+  });
 }
 
 export function formatAMPM(date) {

@@ -54,16 +54,20 @@ class App extends React.Component {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" translucent />)
         }
-        <LinearGradient style={{ flex: 1 }} colors={['#FF4A3F', '#FF6A15']}>
+        <LinearGradient style={{ flex: 1 }} colors={['#222222ee', '#222222ee']}>
           <View style={{ flex: 2, justifyContent: 'center' }}>
-            <Image
-              source={logoWhite}
-              style={{
-                width: 120, height: 120, resizeMode: 'contain', alignSelf: 'center'
-              }}
-            />
+            <View style={{backgroundColor : '#444444ee', padding : 15, borderRadius : 100, alignSelf : 'center'}}>
+              <Image
+                source={logoWhite}
+                style={{
+                  width: 120, 
+                  height: 120, 
+                  resizeMode: 'contain',
+                }}
+              />
+            </View>
             <Text style={{
-              textAlign: 'center', marginTop: 20, color: 'white', fontSize: 35, fontFamily: 'Roboto-Regular'
+              textAlign: 'center', marginTop: 20, color: '#ddd', fontSize: 35, fontFamily: 'Roboto-Regular'
             }}
             >
               {' '}
@@ -71,7 +75,7 @@ class App extends React.Component {
               {' '}
             </Text>
             <Text style={{
-              textAlign: 'center', marginTop: 20, color: 'white', fontSize: 20, fontFamily: 'Roboto-Light'
+              textAlign: 'center', marginTop: 15, color: '#ddd', fontSize: 18, fontFamily: 'Roboto-Light'
             }}
             >
               {' '}
@@ -90,14 +94,17 @@ class App extends React.Component {
                   onPress={this.continueNext}
                 >
                   <View style={{
-                    backgroundColor: '#fff', alignItems: 'center', marginLeft: 20, marginRight: 20, padding: 15, borderRadius: 10
+                    backgroundColor: '#FF6A15', alignItems: 'center', marginLeft: 25, marginRight: 25, padding: 15, borderRadius: 10
                   }}
                   >
-                    <Text style={{ fontFamily: 'Roboto-Regular' }}>Let's get started</Text>
+                    <Text style={{ fontFamily: 'Roboto', color : '#fff', fontSize : 16 }}>Let's get started</Text>
                   </View>
                 </TouchableOpacity>
               )
             }
+          </View>
+          <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
+            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
           </View>
         </LinearGradient>
       </View>

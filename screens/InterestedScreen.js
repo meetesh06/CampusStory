@@ -121,53 +121,44 @@ class InterestedScreen extends React.Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: '#333'
+          backgroundColor: '#222'
         }}
       >
         <View
           style={{
             justifyContent: 'center',
-            marginBottom: 10,
             marginTop: 10,
+            padding : 10,
             flexDirection: 'row'
           }}
         >
           <Text
             numberOfLines={1}
             style={{
-              color: '#fff',
-              fontSize: 20,
-              marginLeft: 10
+              color: '#ddd',
+              fontSize: 22,
+              fontFamily : 'Roboto-light',
+              marginLeft: 5
             }}
           >
-            Interested Events
+            My Events
           </Text>
           <TouchableOpacity
             style={{
-              flex: 1
+              flex: 1,
+              padding : 10,
             }}
             onPress={() => {
               Navigation.dismissModal(this.props.componentId)
             }}
           >
-            <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15' }} name="closecircle" />
+            <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A15', }} name="closecircle" />
           </TouchableOpacity>
         </View>
-        {/* <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            padding : 10
-          }}
-          onPress={() => {
-            console.log('closing');
-            Navigation.dismissModal(this.props.componentId)
-          }}
-        >
-          <Icon size={20} style={{ position: 'absolute', right: 15, color: '#FF6A15', margin : 5 }} name="closecircle" />
-        </TouchableOpacity> */}
         <ScrollView
           style={{
-            flex: 1
+            flex: 1,
+            backgroundColor : '#333'
           }}
           refreshControl={(
             <RefreshControl
@@ -178,22 +169,9 @@ class InterestedScreen extends React.Component {
         >
           
           {
-            interested.length > 0 && (
-              <Text
-                style={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                  textAlign: 'center',
-                  fontFamily: 'Roboto',
-                  fontSize: 18,
-                  color: '#f0f0f0',
-                  marginLeft: 10,
-                }}
-              >
-                {'Interested Events  '}
-                <Icon name="heart" size={15} />
-              </Text>
-            )
+            interested.length > 0 ? (
+              <Text style={{color : '#ddd', textAlign : 'center', margin : 10 , fontSize : 14}}> You have {interested.length} interested events.</Text>
+            ) : <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> Sorry you have 0 interested events.</Text>
           }
           <FlatList
             numColumns = {2}
@@ -205,22 +183,9 @@ class InterestedScreen extends React.Component {
             )}
           />
           {
-            going.length > 0 && (
-              <Text
-                style={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                  textAlign: 'center',
-                  fontFamily: 'Roboto',
-                  fontSize: 18,
-                  marginLeft: 10,
-                  color: '#f0f0f0',
-                }}
-              >
-                {'Registered Events'}
-                <Icon name="checkcircle" size={15} />
-              </Text>
-            )}
+            going.length > 0 &&
+                  <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> You have {interested.length} registered events.</Text>
+          }
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}

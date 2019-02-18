@@ -207,7 +207,7 @@ class GoingDetails extends React.Component {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ backgroundColor: going === 'true' ? '#c0c0c0' : 'blue', width: '50%' }} onPress={this.handleSubmit}>
+            <TouchableOpacity style={{ backgroundColor: going === 'true' ? '#c0c0c0' : '#2E8B57', width: '50%' }} onPress={this.handleSubmit}>
               <Text
                 style={{
                   fontSize: 22,

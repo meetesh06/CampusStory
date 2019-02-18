@@ -15,7 +15,7 @@ import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
 import FastImage from 'react-native-fast-image';
 import SessionStore from '../SessionStore';
-import Constants from '../constants';
+
 const WIDTH = Dimensions.get('window').width;
 
 class DiscoverPreview extends React.Component {

@@ -364,14 +364,13 @@ class Interests extends React.Component {
               textAlign: 'center',
               fontFamily: 'Roboto-Light',
               fontSize: 22,
-              marginLeft: 10,
               marginTop: 10
             }}
           >
             Select your college
           </Text>
           <View style={{
-            backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 100, marginTop: 4, marginBottom: 10, alignSelf: 'center'
+            backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 120, marginTop: 4, marginBottom: 10, alignSelf: 'center'
           }}
           />
           <View
@@ -426,7 +425,6 @@ class Interests extends React.Component {
             textAlign: 'center',
             fontFamily: 'Roboto-Light',
             fontSize: 22,
-            marginLeft: 10,
             marginTop: 20,
           }}
           >
@@ -443,6 +441,7 @@ class Interests extends React.Component {
           />
           <FlatList
             style={{
+              alignSelf : 'center',
               paddingTop: 10,
             }}
             horizontal
@@ -460,6 +459,7 @@ class Interests extends React.Component {
             )}
           />
           <FlatList
+            style = {{alignSelf : 'center',}}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
@@ -479,7 +479,6 @@ class Interests extends React.Component {
             textAlign: 'center',
             fontFamily: 'Roboto-Light',
             fontSize: 22,
-            marginLeft: 10,
             marginTop: 20,
           }}
           >
@@ -499,7 +498,7 @@ class Interests extends React.Component {
             title="Thank You"
             content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. All of your data shared on this platform will be safe and never shared with anyone without your permission."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
-            style_card={{ backgroundColor: '#555' }}
+            style_card={{ backgroundColor: '#555', marginTop : 15 }}
             style_title={{ color: '#d0d0d0' }}
             style_content={{ color: '#c0c0c0', }}
           />

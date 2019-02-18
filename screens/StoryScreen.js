@@ -59,9 +59,6 @@ class StoryScreen extends React.Component {
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
         if (((gestureState.dy / HEIGHT) * 100) > 30) {
-          // const {
-          //   componentId
-          // } = this.props;
           Animated.parallel([
             Animated.spring(this.topHeight, {
               toValue: HEIGHT + this.topHeight._value,
@@ -88,11 +85,6 @@ class StoryScreen extends React.Component {
               duration: 200
             })
           ]).start();
-          //   Animated.timing(this.opacity, {
-          //     toValue: 1,
-          //     duration: 200
-          //   })
-          // ]).start();
         }
         const {
           current,
@@ -109,28 +101,6 @@ class StoryScreen extends React.Component {
           this.tapped();
         }
       },
-      // onPanResponderTerminate: (evt, gestureState) => {
-      //   if (gestureState.dy / HEIGHT * 100 > 30) {
-      //     Animated.timing(
-      //       this.opacity,
-      //       {
-      //         toValue: 0,
-      //         easing: Easing.cubic,
-      //         duration: 300
-      //       }
-      //     ).start(() => {
-      //       Navigation.dismissOverlay(componentId);
-      //     });
-      //   } else {
-      //     Animated.spring(
-      //       this.opacity,
-      //       {
-      //         toValue: 1,
-      //         friction: 4
-      //       }
-      //     ).start();
-      //   }
-      // },
       onShouldBlockNativeResponder: () => true,
     });
   }
@@ -231,7 +201,7 @@ class StoryScreen extends React.Component {
       _id
     } = currentObj;
     new SessionStore().publishVisits(item.channel, _id);
-    Navigation.showModal({
+    Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
         passProps: {

@@ -14,7 +14,7 @@ export const goToInterestsSelector = () => Navigation.setRoot({
             options: {
               topBar: {
                 title: {
-                  text: 'Basic Details',
+                  text: 'Your Basic Details',
                   color: '#c0c0c0'
                 },
                 background: {
@@ -92,7 +92,6 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        // hideOnScroll: true,
                         visible: true,
                         animate: true,
                         background: {
@@ -107,7 +106,7 @@ export const goHome = async (first) => {
                             component: {
                               name: 'app.HeartIcon'
                             }
-                          }]
+                          }],
                       }
                     }
                   }
@@ -144,15 +143,6 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        // hideOnScroll: true,
-                        // visible: true,
-                        // animate: true,
-                        // background: {
-                        //   color: '#222',
-                        //   component: {
-                        //     name: 'homeTopBar'
-                        //   }
-                        // }
                       }
                     }
                   }
@@ -175,8 +165,6 @@ export const goHome = async (first) => {
                   selectedIconColor: '#FF6A15'
                 },
                 topBar: {
-                  // visible: true,
-                  // drawBehind: true
                 }
               },
               children: [
@@ -189,14 +177,13 @@ export const goHome = async (first) => {
                     },
                     options: {
                       topBar: {
-                        // hideOnScroll: true,
                         visible: true,
                         animate: true,
                         background: {
                           color: '#222'
                         },
                         title: {
-                          text: 'Updates',
+                          text: 'Updates For You',
                           color: '#fff'
                         },
                         rightButtons: [
@@ -205,7 +192,16 @@ export const goHome = async (first) => {
                             component: {
                               name: 'app.SettingsIcon'
                             }
-                          }]
+                          }
+                        ],
+                        leftButtons :[
+                          {
+                            id : 'help',
+                            component : {
+                              name : 'app.HelpIcon'
+                            }
+                          }
+                        ]
                       }
                     }
                   }

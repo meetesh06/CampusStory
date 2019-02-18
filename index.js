@@ -23,6 +23,8 @@ import BackupScreen from './screens/BackupScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import Constants from './constants';
 import SessionStore from './SessionStore';
+import {logout} from './screens/helpers/functions';
+
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
 this.state = {
@@ -53,15 +55,12 @@ const homeTopBar = () => (
   </View>
 );
 
-const HeartIcon = (props) => (
+const HeartIcon = () => (
   <TouchableOpacity
     style={{
       flex: 1,
-      // backgroundColor : '#ffffff22', 
-      width : 40,
-      height : 40,
+      padding : 10,
       alignItems : 'center',
-      // borderRadius : 30,
       justifyContent: 'center',
     }}
     onPress={
@@ -79,20 +78,15 @@ const HeartIcon = (props) => (
       }
     }
   >
-    <Icon size={18} style={{ color: '#FF6A15' }} name="heart"/>
+    <Icon size={22} style={{ color: '#fa3e3e' }} name="heart"/>
   </TouchableOpacity>
 );
 
-const SettingsIcon = (props) => (
+const SettingsIcon = () => (
   <TouchableOpacity
     style={{
       flex: 1,
-      // backgroundColor : '#ffffff22', 
-      width : 40,
-      height : 40,
-      alignItems : 'center',
-      // borderRadius : 30,
-      justifyContent: 'center',
+      padding : 10,
     }}
     onPress={
       () => {
@@ -109,7 +103,19 @@ const SettingsIcon = (props) => (
       }
     }
   >
-    <Icon1 size={18} style={{ color: '#FF6A15' }} name="settings"/>
+    <Icon1 size={22} style={{ color: '#fff' }} name="settings"/>
+  </TouchableOpacity>
+);
+
+const HelpIcon = () => (
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      padding : 10,
+    }}
+    onPress={()=> logout()}
+  >
+    <Icon1 size={22} style={{ color: '#fff' }} name="help-circle"/>
   </TouchableOpacity>
 );
 
@@ -125,7 +131,7 @@ Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('app.HeartIcon', () => HeartIcon);
 Navigation.registerComponent('app.SettingsIcon', () => SettingsIcon);
-// Navigation.registerComponent('app.goBackButton', () => goBackButton);
+Navigation.registerComponent('app.HelpIcon', () => HelpIcon);
 Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);

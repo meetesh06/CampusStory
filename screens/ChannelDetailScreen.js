@@ -85,15 +85,6 @@ class ChannelDetailScreen extends React.Component {
         } else {
           this.handleFull();
         }
-
-        // if (dy > 10) {
-        //   this.handleClose();
-        // } else if(dy < -20) {
-        //   this.handleFull();
-        // }
-        // else if (dx < 5, dy < 5) {
-        //   if(this.state.partial) this.handleFull();
-        // }
       }
     });
   }
@@ -101,12 +92,12 @@ class ChannelDetailScreen extends React.Component {
   componentDidMount() {
     Animated.parallel([
       Animated.spring(this.topHeight, {
-        toValue: HEIGHT * 0.30,
+        toValue: HEIGHT * 0.40,
         duration: 200,
         friction: 7
       }),
       Animated.timing(this.opacity1, {
-        toValue: 1 - (HEIGHT * 0.30 / HEIGHT),
+        toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
         duration: 400
       })
     ]).start();
@@ -291,24 +282,11 @@ handleSubscribe = () =>{
       pan
     } = this.state;
     const offset = pan.y._offset;
-    // pan.setOffset({ y: 0 });
     Animated.spring(pan, {
-      toValue: -(HEIGHT * 0.30) - offset,
+      toValue: -(HEIGHT * 0.40) - offset,
       friction: 8
-    }).start(() => pan.setOffset({ y: -(HEIGHT * 0.30) }));
+    }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
-
-  // handleFull = () => {
-  //   this.setState({ partial: false });
-  //   const {
-  //     pan
-  //   } = this.state;
-  //   pan.setOffset({ y: 0 });
-  //   Animated.spring(pan, {
-  //     toValue: -(HEIGHT * 0.30),
-  //     friction: 15
-  //   }).start();
-  // }
 
   render() {
     const {
@@ -318,7 +296,6 @@ handleSubscribe = () =>{
       pan
     } = this.state;
     const [translateY] = [pan.y];
-    const { componentId } = this.props;
     return (
       <View
         style={{
@@ -327,7 +304,7 @@ handleSubscribe = () =>{
       >
         {
           Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" translucent />)
+          && (<StatusBar barStyle="light-content" hidden />)
         }
 
         <Animated.View
@@ -363,6 +340,22 @@ handleSubscribe = () =>{
               height: (WIDTH - 20) * 0.75 + 20
             }}
           >
+
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                justifyContent: 'center',
+                textAlign: 'center',
+                top: -25,
+                left: 0,
+                right: 0,
+                padding: 5,
+                borderRadius: 20
+              }}
+              onPress={() => this.handleFull()}
+            >
+              <Icon style={{ alignSelf: 'center', color: '#fff' }} size={20} name={this.partial ? 'up' : 'down'} />
+            </TouchableOpacity>
             {
               item !== null && item !== undefined && item.media !== undefined
               && (
@@ -420,19 +413,30 @@ handleSubscribe = () =>{
           <Text
             style={{
               textAlign: 'center',
-              fontSize: 20,
+              fontSize: 24,
+              margin : 10,
               color : '#fff',
-              fontFamily: 'Roboto-Light'
+              fontFamily: 'Roboto'
             }}
           >
             {item !== null && item !== undefined && item.name !== undefined && item.name}
           </Text>
+          <Text style={{
+            color : '#999',
+            fontSize : 15,
+            textAlign : 'center',
+            marginBottom : 8,
+            margin : 5,
+
+          }}>
+            {item !== null && item !== undefined && item.private ? 'Private Channel' : 'Public Channel'}
+            {item !== null && item !== undefined && ' • ' + item.followers + ' Subscribers'}
+          </Text>
           <View style={{
-            backgroundColor: '#c5c5c5', 
+            backgroundColor: '#555', 
             borderRadius: 10, 
             height: 2, 
-            width: 120, 
-            marginTop: 5, 
+            width: 180, 
             alignSelf: 'center',
           }}
           />
@@ -442,12 +446,15 @@ handleSubscribe = () =>{
             margin: 10,
             borderRadius: 10,
           }}>
-          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#b0b0b0'}}>Description</Text>
+          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#999'}}>Description</Text>
           <Text
+            selectable
             style={{
               fontFamily: 'Roboto-Light',
-              fontSize: 15,
+              fontSize: 14,
               margin : 10,
+              marginTop : 0,
+              marginBottom : 15,
               overflow: 'hidden',
               textAlign: 'center',
               color: '#fff'
@@ -457,7 +464,7 @@ handleSubscribe = () =>{
           </Text>
           </View>
 
-          <Text style={{ fontSize: 11, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {12} /> {' Subscribe channels to get new updates from them easily!'}</Text>
+          <Text style={{ fontSize: 12, color: '#888', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {11} /> {' Subscribe channels for easy updates on home screen.'}</Text>
           
           <View style={{flex : 1}} />
           <View
@@ -493,7 +500,7 @@ handleSubscribe = () =>{
                 }}
                 onPress={this.handleNotify}
               >
-                <Icon2 style={{ alignSelf: 'center', color: notify === false ? '#FF6A15' : '#fff', }} size={23} name = { notify === false ? 'notifications' : "notifications-active" } />
+                <Icon2 style={{ alignSelf: 'center', color: notify === false ? '#777' : '#fff', }} size={23} name = { notify === false ? 'notifications' : "notifications-active" } />
               </TouchableOpacity>
               <View
                 style={{
@@ -509,7 +516,7 @@ handleSubscribe = () =>{
                     color: '#a0a0a0',
                   }}
                 >
-                  {notify === false ? 'Click the bell icon to get notified for any future updates for this channel.' : 'You are now subscribed for future updates for this channel.'}
+                  {notify === false ? 'Click the bell icon to get notified for all future updates for this channel.' : 'You are now subscribed for all future updates for this channel.'}
                 </Text>
               </View>
             </View>
@@ -520,9 +527,9 @@ handleSubscribe = () =>{
             style={{
               padding: 15,
               paddingLeft : 5,
-              backgroundColor : subscribed ? '#777' : '#FF6A15',
+              backgroundColor : subscribed ? '#666' : '#fa3e3e',
               paddingRight : 5,
-              marginBottom: 50,
+              marginBottom: Platform.OS === 'ios' ? 0 : 50,
               flex: 1
             }}
           >
@@ -534,9 +541,7 @@ handleSubscribe = () =>{
                 textAlign: 'center'
               }}
             >
-              { !subscribed ? 'SUBSCRIBE' : 'UNSUBSCRIBE'}
-              {item !== null && item !== undefined && ' (' + item.followers + ')'}
-              
+              { !subscribed ? 'Subscribe Now ' : 'Unsubscribe Now'}
             </Text>
           </TouchableOpacity>
         </View>
