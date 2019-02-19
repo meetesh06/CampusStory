@@ -9,6 +9,7 @@ import {
   Platform,
   StatusBar,
   ScrollView,
+  ActivityIndicator,
   TouchableOpacity
 } from 'react-native';
 import axios from 'axios';
@@ -119,14 +120,15 @@ class Interests extends React.Component {
     goHome(true);
   }
 
-  showBackupPrompt = () =>{
+  showBackupPrompt = (data) =>{
     Navigation.showModal({
       component: {
         name: 'Backup Screen',
         id: 'backup_screen',
         passProps: {
           reset : this.reset,
-          proceed : this.proceed
+          proceed : this.proceed,
+          data
         },
         options: {
           modalPresentationStyle: 'overCurrentContext',
@@ -221,7 +223,7 @@ class Interests extends React.Component {
     this.setState({ loading: true, error : null});
     interestsProcessed = interestsProcessed.join();
     // eslint-disable-next-line no-undef
-    const id = uniqueId === undefined || uniqueId === null || uniqueId === '' || uniqueId.length < 2 ? this.UUID(10) : uniqueId;
+    const id = uniqueId === undefined || uniqueId === null || uniqueId === '' || uniqueId.length < 2 ? this.UUID(24) : uniqueId;
     const formData = new FormData();
     formData.append('id', id);
     formData.append(COLLEGE, college);
@@ -238,7 +240,7 @@ class Interests extends React.Component {
         if (!resultObj.error) {
           if(resultObj.exists){
             this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data, id}}, ()=>{
-              this.showBackupPrompt();
+              this.showBackupPrompt(result.data.data);
             });
           }
           else {
@@ -496,7 +498,7 @@ class Interests extends React.Component {
           <InformationCard
             touchable = {false}
             title="Thank You"
-            content="Thank you for installing Campus Story! This app collects app usage data to improve your user experience. All of your data shared on this platform will be safe and never shared with anyone without your permission."
+            content="Thank you for installing Campus Story. This app collects app usage data to improve user experience. All of your data shared on this platform will be safe and never shared with anyone."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
             style_card={{ backgroundColor: '#555', marginTop : 15 }}
             style_title={{ color: '#d0d0d0' }}
@@ -504,14 +506,19 @@ class Interests extends React.Component {
           />
 
           {this.state.error && <Text style={{ fontSize: 14, color: '#FF6A15', textAlign: 'center', textAlignVertical : 'center', margin : 5}}><IconAnt name = 'infocirlceo' size = {15} /> {this.state.error}</Text> }
+          {
+                this.state.loading
+                && <ActivityIndicator size="small" color="#fff" style={{margin : 5}} />
+          }
           <View
             style={{
               alignSelf: 'center',
               elevation: 10,
               backgroundColor: '#444',
               padding: 5,
+              marginTop : 10,
               borderRadius: 30,
-              marginBottom: 10
+              marginBottom: 30
             }}
           >
             <TouchableOpacity
@@ -525,8 +532,8 @@ class Interests extends React.Component {
               }}
               onPress={this.handleNextScreen}
             >
-              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 22, textAlignVertical : 'center', textAlign : 'center'}}>{'Next'}</Text>
-              <IconMaterial name="navigate-next" size={35} color="#fff" />
+              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 22, textAlignVertical : 'center', textAlign : 'center'}}>{' Next'}</Text>
+              <IconMaterial name="navigate-next" size={32} color="#fff" />
             </TouchableOpacity>
           </View>
         </ScrollView>

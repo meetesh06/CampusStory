@@ -15,6 +15,8 @@ const {
   UPDATES,
   VIEWS,
   VISITS,
+  FIRST_TIME,
+  USER_DATA,
   SESSION_ID,
   LOGS,
   TRACKS,
@@ -32,12 +34,14 @@ export default class SessionStore {
 
   state = {
     [MUTED] : false,
+    [FIRST_TIME] : true,
     [TOKEN] : 'something',
     [CONFIG] : {},
     [SET_UP_STATUS] : false,
     [COLLEGE] : '',
     [INTERESTS] : '',
     [SESSION_ID] : '',
+    [USER_DATA] : {},
     temp : {
       [UPDATES] : [],
       [VIEWS] : [],
@@ -97,10 +101,12 @@ export default class SessionStore {
   reset = async () =>{
     this.state = {
       [MUTED] : false,
+      [FIRST_TIME] : true,
       [TOKEN] : 'something',
       [CONFIG] : {},
       [SET_UP_STATUS] : false,
       [COLLEGE] : '',
+      [USER_DATA] : {},
       [INTERESTS] : '',
       [SESSION_ID] : '',
       temp : {

@@ -11,7 +11,7 @@ const PostThumbnail = (props) => {
     <LinearGradient
       style={{
         width: (WIDTH / 3) - 2,
-        height: WIDTH / 3,
+        height: WIDTH / 3 + 20,
         justifyContent: 'center',
         alignItems: 'center',
         margin : 1

@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
 import firebase from 'react-native-firebase';
@@ -80,7 +79,7 @@ class ChannelDetailScreen extends React.Component {
         this.opacity.setValue(1 - gestureState.dy / HEIGHT);
       },
       onPanResponderRelease: (e, { dx, dy }) => {
-        if (((dy / HEIGHT) * 100) > 30) {
+        if (((dy / HEIGHT) * 100) > 20) {
           this.handleClose();
         } else {
           this.handleFull();
@@ -94,11 +93,13 @@ class ChannelDetailScreen extends React.Component {
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
         duration: 200,
-        friction: 7
+        friction: 7,
+        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity1, {
         toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
-        duration: 400
+        duration: 400,
+        //useNativeDriver : true,
       })
     ]).start();
 
@@ -265,11 +266,13 @@ handleSubscribe = () =>{
       Animated.spring(this.topHeight, {
         toValue: HEIGHT + this.topHeight._value,
         duration: 200,
-        friction: 7
+        friction: 7,
+        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity, {
         toValue: 0,
-        duration: 200
+        duration: 200,
+        //useNativeDriver : true,
       })
     ]).start();
     setTimeout(() => Navigation.dismissOverlay(componentId), 180);
@@ -284,7 +287,8 @@ handleSubscribe = () =>{
     const offset = pan.y._offset;
     Animated.spring(pan, {
       toValue: -(HEIGHT * 0.40) - offset,
-      friction: 8
+      friction: 8,
+      //useNativeDriver : true,
     }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 

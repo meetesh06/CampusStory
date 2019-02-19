@@ -50,6 +50,7 @@ class EventDetail extends React.Component {
     this.opacity = new Animated.Value(0.3);
     this.opacity1 = new Animated.Value(0);
     this.partial = true;
+    console.log('EVENT', this.props.item);
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: props.item,
@@ -87,7 +88,7 @@ class EventDetail extends React.Component {
         this.opacity.setValue(1 - gestureState.dy / HEIGHT);
       },
       onPanResponderRelease: (e, { dx, dy }) => {
-        if (((dy / HEIGHT) * 100) > 30) {
+        if (((dy / HEIGHT) * 100) > 20) {
           this.handleClose();
         } else {
           this.handleFull();
@@ -104,11 +105,13 @@ class EventDetail extends React.Component {
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
         duration: 200,
-        friction: 7
+        friction: 7,
+        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity1, {
         toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
-        duration: 400
+        duration: 200,
+        //useNativeDriver : true,
       })
     ]).start();
 
@@ -192,11 +195,13 @@ class EventDetail extends React.Component {
       Animated.spring(this.topHeight, {
         toValue: HEIGHT + this.topHeight._value,
         duration: 200,
-        friction: 7
+        friction: 7,
+        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity, {
         toValue: 0,
-        duration: 200
+        duration: 200,
+        //useNativeDriver : true,
       })
     ]).start();
     setTimeout(() => Navigation.dismissOverlay(componentId), 180);
@@ -211,7 +216,8 @@ class EventDetail extends React.Component {
     const offset = pan.y._offset;
     Animated.spring(pan, {
       toValue: -(HEIGHT * 0.40) - offset,
-      friction: 8
+      friction: 8,
+      //useNativeDriver : true,
     }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 
@@ -235,7 +241,6 @@ class EventDetail extends React.Component {
     const { _id } = item;
     const { updateStatus } = this;
     if (loading) return;
-    console.log(item);
     if (item.reg_link !== '') {
       Navigation.dismissOverlay(this.props.componentId);
       Navigation.showModal({
@@ -810,7 +815,6 @@ Views
                   marginRight: 10,
                   width: 50,
                   height: 50,
-                  
                   paddingTop: 5,
                   paddingBottom: 5,
                   borderRadius: 50,
@@ -850,34 +854,30 @@ Views
             <TouchableOpacity
               onPress={this.handleClick}
               style={{
-                padding: 15,
+                padding: 10,
                 backgroundColor: '#666',
                 flex: 1
               }}
             >
               {
-                            loading
-                            && <ActivityIndicator size="small" color="#fff" />
-                        }
+                loading
+                && <ActivityIndicator size="small" color="#fff" />
+              }
               {
-                            !loading
-                            && (
-                            <Text
-                              style={{
-                                color: '#fafafa',
-                                fontSize: 18,
-                                fontFamily: 'Roboto',
-                                textAlign: 'center'
-                              }}
-                            >
-                              <Icon style={{ color: '#ddd' }} name="heart" size={18} />
-                              {' '}
-                              {'  Interested  '}
-                              {' '}
-                              <Icon style={{ color: '#ddd' }} name="heart" size={18} />
-                            </Text>
-                            )
-                        }
+                !loading
+                && (
+                <Text
+                  style={{
+                    color: '#fafafa',
+                    fontSize: 18,
+                    fontFamily: 'Roboto',
+                    textAlign: 'center'
+                  }}
+                >
+                  {" I'm Interested  "}
+                </Text>
+                )
+            }
             </TouchableOpacity>
             ) }
             { item.interested === 'true' && item.going === 'false'
@@ -885,7 +885,7 @@ Views
                     <TouchableOpacity
                       onPress={this.handleGoing}
                       style={{
-                        padding: 15,
+                        padding: 10,
                         backgroundColor: '#fa3e3e',
                         flex: 1
                       }}
@@ -913,9 +913,10 @@ Views
             { item.interested === 'true' && item.going === 'true'
                     && (
                     <TouchableOpacity
+                      activeOpacity = {0.2}
                       style={{
-                        padding: 15,
-                        backgroundColor: '#222222',
+                        padding: 10,
+                        backgroundColor: '#2E8B57',
                         flex: 1
                       }}
                     >

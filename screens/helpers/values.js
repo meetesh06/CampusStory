@@ -36,7 +36,7 @@ export const categoriesNoHottest = [
     image: musicImageAlt
   },
   {
-    title: 'Art',
+    title: 'Art and Theater',
     value: 'art',
     image: dadImageAlt
   },

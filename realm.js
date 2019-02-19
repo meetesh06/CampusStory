@@ -66,7 +66,8 @@ const Firebase = {
   properties: {
     _id: 'string',
     notify: 'string',
-    type: 'string'
+    type: 'string',
+    private : 'bool?'
   }
 };
 

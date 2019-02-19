@@ -2,12 +2,15 @@
 import React from 'react';
 import {
   View,
-  FlatList
+  FlatList,
+  Text,
+  RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import Constants from '../constants';
 import StoryFeed from '../components/StoryFeed';
 import SessionStore from '../SessionStore';
+import IconAnt from 'react-native-vector-icons/AntDesign';
 import urls from '../URLS';
 
 const { TOKEN } = Constants;
@@ -18,11 +21,32 @@ class DiscoverFeed extends React.PureComponent {
   }
 
   state = {
-    channels : []
+    channels : [],
+    error : false,
+    refreshing : true,
+    mssg : '',
+    empty : false,
   }
 
   componentDidMount(){
     const { category } = this.props;
+    const value = new SessionStore().getValueTemp(category);
+    if(value === null || value === undefined) {
+      this.fetch_data(category);
+    }
+    else {
+      console.log('CACHE HIT');
+      this.setState({channels : value, error : false, refreshing : false});
+    }
+  }
+
+  refresh = () =>{
+    const { category } = this.props;
+    this.setState({refreshing : true, error : false});
+    this.fetch_data(category);
+  }
+
+  fetch_data = (category) =>{
     const private_channels = false;
     axios.post(urls.GET_CATEGORY_CHANNEL_URL, {category, private : private_channels}, {
       headers: {
@@ -30,22 +54,51 @@ class DiscoverFeed extends React.PureComponent {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
+      console.log('FEED', response);
       if(!response.data.error){
-        this.setState({channels : response.data.data});
+        this.setState({channels : response.data.data, error : false, refreshing : false});
+        new SessionStore().putValueTemp(category, response.data.data);
       } else {
-        this.setState({error : true, mssg : response.data.mssg});
+        console.log(response.data.mssg);
+        this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>console.log(e));
+  }
+
+  onEmpty = (index) =>{
+    const data = this.state.channels;
+    data.splice(index, 1);
+    this.setState({channels : data, update : !this.state.update});
   }
 
   render(){
     return(
       <View style={{flex : 1, backgroundColor: '#333'}}>
+        { this.state.error && 
+          <Text style={{ 
+              fontSize: 14,
+              color: '#FF6A15', 
+              textAlign: 'center',
+              textAlignVertical : 'center', 
+              margin : 5,
+              marginTop : 15,
+            }}>
+            <IconAnt name = 'infocirlceo' size = {15} /> 
+            {'  ' + this.state.mssg}
+          </Text> 
+        }
         <FlatList
+          refreshControl = {(
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.refresh}
+            />
+          )}
           keyExtractor={(item, index) => `${index}`}
           data={this.state.channels}
-          renderItem={({ item }) => (
-          <StoryFeed item = {item} />
+          extraData = {this.state.update}
+          renderItem={({ item, index }) => (
+          <StoryFeed item = {item} onEmpty = {this.onEmpty} index = {index} />
           )}
         />
       </View>

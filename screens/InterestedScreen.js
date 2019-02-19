@@ -8,21 +8,20 @@ import {
   View,
   AsyncStorage,
   TouchableOpacity,
+  ActivityIndicator,
   Text,
   SafeAreaView
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconFontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
 import { processRealmObj } from './helpers/functions';
-import InformationCard from '../components/InformationCard';
 
 const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 class InterestedScreen extends React.Component {
   constructor(props) {
@@ -35,7 +34,8 @@ class InterestedScreen extends React.Component {
     interested: [],
     going: [],
     count: 0,
-    refreshing: false
+    refreshing: false,
+    loading : true,
   }
 
   componentDidMount() {
@@ -50,7 +50,7 @@ class InterestedScreen extends React.Component {
         this.setState({ interested: result });
       });
       processRealmObj(going, (result) => {
-        this.setState({ going: result });
+        this.setState({ going: result, loading : false});
       });
     });
   }
@@ -141,8 +141,9 @@ class InterestedScreen extends React.Component {
               marginLeft: 5
             }}
           >
-            My Events
+            {' My Events  '}
           </Text>
+          <IconMaterial name = 'heart' size = {25} color = '#ddd' />
           <TouchableOpacity
             style={{
               flex: 1,
@@ -167,11 +168,15 @@ class InterestedScreen extends React.Component {
             />
           )}
         >
+
+          { 
+                this.state.loading
+                && <ActivityIndicator size="small" color="#fff" style={{margin : 10}} />
+          }
           
           {
-            interested.length > 0 ? (
-              <Text style={{color : '#ddd', textAlign : 'center', margin : 10 , fontSize : 14}}> You have {interested.length} interested events.</Text>
-            ) : <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> Sorry you have 0 interested events.</Text>
+            interested.length > 0 &&
+              <Text style={{color : '#ddd', textAlign : 'center', margin : 10 , fontSize : 14}}> You are interested in {interested.length} events.</Text>
           }
           <FlatList
             numColumns = {2}
@@ -184,17 +189,24 @@ class InterestedScreen extends React.Component {
           />
           {
             going.length > 0 &&
-                  <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> You have {interested.length} registered events.</Text>
+                  <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> You have {going.length} registered events.</Text>
           }
           <FlatList
-            horizontal
+            numColumns = {2}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
             data={going}
             renderItem={({ item }) => (
-              <EventCard onPress={this.handleEventPress} width={180} height={(140)} item={item} />
+              <EventCard onPress={this.handleEventPress} width={WIDTH / 2 - 20} height={140} item={item} />
             )}
           />
+          {
+            going.length === 0 && interested.length === 0 && !this.state.loading &&
+            <View style={{position : 'absolute', top : 100, alignSelf : 'center', alignItems : 'center'}}>
+              <IconMaterial name = "delete-empty" size={180} style={{color : "#444",}} />
+              <Text style={{color : '#fff', textAlign : 'center', marginLeft : 10, marginRight : 10, fontSize : 15, fontFamily : 'Roboto-Light'}}> Huh! You have no events in your list.</Text>
+            </View>
+          }
         </ScrollView>
       </SafeAreaView>
     );

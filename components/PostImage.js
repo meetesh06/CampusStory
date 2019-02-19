@@ -30,7 +30,8 @@ const PostImage = (props) => {
       <Text
         style={{
           color: '#fff',
-          marginTop: 15,
+          marginTop: 20,
+          marginLeft : 15, marginRight : 15,
           fontFamily: 'Roboto',
           fontSize: 14,
           margin : 5,

@@ -21,9 +21,16 @@ import InterestedScreen from './screens/InterestedScreen';
 import NotificationsAllScreen from './screens/NotificationsAllScreen';
 import BackupScreen from './screens/BackupScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import HelpScreen from './screens/HelpScreen';
 import Constants from './constants';
 import SessionStore from './SessionStore';
-import {logout} from './screens/helpers/functions';
+import ProfileDetailsScreen from './screens/ProfileDetailsScreen';
+import InterestsDetailsScreen from './screens/InterestsDetailsScreen';
+import ChannelsListScreen from './screens/ChannelsListScreen';
+import ListPrivateChannels from './screens/ListPrivateChannels';
+import NotificationsSettings from './screens/NotificationsSettings';
+import AboutUsScreen from './screens/AboutUsScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -113,7 +120,17 @@ const HelpIcon = () => (
       flex: 1,
       padding : 10,
     }}
-    onPress={()=> logout()}
+    onPress={()=>  Navigation.showModal({
+      component: {
+        name: 'Help Screen',
+        options: {
+          topBar: {
+            visible: false
+          }
+        }
+      }
+    })
+  }
   >
     <Icon1 size={22} style={{ color: '#fff' }} name="help-circle"/>
   </TouchableOpacity>
@@ -139,6 +156,14 @@ Navigation.registerComponent('Interested Screen', () => InterestedScreen);
 Navigation.registerComponent('Notifications All Screen', () => NotificationsAllScreen);
 Navigation.registerComponent('Backup Screen', () => BackupScreen);
 Navigation.registerComponent('Settings Screen', () => SettingsScreen);
+Navigation.registerComponent('Help Screen', () => HelpScreen);
+Navigation.registerComponent('Profile Details Screen', () => ProfileDetailsScreen);
+Navigation.registerComponent('Channels List Screen', () => ChannelsListScreen);
+Navigation.registerComponent('Interests Details Screen', () => InterestsDetailsScreen);
+Navigation.registerComponent('List Private Channels', () => ListPrivateChannels);
+Navigation.registerComponent('Notifications Settings', () => NotificationsSettings);
+Navigation.registerComponent('About Us Screen', () => AboutUsScreen);
+Navigation.registerComponent('Privacy Policy Screen', () => PrivacyPolicyScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);

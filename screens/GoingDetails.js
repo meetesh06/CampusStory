@@ -42,6 +42,9 @@ class GoingDetails extends React.Component {
         friction: 5
       }
     ).start();
+    let user_data = new SessionStore().getValue(Constants.USER_DATA);
+    if(user_data === null || user_data === undefined) return;
+    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone});
   }
 
   handleClose = () => {
@@ -51,7 +54,6 @@ class GoingDetails extends React.Component {
       {
         duration: 300,
         toValue: 0,
-        // friction: 0
       }
     ).start(() => { updateStatus(); Navigation.dismissOverlay(componentId); });
   }
@@ -153,39 +155,41 @@ class GoingDetails extends React.Component {
                 textAlign: 'center',
                 fontSize: 15,
                 padding: 15,
-                margin: 10,
-                borderRadius: 10,
+                marginTop: 10,
+                marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
-              placeholder="Your Name"
+              placeholder="Your Full Name"
               onChangeText={val => this.setState({ name: val })}
               value={name}
             />
             <TextInput
               autoCapitalize="none"
+              keyboardType = 'email-address'
               style={{
                 textAlign: 'center',
                 fontSize: 15,
                 padding: 15,
-                margin: 10,
-                borderRadius: 10,
+                marginTop: 10,
+                marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
-              placeholder="Your E-mail"
+              placeholder="Your E-mail ID"
               onChangeText={val => this.setState({ email: val })}
               value={email}
             />
             <TextInput
               autoCapitalize="none"
+              keyboardType = 'phone-pad'
               style={{
                 textAlign: 'center',
                 fontSize: 15,
                 padding: 15,
-                margin: 10,
-                borderRadius: 10,
+                marginTop: 10,
+                marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
-              placeholder="Your Phone"
+              placeholder="Your Phone Number"
               onChangeText={val => this.setState({ phone: val })}
               value={phone}
             />
@@ -221,6 +225,7 @@ class GoingDetails extends React.Component {
               </Text>
             </TouchableOpacity>
           </View>
+        
         </Animated.View>
 
         <TouchableOpacity

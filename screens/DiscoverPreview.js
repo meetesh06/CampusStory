@@ -17,6 +17,7 @@ import FastImage from 'react-native-fast-image';
 import SessionStore from '../SessionStore';
 
 const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
@@ -41,7 +42,9 @@ class DiscoverPreview extends React.Component {
         this.position,
         {
           toValue: 400,
-          friction: 6
+          friction: 7,
+          //duration : 200,
+          //useNativeDriver : true,
         }
       ).start();
     } catch(e) {
@@ -56,10 +59,10 @@ class DiscoverPreview extends React.Component {
         <Post message={item.message} />
       );
       case 'post-image': return (
-        <PostImage image={item.media[0]} message={item.message}/>
+        <PostImage image={item.media[0]}/>
       );
       case 'post-video': return (
-        <PostVideo video={item.media} message={item.message}/>
+        <PostVideo video={item.media}/>
       );
     }
   }
@@ -99,8 +102,9 @@ class DiscoverPreview extends React.Component {
     Animated.timing(
       this.position,
       {
-        duration: 400,
+        duration: 200,
         toValue: 0,
+        //useNativeDriver : true,
       }
     ).start(() => {
       Navigation.dismissOverlay(componentId); 
@@ -121,7 +125,7 @@ class DiscoverPreview extends React.Component {
       <View
         style={{
           flex: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
           justifyContent: 'center'
         }}
       >
@@ -146,12 +150,12 @@ class DiscoverPreview extends React.Component {
             }
           </View>
 
-          <View style={{position : 'absolute', flexDirection : 'row', top : 0, left : 0, padding : 5, justifyContent : 'center', alignItems : 'center'}}>
+          <View style={{position : 'absolute', flexDirection : 'row', top : 3, left : 0, padding : 5, justifyContent : 'center', alignItems : 'center'}}>
           
           <TouchableOpacity onPress ={()=>this.gotoChannel(item)} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', }}>
             <FastImage
               style={{
-                width : 36, height : 36, borderRadius : 20
+                width : 36, height : 36, borderRadius : 20, marginLeft : 10,
               }}
 
               source={{ uri: `https://www.mycampusdock.com/${image}` }}
@@ -167,6 +171,7 @@ class DiscoverPreview extends React.Component {
                 width: 30,
                 height: 30,
                 padding: 5,
+                marginRight : 5,
                 backgroundColor: '#ffffff99',
                 borderRadius: 20
               }}

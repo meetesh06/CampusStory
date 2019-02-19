@@ -72,7 +72,6 @@ class Home extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-        console.log(response);
         if(!response.data.error){
           this.setState({weekEventList : response.data.data});
         } else {
@@ -110,7 +109,6 @@ class Home extends React.Component {
       config.firebase_token = fcmToken;
       config.platform = Platform.OS === 'android' ? 'android' : 'ios';
       store.putValue(CONFIG, config);
-      console.log(fcmToken);
     }
     this.navigationEventListener = Navigation.events().bindComponent(this);
     const interests = store.getValue(INTERESTS);
@@ -161,7 +159,7 @@ class Home extends React.Component {
     }
   }
 
-  updateLists = async (lastUpdated, channelsList) => {
+  updateLists = async (lastUpdated, channelsList, should_not_update) => {
     axios.post(urls.GET_EVENT_LIST, { last_updated: lastUpdated }, {
       headers: {
         'Content-Type': 'application/json',
@@ -195,7 +193,7 @@ class Home extends React.Component {
             let i;
             for (i = 0; i < data.length; i += 1) {
               try {
-                realm.create('Events', data[i], true);
+                realm.create('Events', data[i], !should_not_update);
               } catch (e) {
                 console.log(e);
               }
@@ -326,7 +324,9 @@ class Home extends React.Component {
         });
       });
     });
-    await updateLists(lastUpdated, subList);
+    const is_first_time = new SessionStore().getValue(Constants.FIRST_TIME);
+    if(is_first_time) new SessionStore().putValue(Constants.FIRST_TIME, false);
+    await updateLists(lastUpdated, subList, is_first_time);
   }
 
   updateContent = async () => {

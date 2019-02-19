@@ -11,7 +11,7 @@ const PostImageThumbnail = (props) => {
     <View
       style={{
         width: (WIDTH / 3) - 2,
-        height: WIDTH / 3,
+        height: WIDTH / 3 + 20,
         alignItems: 'center',
         justifyContent: 'center',
         margin: 1,

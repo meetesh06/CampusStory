@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View, Dimensions, SafeAreaView } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
-import CategoryView from './CategoryView';
 import DiscoverFeed from './DiscoverFeed';
 import CategoryCard from '../components/CategoryCard';
 import { categoriesNew } from './helpers/values';
@@ -18,10 +17,6 @@ export default class Discover extends React.Component {
       { key: 'sports', title: 'Sports' },
     ],
   };
-
-  componentDidMount(){
-    console.log('DISCOVER MOUNTED');
-  }
 
   renderScene = ({ route }) => {
     const {

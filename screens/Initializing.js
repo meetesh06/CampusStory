@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Constants from '../constants';
 import { goToInterestsSelector, goHome } from './helpers/Navigation';
 import SessionStore from '../SessionStore';
@@ -49,25 +48,27 @@ class App extends React.Component {
   render() {
     const { loading } = this.state;
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor : '#333' }}>
       {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" translucent />)
         }
-        <LinearGradient style={{ flex: 1 }} colors={['#222222ee', '#222222ee']}>
           <View style={{ flex: 2, justifyContent: 'center' }}>
-            <View style={{backgroundColor : '#444444ee', padding : 15, borderRadius : 100, alignSelf : 'center'}}>
+          <View style={{padding : 3, borderRadius : 100, alignSelf : 'center'}}>
+            <View style={{backgroundColor : '#555', padding : 15, borderRadius : 100, alignSelf : 'center'}}>
               <Image
                 source={logoWhite}
                 style={{
-                  width: 120, 
-                  height: 120, 
+                  width: 120,
+                  padding : 10,
+                  height: 120,
                   resizeMode: 'contain',
                 }}
               />
             </View>
+            </View>
             <Text style={{
-              textAlign: 'center', marginTop: 20, color: '#ddd', fontSize: 35, fontFamily: 'Roboto-Regular'
+              textAlign: 'center', marginTop: 20, color: '#ddd', fontSize: 35, fontFamily: 'Roboto'
             }}
             >
               {' '}
@@ -106,7 +107,6 @@ class App extends React.Component {
           <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
             <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
           </View>
-        </LinearGradient>
       </View>
     );
   }

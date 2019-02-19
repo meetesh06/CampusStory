@@ -34,7 +34,12 @@ class StoryFeed extends React.PureComponent {
         }
       }).then((response) => {
         if(!response.data.error){
-          this.setState({feed : response.data.data});
+          const data = response.data.data;
+          if(data.length > 0){
+            this.setState({feed : data});
+          } else {
+            this.props.onEmpty(this.props.index);
+          }
         } else {
           this.setState({error : true});
         }
@@ -93,7 +98,6 @@ class StoryFeed extends React.PureComponent {
       } = this.state;
       if (!peek) return;
       Navigation.dismissOverlay('preview_overlay1');
-      // Navigation.dismissOverlay('preview_overlay');
     }
 
     handlePreview = (item,image) => {

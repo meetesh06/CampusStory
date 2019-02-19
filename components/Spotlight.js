@@ -47,13 +47,10 @@ const getMonthName = (num) => {
 
 const Spotlight = (props) => {
   const { item, onPress } = props;
-  console.log(item);
   const { media, title, date } = item;
   return (
     <View
       style={{
-        // borderRadius: 10,
-        // margin: 10,
         overflow: 'hidden'
       }}
     >
@@ -65,16 +62,6 @@ const Spotlight = (props) => {
         }}
         resizeMode={FastImage.resizeMode.cover}
       />
-      {/* <LinearGradient
-        style={{
-          flex: 1,
-          position: 'absolute',
-          top: 0,
-          width: '100%',
-          height: 250
-        }}
-        colors={['#rgba(0, 0, 0, 0.5)', '#rgba(0,0,0,0.7)']}
-      /> */}
       <LinearGradient
         style={{
           position: 'absolute',

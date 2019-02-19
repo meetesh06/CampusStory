@@ -8,6 +8,12 @@ class AdvertCard extends React.Component {
     pressed: false
   }
 
+  componentDidMount(){
+    if(this.props.checked){
+      this.setState({pressed : true});
+    }
+  }
+
   render() {
     const {
       onChecked,

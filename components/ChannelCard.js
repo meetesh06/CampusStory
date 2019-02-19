@@ -16,6 +16,7 @@ const ChannelCard = (props) => {
     media,
     college
   } = item;
+  console.log(item);
   return (
     <TouchableOpacity
       onPress={() => onPress(_id, name)}
