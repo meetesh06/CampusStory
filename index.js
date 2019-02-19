@@ -92,8 +92,10 @@ const HeartIcon = () => (
 const SettingsIcon = () => (
   <TouchableOpacity
     style={{
-      flex: 1,
-      padding : 10,
+      // flex: 1,
+      justifyContent: 'center',
+      paddingRight: 5
+      // marginRight: 5
     }}
     onPress={
       () => {
@@ -117,8 +119,11 @@ const SettingsIcon = () => (
 const HelpIcon = () => (
   <TouchableOpacity
     style={{
-      flex: 1,
-      padding : 10,
+      justifyContent: 'center',
+      paddingRight: 10,
+      paddingLeft: 10,
+      // flex: 1,
+      // padding : 10,
     }}
     onPress={()=>  Navigation.showModal({
       component: {

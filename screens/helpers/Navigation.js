@@ -1,6 +1,7 @@
 import { Navigation } from 'react-native-navigation';
 import Icon1 from 'react-native-vector-icons/Foundation';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import { Platform } from 'react-native';
 // import Icon3 from 'react-native-vector-icons/MaterialIcons';
 
 export const goToInterestsSelector = () => Navigation.setRoot({
@@ -49,6 +50,41 @@ export const goInitializing = () => Navigation.setRoot({
     }
   }
 });
+
+const androidRight = [
+  {
+    id: 'Settings',
+    component: {
+      name: 'app.SettingsIcon'
+    }
+  },
+  {
+    id : 'help',
+    component : {
+      name : 'app.HelpIcon'
+    }
+  }
+];
+
+const iosRight = [
+  {
+    id: 'Settings',
+    component: {
+      name: 'app.SettingsIcon'
+    }
+  },
+  
+];
+
+const androidLeft = [];
+const iosLeft = [
+  {
+    id : 'help',
+    component : {
+      name : 'app.HelpIcon'
+    }
+  }
+];
 
 export const goHome = async (first) => {
   const homeIcon = await Icon1.getImageSource('home', 25);
@@ -186,22 +222,8 @@ export const goHome = async (first) => {
                           text: 'Updates For You',
                           color: '#fff'
                         },
-                        rightButtons: [
-                          {
-                            id: 'Settings',
-                            component: {
-                              name: 'app.SettingsIcon'
-                            }
-                          }
-                        ],
-                        leftButtons :[
-                          {
-                            id : 'help',
-                            component : {
-                              name : 'app.HelpIcon'
-                            }
-                          }
-                        ]
+                        rightButtons: Platform.OS === 'android' ? androidRight : iosRight,
+                        leftButtons: Platform.OS === 'android' ? androidLeft : iosLeft,
                       }
                     }
                   }

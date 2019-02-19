@@ -47,9 +47,10 @@ class HelpScreen extends React.Component {
               marginLeft: 5
             }}
           >
-            {'Help  '}
+            {'About Us  '}
           </Text>
-          <IconMaterial name = 'help-circle' size = {25} color = '#ddd' />
+          {/* <IconMaterial name = 'help-circle' size = {25} color = '#ddd' /> */}
+          <IconIon name = 'ios-people' color = '#fff' size = {25} style={{alignSelf : 'center',}} />
           <TouchableOpacity
             style={{
               flex: 1,

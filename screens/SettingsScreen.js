@@ -146,7 +146,7 @@ class SettingsScreen extends React.Component {
           </View>
         </TouchableOpacity> */}
 
-        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}}>
+        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}} onPress = {()=>this.gotoScreen('About Us Screen')}>
           <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
             <View>
               <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>About Us</Text>
@@ -159,7 +159,7 @@ class SettingsScreen extends React.Component {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}}>
+        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}} onPress = {()=>this.gotoScreen('Privacy Policy Screen')}>
           <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
             <View>
               <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>Privacy Policy</Text>

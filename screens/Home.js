@@ -35,6 +35,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.handleEventPress = this.handleEventPress.bind(this);
+    this.handleEventPressSpotlight = this.handleEventPressSpotlight.bind(this);
     this.handleStoryPress = this.handleStoryPress.bind(this);
     this.updateContent = this.updateContent.bind(this);
     this.updateLists = this.updateLists.bind(this);
@@ -200,6 +201,7 @@ class Home extends React.Component {
             }
           });
         });
+        console.log('new events', response.data.data);
         if (this.props.first) this.fetchEventsFromRealm();
         else this.setState({ newUpdates: true });
       }
@@ -246,6 +248,7 @@ class Home extends React.Component {
                   //  make a logic to update the purecomponent based on shouldupdate
                   realm.create('Channels', { _id: key, updates: 'true' }, true);
                 });
+                console.log('new channels');
                 if (this.props.first) this.fetchChannelsFromRealm();
                 else this.setState({ newUpdates: true });
               }
@@ -296,7 +299,7 @@ class Home extends React.Component {
     });
   }
 
-  checkForChanges = async () => {
+  checkForChanges = () => {
     const {
       updateLists
     } = this;
@@ -326,7 +329,7 @@ class Home extends React.Component {
     });
     const is_first_time = new SessionStore().getValue(Constants.FIRST_TIME);
     if(is_first_time) new SessionStore().putValue(Constants.FIRST_TIME, false);
-    await updateLists(lastUpdated, subList, is_first_time);
+    updateLists(lastUpdated, subList, is_first_time);
   }
 
   updateContent = async () => {
@@ -406,6 +409,70 @@ class Home extends React.Component {
             }
           }
         });
+      });
+    });
+  }
+
+  handleEventPressSpotlight = (item) => {
+    const { _id } = item;
+    new SessionStore().pushTrack({type: 'open_event', event: _id});
+    Realm.getRealm((realm) => {
+      const current = realm.objects('Events').filtered(`_id="${_id}"`);
+      processRealmObj(current, (result) => {
+        console.log(result.length === 0, item);
+        if (result.length === 0) {
+          Navigation.showOverlay({
+            component: {
+              name: 'Event Detail Screen',
+              passProps: {
+                item: { ...item, date: new Date(item.date), media: JSON.stringify(item.media) },
+                id: item.title
+              },
+              options: {
+                modalPresentationStyle: 'overCurrentContext',
+                topBar: {
+                  animate: true,
+                  visible: true,
+                  drawBehind: false,
+                  title: {
+                    text: item.title,
+                  },
+                },
+                bottomTabs: {
+                  visible: false,
+                  drawBehind: true,
+                  animate: true
+                },
+              }
+            }
+          });
+        } else {
+          Navigation.showOverlay({
+            component: {
+              name: 'Event Detail Screen',
+              passProps: {
+                item: result[0],
+                id: result[0].title
+              },
+              options: {
+                modalPresentationStyle: 'overCurrentContext',
+                topBar: {
+                  animate: true,
+                  visible: true,
+                  drawBehind: false,
+                  title: {
+                    text: result[0].title,
+                  },
+                },
+                bottomTabs: {
+                  visible: false,
+                  drawBehind: true,
+                  animate: true
+                },
+              }
+            }
+          });
+        }
       });
     });
   }
@@ -558,7 +625,7 @@ class Home extends React.Component {
                       item={item}
                       // eslint-disable-next-line no-underscore-dangle
                       key={item._id}
-                      onPress={this.handleEventPress}
+                      onPress={this.handleEventPressSpotlight}
                     />
                   ))
                 }

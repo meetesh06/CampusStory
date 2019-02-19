@@ -173,7 +173,7 @@ class BackupScreen extends React.Component {
       > 
         <View
           style={{
-            justifyContent: 'center',
+            // justifyContent: 'center',
             alignItems : 'center',
             height: 50,
             marginTop: 10,
@@ -189,7 +189,7 @@ class BackupScreen extends React.Component {
             }}
           >
             {'Backup Details'}
-            </Text>
+          </Text>
 
           <View style={{
             backgroundColor: '#c5c5c5', 
@@ -201,7 +201,11 @@ class BackupScreen extends React.Component {
           }}
           />
       </View>
-      <View style={{flex : 1, justifyContent : 'center', alignItems : 'center'}}>
+      
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <IconMaterial name='cloud-download' size={220} style={{color : "#444",}}/>
+        </View>
+      <View style={{flex : 3, justifyContent : 'center', alignItems : 'center'}}>
         <View style={{justifyContent : 'center', alignItems : 'center', backgroundColor : '#555', padding : 15, borderRadius : 10}}>
           <Text style={{fontSize : 16, color : '#fff', margin : 3}}>Active backup found for this device.</Text>
           <Text style={{fontSize : 12, color : '#fff', margin : 3}}>Would you like to restore your backup?</Text>
@@ -230,10 +234,6 @@ class BackupScreen extends React.Component {
           </View>
           }
         </View>
-      </View>
-
-      <View style={{position : 'absolute', top : 110, alignSelf : 'center'}}>
-        <IconMaterial name='cloud-download' size={220} style={{color : "#444",}}/>
       </View>
       
       <View style={{position : 'absolute', bottom : 30, alignSelf : 'center'}}>

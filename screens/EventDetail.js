@@ -54,9 +54,9 @@ class EventDetail extends React.Component {
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: props.item,
-      interested: props.item.interested,
-      going: props.item.going,
-      remind: props.item.remind,
+      interested: props.item.interested === undefined ? 'false' : props.item.interested,
+      going: props.item.going === undefined ? 'false' : props.item.going,
+      remind: props.item.remind === undefined ? 'false' : props.item.remind,
       loading: false,
       partial: true,
       pan: new Animated.ValueXY()
@@ -745,7 +745,8 @@ Views
               </View>
             </View>
             {
-            item.faq.length > 0
+            item.faq !== undefined
+            && item.faq.length > 0
             && (
             <View
               style={{

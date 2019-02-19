@@ -36,6 +36,7 @@ class Profile extends React.Component {
 
   componentDidMount() {
     this.navigationEventListener = Navigation.events().bindComponent(this);
+    if (this.props.first) this.handleDisplayData();
   }
 
   handleDisplayData = () => {
