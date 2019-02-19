@@ -22,7 +22,9 @@ const urls = {
   UPDATE_STORY_VIEWS : PREFIX + '/channels/update-story-views',
   UPDATE_CHANNEL_VISITS : PREFIX + '/channels/update-channel-visits',
   PUT_LOGS : PREFIX + '/auth/put-logs',
-  PUT_TRACKS : PREFIX + '/auth/put-tracks'
+  PUT_TRACKS : PREFIX + '/auth/put-tracks',
+  GET_TAG : PREFIX + '/channels/user/collect-tag',
+  UPDATE_USER : PREFIX + '/auth/update-user-data',
 };
 
 export default urls;

@@ -22,7 +22,8 @@ import Realm from '../realm';
 import { processRealmObj } from './helpers/functions';
 
 const WIDTH = Dimensions.get('window').width;
-class HelpScreen extends React.Component {
+
+class ListPrivateChannels extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -123,8 +124,9 @@ class HelpScreen extends React.Component {
               marginLeft: 5
             }}
           >
-            {'Discover Private Channels'}
+            {'Private Channels  '}
           </Text>
+          <IconIon name = 'ios-search' size = {22} color = '#ddd' />
           <TouchableOpacity
             style={{
               flex: 1,
@@ -178,4 +180,4 @@ class HelpScreen extends React.Component {
   }
 }
 
-export default HelpScreen;
+export default ListPrivateChannels;

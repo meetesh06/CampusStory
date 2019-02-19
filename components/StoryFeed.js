@@ -84,7 +84,7 @@ class StoryFeed extends React.PureComponent {
             name: 'Discover Preview',
             options: {
               overlay: {
-                interceptTouchOutside: false
+                interceptTouchOutside: false,
               }
             }
           }
@@ -168,7 +168,7 @@ class StoryFeed extends React.PureComponent {
                           overflow: 'hidden'
                         }}
                         onPress={() => { this.handleChannelClickStory(item, image); }}
-                        onLongPress={() => this.handlePreview(item)}
+                        onLongPress={() => this.handlePreview(item, image)}
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}
                       >
@@ -184,7 +184,7 @@ class StoryFeed extends React.PureComponent {
                           overflow: 'hidden'
                         }}
                         onPress={() => { this.handleChannelClickStory(item, image); }}
-                        onLongPress={() => this.handlePreview(item)}
+                        onLongPress={() => this.handlePreview(item, image)}
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}
                       >

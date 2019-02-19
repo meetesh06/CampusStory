@@ -107,7 +107,9 @@ const Activity = {
     // post-image, post-video specific
     media: 'string',
     // stuff
-    read: 'string'
+    read: 'string',
+    tag : 'string?',
+    event_link : 'string?'
   }
 };
 

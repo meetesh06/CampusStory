@@ -93,13 +93,11 @@ class ChannelDetailScreen extends React.Component {
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
         duration: 200,
-        friction: 7,
-        //useNativeDriver : true,
+        friction: 6,
       }),
       Animated.timing(this.opacity1, {
         toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
         duration: 400,
-        //useNativeDriver : true,
       })
     ]).start();
 
@@ -255,7 +253,6 @@ handleSubscribe = () =>{
         });
       }
     });
-    
   }
 
   handleClose = () => {
@@ -266,13 +263,11 @@ handleSubscribe = () =>{
       Animated.spring(this.topHeight, {
         toValue: HEIGHT + this.topHeight._value,
         duration: 200,
-        friction: 7,
-        //useNativeDriver : true,
+        friction: 6,
       }),
       Animated.timing(this.opacity, {
         toValue: 0,
         duration: 200,
-        //useNativeDriver : true,
       })
     ]).start();
     setTimeout(() => Navigation.dismissOverlay(componentId), 180);
@@ -287,8 +282,7 @@ handleSubscribe = () =>{
     const offset = pan.y._offset;
     Animated.spring(pan, {
       toValue: -(HEIGHT * 0.40) - offset,
-      friction: 8,
-      //useNativeDriver : true,
+      friction: 6,
     }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 
@@ -412,8 +406,6 @@ handleSubscribe = () =>{
             flex: 1,
           }}
         >
-          
-          
           <Text
             style={{
               textAlign: 'center',

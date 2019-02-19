@@ -31,6 +31,7 @@ import ListPrivateChannels from './screens/ListPrivateChannels';
 import NotificationsSettings from './screens/NotificationsSettings';
 import AboutUsScreen from './screens/AboutUsScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
+import ShowTagScreen from './screens/ShowTagScreen';
 
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -169,6 +170,7 @@ Navigation.registerComponent('List Private Channels', () => ListPrivateChannels)
 Navigation.registerComponent('Notifications Settings', () => NotificationsSettings);
 Navigation.registerComponent('About Us Screen', () => AboutUsScreen);
 Navigation.registerComponent('Privacy Policy Screen', () => PrivacyPolicyScreen);
+Navigation.registerComponent('Show Tag Screen', () => ShowTagScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
@@ -192,14 +194,17 @@ onAppStateChanged = async (nextAppState) => {
     console.log('Background - Forground'); /* forground */
   } else if(nextAppState === 'background') {
     console.log('Background'); /* background */
+  } else if(nextAppState === 'active'){
+    console.log('Forground'); /* from background to forground */
+  }
+  else if(nextAppState === 'inactive'){
+    console.log('Inactive'); /* User not in app. */
     const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
     const cs = new Date().getTime();
     const timespent = (cs - ts) /1000;
     new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
     new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
     await new SessionStore().setValueBulk();
-  } else if(nextAppState === 'active'){
-    console.log('Forground'); /* from background to forground */
   }
   this.state.appState = nextAppState;
 };

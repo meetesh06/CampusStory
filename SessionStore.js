@@ -115,6 +115,7 @@ export default class SessionStore {
         [VISITS] : []
       }
     }
+
     this.temp = {
       [UPDATES] : [],
       [VIEWS] : [],
@@ -176,6 +177,7 @@ export default class SessionStore {
     this.publishVisits();
     this.publishLogs();
     this.publishTracks();
+    this.publishUserData();
   }
 
   publishUpdates = () =>{
@@ -188,7 +190,10 @@ export default class SessionStore {
           'x-access-token': this.state[TOKEN]
         }
       }).then((response) => {
-      }).catch(err => console.log(err));
+        console.log(response)
+      }).catch(err => {
+        console.log(err)
+      });
     }
   }
 
@@ -209,6 +214,24 @@ export default class SessionStore {
       });
     }
   }
+
+  publishUserData = () =>{
+    const formData = new FormData();
+    console.log(this.getValue([USER_DATA]), this.state);
+    formData.append(Constants.INTERESTS, this.getValue([INTERESTS]));
+    formData.append(Constants.USER_DATA, JSON.stringify(this.getValue([USER_DATA])));
+    formData.append('dummy', [{_id : 'something'}]);
+    axios.post(urls.UPDATE_USER, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-access-token': this.state[TOKEN]
+      }
+    }).then((response) => {
+      console.log(response);
+    }).catch(err => {
+      console.log(err)
+    });
+}
 
   publishVisits = () =>{
     if(this.temp[VISITS].length > 0){

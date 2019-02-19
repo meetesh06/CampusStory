@@ -2,9 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const Post = (props) => {
-  const { message, thumb, type } = props;
-
+class Post extends React.PureComponent {
   getColors = (type) =>{
     switch(type){
       case 1 : return ['#0056e5', '#85f5ff'];
@@ -12,6 +10,9 @@ const Post = (props) => {
       default : return ['#0056e5', '#85f5ff'];
     }
   }
+
+  render(){
+  const { message, type } = this.props;
   return (
     <LinearGradient
       style={{
@@ -37,5 +38,6 @@ const Post = (props) => {
       </Text>
     </LinearGradient>
   );
+  }
 };
 export default Post;

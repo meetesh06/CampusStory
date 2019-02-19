@@ -4,9 +4,9 @@ import {
   StatusBar,
   BackHandler,
   ActivityIndicator,
-  Easing,
   Dimensions,
   TouchableOpacity,
+  TouchableHighlight,
   Animated,
   PanResponder,
   View,
@@ -21,6 +21,9 @@ import PostVideo from '../components/PostVideo';
 import Realm from '../realm';
 import { processRealmObj, timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
+import IconIon from 'react-native-vector-icons/Ionicons';
+import urls from '../URLS';
+import axios from 'axios'
 
 const { MUTED, } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -45,8 +48,10 @@ class StoryScreen extends React.Component {
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: () => {
+        console.log('GRANT')
       },
       onPanResponderMove: (evt, gestureState) => {
+        console.log('TOUCH')
         const {
           pan
         } = this.state;
@@ -58,6 +63,7 @@ class StoryScreen extends React.Component {
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
+        console.log('TOUCH END')
         if (((gestureState.dy / HEIGHT) * 100) > 30) {
           Animated.parallel([
             Animated.spring(this.topHeight, {
@@ -129,12 +135,10 @@ class StoryScreen extends React.Component {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const { _id } = this.props;
     Realm.getRealm((realm) => {
-      const d = new Date();
-      d.setDate(d.getDate() - 1);
-      d.setHours(0,0,0,0);
+      const d = new Date(new Date().getTime() - (24  * 3600 * 1000)); /* LAST 24 HOURS */
       const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
-      const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
       const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
+      const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
       const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
       processRealmObj(channel, (channelResult) => {
         realm.write(() => {
@@ -142,10 +146,18 @@ class StoryScreen extends React.Component {
         });
         let Final;
         processRealmObj(readActivity, (result1) => {
-          const res1 = result1.slice(0, 15);
           processRealmObj(unreadActivity, (result2) => {
-            Final = result2.concat(res1);
-            const current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
+            Final = result2.concat(result1);
+            let current;
+            if(result2.length === 0){ /* NO NEW UPDATE */
+              if(result1.length === 0){ /* NO OLD DATA */
+                current = 0;
+              } else {
+                current = Final.length - 1;
+              }
+            } else {
+              current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
+            }
             this.setState({
               current,
               stories: Final,
@@ -154,6 +166,118 @@ class StoryScreen extends React.Component {
             }, () => this.updateRead());
           });
         });
+      });
+    });
+  }
+
+  fetch_event_data = async (_id, token) =>{
+    axios.post(urls.FETCH_EVENT_DATA, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': token
+      }
+    }).then((response) => {
+      const responseObj = response.data;
+      console.log('Something', responseObj);
+      if (!responseObj.error) {
+        Realm.getRealm((realm) => {
+          const el = responseObj.data[0];
+          realm.write(() => {
+            const current = realm.objects('Events').filtered(`_id="${_id}"`);
+            realm.delete(current);
+            el.reach = JSON.stringify(el.reach);
+            el.views = JSON.stringify(el.views);
+            el.enrollees = JSON.stringify(el.enrollees);
+            el.name = JSON.stringify(el.name);
+            el.audience = JSON.stringify(el.audience);
+            el.media = JSON.stringify(el.media);
+            el.timestamp = new Date(el.timestamp);
+            el.time = new Date(el.time);
+            const ts = Date.parse(`${el.date}`);
+            el.date = new Date(el.date);
+            el.ms = ts;
+            el.reg_end = new Date(el.reg_end);
+            el.reg_start = new Date(el.reg_start);
+            /* MISSING */
+            try {
+              realm.create('Events', el, true);
+              this.navigateEvent(el, _id);
+            } catch (e) {
+              console.log(e);
+            }
+          });
+        });
+      }
+    }).catch((err)=>{
+      console.log(err);
+    });
+  }
+
+  navigateEvent = (item, id) =>{
+    Navigation.showOverlay({
+      component: {
+        name: 'Event Detail Screen',
+        passProps: {
+          item,
+          id
+        },
+        options: {
+          modalPresentationStyle: 'overCurrentContext',
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false,
+            title: {
+              text: id,
+            },
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
+        }
+      }
+    });
+    Navigation.dismissOverlay(this.props.componentId);
+  }
+
+  navigateTag = (tag) =>{
+    console.log(tag);
+    Navigation.showOverlay({
+      component: {
+        name: 'Show Tag Screen',
+        passProps: {
+          tag
+        },
+        options: {
+          modalPresentationStyle: 'overCurrentContext',
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false,
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
+        }
+      }
+    });
+    Navigation.dismissOverlay(this.props.componentId);
+  }
+
+  gotoEvent = (_id) =>{
+    Realm.getRealm((realm) => {
+      const current = realm.objects('Events').filtered(`_id="${_id}"`);
+      processRealmObj(current, async (result) => {
+        console.log(result);
+        if(result.length > 0) this.navigateEvent(result[0], _id);
+        else{
+          console.log('TRYING');
+          this.navigateEvent({_id, media : '["xxx"]', dummy : true}, _id);
+        }
       });
     });
   }
@@ -190,17 +314,25 @@ class StoryScreen extends React.Component {
     });
   }
 
+  gotoTag = (tag) =>{
+    console.log('Tag', tag);
+    this.navigateTag(tag);
+  }
+
   gotoChannel = (item) => {
     const {
       stories,
       current
     } = this.state;
     const currentObj = stories[current];
-    if (currentObj === undefined) return;
-    const {
-      _id
-    } = currentObj;
-    new SessionStore().publishVisits(item.channel, _id);
+    let _id;
+    if (currentObj === undefined){
+      _id = '';
+    }
+    else {
+      _id = currentObj._id;
+      new SessionStore().publishVisits(item.channel, _id);
+    }
     Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
@@ -354,13 +486,14 @@ class StoryScreen extends React.Component {
               />
               <Text style={{ fontSize: 14, color: '#fff', margin: 5, fontFamily: 'Roboto', fontWeight: 'bold' }} > {this.state.channel.name} </Text>
               {this.state.stories !== null && this.state.stories !== undefined && this.state.stories[current] !== undefined &&<Text style={{fontSize : 13, color : '#dfdfdf'}}>{timelapse(this.state.stories[current].timestamp)}</Text>}
+              {stories[current] !== undefined && stories[current].read !== 'true' && <Text style={{fontSize : 13, color : '#ccc',}}>{'  •  New'}</Text>}
             </TouchableOpacity>
             <View style={{ flex: 1 }} />
             <View
               style={{
                 justifyContent: 'center',
                 textAlign: 'right',
-                padding: 5,
+                padding: 4,
                 paddingLeft : 8,
                 paddingRight : 8,
                 marginRight: 12,
@@ -372,8 +505,8 @@ class StoryScreen extends React.Component {
                 style={{
                   fontFamily: 'Roboto',
                   alignSelf: 'center',
-                  fontSize: 14,
-                  color: '#333'
+                  fontSize: 15,
+                  color: '#222'
                 }}
               >
                 {this.state.stories.length - this.state.current}/{this.state.stories.length}
@@ -381,6 +514,45 @@ class StoryScreen extends React.Component {
             </View>
           </View>
         </View>
+      {
+          stories[current] !== undefined && stories[current].event_link !== null && stories[current].tag === null && 
+          <TouchableOpacity 
+            style={{
+              position : 'absolute',
+              bottom : 10, 
+              alignSelf : 'center', 
+              padding : 15, 
+              paddingRight : 50, 
+              paddingLeft : 50, 
+              justifyContent : 'center', 
+              alignItems : 'center'
+            }} 
+            onPress = {()=>this.gotoEvent(stories[current].event_link)}
+            >
+            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
+            <Text style = {{color : '#ddd', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
+          </TouchableOpacity>
+      }
+
+      {
+          stories[current] !== undefined && stories[current].tag !== null && stories[current].event_link === null && 
+          <TouchableOpacity 
+            style={{
+              position : 'absolute',
+              bottom : 10, 
+              alignSelf : 'center', 
+              padding : 15, 
+              paddingRight : 50, 
+              paddingLeft : 50, 
+              justifyContent : 'center', 
+              alignItems : 'center'
+            }} 
+            onPress = {()=>this.gotoTag(stories[current].tag)}
+            >
+            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
+            <Text style = {{color : '#ddd', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
+          </TouchableOpacity>
+      }
       </Animated.View>
     );
   }

@@ -32,7 +32,8 @@ class DiscoverPreview extends React.Component {
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    const {item,image} = this.props;
+    let {item,image} = this.props;
+    if(image === null || image === undefined) image = '["xxx"]';
     const store = new SessionStore();
     store.pushUpdate(item._id);
     store.pushViews(item.channel, item._id);
@@ -43,8 +44,6 @@ class DiscoverPreview extends React.Component {
         {
           toValue: 400,
           friction: 7,
-          //duration : 200,
-          //useNativeDriver : true,
         }
       ).start();
     } catch(e) {
@@ -104,7 +103,6 @@ class DiscoverPreview extends React.Component {
       {
         duration: 200,
         toValue: 0,
-        //useNativeDriver : true,
       }
     ).start(() => {
       Navigation.dismissOverlay(componentId); 

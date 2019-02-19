@@ -154,12 +154,12 @@ class Interests extends React.Component {
         const resultObj = result.data;
         if (!resultObj.error) {
           console.log('RESPONSE RESET', resultObj);
-          new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err : resultObj.mssg});
           try {
             this.subsribeFB(config.temp, config.college, () => {
               this.updateLocalState(config.college, config.interestsProcessed, resultObj.data, {_id : config.id, token : resultObj.data});
             });
           } catch (error) {
+            console.log(error);
             this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
           }
         }
@@ -225,10 +225,18 @@ class Interests extends React.Component {
     // eslint-disable-next-line no-undef
     const id = uniqueId === undefined || uniqueId === null || uniqueId === '' || uniqueId.length < 2 ? this.UUID(24) : uniqueId;
     const formData = new FormData();
+    const other_details = {
+      brand : DeviceInfo.getBrand(),
+      manufacturer : DeviceInfo.getManufacturer(),
+      os : DeviceInfo.getSystemName(),
+      os_version : DeviceInfo.getSystemVersion(),
+      notch : DeviceInfo.hasNotch(),
+      carrier : DeviceInfo.getCarrier()
+    }
     formData.append('id', id);
     formData.append(COLLEGE, college);
     formData.append(INTERESTS, interestsProcessed);
-    formData.append('others', JSON.stringify({}));
+    formData.append('others', JSON.stringify(other_details));
 
     axios.post(Urls.GENERAL_TOKEN_URL, formData, {
       headers: {
@@ -268,12 +276,17 @@ class Interests extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', type: 'admin' }, true);
+            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', type: 'universe' }, true);
             firebase.messaging().subscribeToTopic('ogil7190');
+            
+            realm.create('Firebase', { _id: 'admin$' + clg, notify: 'true', type: 'admin' }, true);
+            firebase.messaging().subscribeToTopic('admin$' + clg);
+            
             for (i = 0; i < array.length; i += 1) {
               realm.create('Firebase', { _id: array[i], notify: 'true', type: 'category' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
             }
+            
             realm.create('Firebase', { _id: clg, notify: 'true', type: 'college' }, true);
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {

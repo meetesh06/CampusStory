@@ -112,18 +112,23 @@ class PrivateChannel extends React.Component {
 
           { this.state.enabled &&
           <TextInput
+              keyboardAppearance = 'dark'
+              keyboardType = 'url'
+              numberOfLines = {1}
+              maxLength = {10}
+              secureTextEntry
               placeholderTextColor = '#999'
               style={{
                 textAlign: 'center',
                 fontSize: 15,
                 padding : 3,
-                marginBottom : 3, 
+                marginBottom : 2, 
                 color : '#fff',
                 width : '100%',
                 borderRadius : 10,
                 backgroundColor: '#222'
               }}
-              placeholder="Hash"
+              placeholder="Secret Key"
               onChangeText={val => this.setState({ hash: val })}
               value={this.state.hash}
             />

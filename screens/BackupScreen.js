@@ -54,6 +54,7 @@ class BackupScreen extends React.Component {
 
   fetch_channel =(_id, token) => {
     console.log('Fetching Channel', _id);
+    let is_private = false;
     axios.post(urls.FETCH_CHANNEL_DATA, { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -70,9 +71,9 @@ class BackupScreen extends React.Component {
           el.recommended = 'true';
           el.subscribed = 'true';
           el.updates = 'true';
+          is_private = el.private === undefined ? false : el.private;
         });
         const { data } = response.data;
-        console.log('Channel data', data);
         if (data.length === 0) return;
         Realm.getRealm((realm) => {
           realm.write(() => {
@@ -93,7 +94,7 @@ class BackupScreen extends React.Component {
       console.log(err);
     })
     .finally(()=>{
-      this.subscribe(_id);
+      this.subscribe(_id, is_private);
       const done = this.state.total > this.state.done ? this.state.done+ 1 : this.state.total;
       this.setState({
         done,
@@ -153,16 +154,19 @@ class BackupScreen extends React.Component {
     });
   }
 
-  subscribe = (_id) => {
+  subscribe = (_id, is_private) => {
     Realm.getRealm((realm) => {
       realm.write(() => {
-        realm.create('Firebase', { _id, notify: 'true', type: 'channel' });
+        realm.create('Firebase', { _id, notify: 'true', type: 'channel', private : is_private});
         firebase.messaging().subscribeToTopic(_id);
       });
     });
-    
   }
 
+  reset = () =>{
+    this.setState({log : 'Resetting your data, please wait', help : 'Resetting you identity, profile & other data'});
+    this.props.reset();
+  }
   render() {
     return (
       <SafeAreaView
@@ -173,7 +177,6 @@ class BackupScreen extends React.Component {
       > 
         <View
           style={{
-            // justifyContent: 'center',
             alignItems : 'center',
             height: 50,
             marginTop: 10,
@@ -202,15 +205,15 @@ class BackupScreen extends React.Component {
           />
       </View>
       
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={{ alignItems: 'center', marginBottom : 50 }}>
           <IconMaterial name='cloud-download' size={220} style={{color : "#444",}}/>
         </View>
-      <View style={{flex : 3, justifyContent : 'center', alignItems : 'center'}}>
+      <View style={{justifyContent : 'center', alignItems : 'center'}}>
         <View style={{justifyContent : 'center', alignItems : 'center', backgroundColor : '#555', padding : 15, borderRadius : 10}}>
           <Text style={{fontSize : 16, color : '#fff', margin : 3}}>Active backup found for this device.</Text>
           <Text style={{fontSize : 12, color : '#fff', margin : 3}}>Would you like to restore your backup?</Text>
           <View style={{flexDirection : 'row', margin : 5}}>
-          <TouchableOpacity style={{borderRadius : 10, backgroundColor : '#777', margin : 5, padding : 5}} onPress={()=> this.state.enabled ? this.props.reset() : console.log('NO WAY')}>
+          <TouchableOpacity style={{borderRadius : 10, backgroundColor : '#777', margin : 5, padding : 5}} onPress={()=> this.state.enabled ? this.reset() : console.log('NO WAY')}>
             <View style={{flexDirection : 'row', padding: 5}}>
               <IconMaterial name='delete-forever' size={18} style={{color : "#fff", margin : 3}}/>
               <Text style={{color : '#fff', fontSize : 15, textAlign : 'center', marginLeft : 6, margin : 3}}>Remove</Text>
@@ -229,7 +232,7 @@ class BackupScreen extends React.Component {
           <View style={{
             margin : 10,
           }}>
-            <Text style={{color : '#ddd', fontSize : 15, marginBottom : 5, textAlign : 'center'}}>{this.state.log}</Text>
+            <Text style={{color : '#ddd', fontSize : 14, marginBottom : 5, textAlign : 'center'}}>{this.state.log}</Text>
             <Text style={{color : '#999', fontSize : 12, marginBottom : 5, textAlign : 'center'}}>{this.state.help}</Text>
           </View>
           }

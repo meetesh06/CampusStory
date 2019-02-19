@@ -45,105 +45,107 @@ const getMonthName = (num) => {
   }
 };
 
-const Spotlight = (props) => {
-  const { item, onPress } = props;
-  const { media, title, date } = item;
-  return (
-    <View
-      style={{
-        overflow: 'hidden'
-      }}
-    >
-      <FastImage
-        style={{ height: 250, flexDirection: 'column' }}
-        source={{
-          uri: `https://www.mycampusdock.com/${media[0]}`,
-          priority: FastImage.priority.high
-        }}
-        resizeMode={FastImage.resizeMode.cover}
-      />
-      <LinearGradient
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: 250,
-          flex: 1
-        }}
-        colors={['#00000066', '#000000dd']}
-      />
+class Spotlight extends React.PureComponent {
+  render(){
+    const { item, onPress } = this.props;
+    const { media, title, date } = item;
+    return (
       <View
         style={{
-          position: 'absolute',
-          width: '100%',
-          height: 250
+          overflow: 'hidden'
         }}
       >
+        <FastImage
+          style={{ height: 250, flexDirection: 'column' }}
+          source={{
+            uri: `https://www.mycampusdock.com/${media[0]}`,
+            priority: FastImage.priority.high
+          }}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+        <LinearGradient
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: 250,
+            flex: 1
+          }}
+          colors={['#00000066', '#000000dd']}
+        />
         <View
           style={{
-            height: 45
+            position: 'absolute',
+            width: '100%',
+            height: 250
           }}
-        />
-        <TouchableOpacity
-          activeOpacity={0.6}
-          style={{
-            alignSelf: 'center'
-          }}
-          onPress={() => onPress(item)}
         >
-          <FastImage
+          <View
             style={{
-              width: 150,
-              height: 100,
-              borderRadius: 10,
-              margin: 10
+              height: 45
             }}
-            source={{ uri: `https://www.mycampusdock.com/${media[0]}` }}
-            resizeMode={FastImage.resizeMode.cover}
           />
-        </TouchableOpacity>
-        <View style={{ flex: 1, paddingTop: 5 }}>
-          <Text
-            numberOfLines={1}
+          <TouchableOpacity
+            activeOpacity={0.6}
             style={{
-              textAlign: 'center',
-              fontFamily: 'Roboto-Light',
-              fontSize: 20,
-              marginLeft: 5,
-              marginRight: 5,
-              color: '#fff'
+              alignSelf: 'center'
             }}
+            onPress={() => onPress(item)}
           >
-            {title}
-          </Text>
-          <Text
-            numberOfLines={1}
-            style={{
-              textAlign: 'center',
-              fontSize: 14,
-              margin : 2,
-              color: '#a5a5a5',
-              fontWeight: '200'
-            }}
-          >
-            {item.channel_name}
-          </Text>
-          <Text
-            numberOfLines={1}
-            style={{
-              textAlign: 'center',
-              fontFamily: 'Roboto',
-              fontSize: 15,
-              color: '#fff',
-              marginTop: 5,
-              fontWeight: '300'
-            }}
-          >
-            { `${new Date(date).getDate()}-${getMonthName(new Date(date).getMonth() + 1)}-${1900 + new Date(date).getYear()}, ${formatAMPM(new Date(date))}` }
-          </Text>
+            <FastImage
+              style={{
+                width: 150,
+                height: 100,
+                borderRadius: 10,
+                margin: 10
+              }}
+              source={{ uri: `https://www.mycampusdock.com/${media[0]}` }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </TouchableOpacity>
+          <View style={{ flex: 1, paddingTop: 5 }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                textAlign: 'center',
+                fontFamily: 'Roboto-Light',
+                fontSize: 20,
+                marginLeft: 5,
+                marginRight: 5,
+                color: '#fff'
+              }}
+            >
+              {title}
+            </Text>
+            <Text
+              numberOfLines={1}
+              style={{
+                textAlign: 'center',
+                fontSize: 14,
+                margin : 2,
+                color: '#a5a5a5',
+                fontWeight: '200'
+              }}
+            >
+              {item.channel_name}
+            </Text>
+            <Text
+              numberOfLines={1}
+              style={{
+                textAlign: 'center',
+                fontFamily: 'Roboto',
+                fontSize: 15,
+                color: '#fff',
+                marginTop: 5,
+                fontWeight: '300'
+              }}
+            >
+              { `${new Date(date).getDate()}-${getMonthName(new Date(date).getMonth() + 1)}-${1900 + new Date(date).getYear()}, ${formatAMPM(new Date(date))}` }
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  }
 };
 
 export default Spotlight;

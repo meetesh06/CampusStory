@@ -124,6 +124,7 @@ class HelpScreen extends React.Component {
             }}
           >
             <TextInput
+              keyboardAppearance = 'dark'
               autoCapitalize="none"
               placeholderTextColor = '#999'
               style={{
@@ -141,6 +142,7 @@ class HelpScreen extends React.Component {
               value={name}
             />
             <TextInput
+              keyboardAppearance = 'dark'
               autoCapitalize="none"
               keyboardType = 'email-address'
               placeholderTextColor = '#999'
@@ -160,6 +162,7 @@ class HelpScreen extends React.Component {
             />
             
             <TextInput
+              keyboardAppearance = 'dark'
               autoCapitalize="none"
               keyboardType = 'phone-pad'
               placeholderTextColor = '#999'

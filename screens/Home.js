@@ -27,6 +27,7 @@ import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
 import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
 import urls from '../URLS';
+import SystemSetting from 'react-native-system-setting'
 
 const { TOKEN, INTERESTS, CONFIG } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -44,6 +45,7 @@ class Home extends React.Component {
     this.checkForChanges = this.checkForChanges.bind(this);
     this.checkPermission = this.checkPermission.bind(this);
     this.handleStoryOpenNotification = this.handleStoryOpenNotification.bind(this);
+    
   }
 
   state = {
@@ -57,7 +59,8 @@ class Home extends React.Component {
     ],
     eventsChannels: [],
     refreshing: false,
-    newUpdates: false
+    newUpdates: false,
+    volume : 0
   }
 
   componentDidMount() {
@@ -125,14 +128,29 @@ class Home extends React.Component {
       .notifications().onNotificationDisplayed((notification) => {
         console.log(notification);
       });
+
     this.notificationListener = firebase
       .notifications().onNotification((notification) => {
-        console.log(notification);
+        if(notification._data.type !== 'event') {
+          const data = JSON.parse(notification._data.content);
+          // Build a channel
+          const channel = new firebase.notifications.Android.Channel('default-channel', 'Default Channel', firebase.notifications.Android.Importance.Max)
+            .setDescription('Campus Story Default channel');
+          // Create the channel
+          firebase.notifications().android.createChannel(channel);
+          const noti = new firebase.notifications.Notification()
+            .setNotificationId('default-channel')
+            .setTitle('New Updates In College')
+            .setBody(data.message);
+          noti.android.setChannelId('default-channel');
+          noti.android.setSmallIcon('ic_notification');
+          firebase.notifications().displayNotification(noti);
+        }
       });
+
     this.messageListener = firebase
       .messaging().onMessage((message) => {
         // eslint-disable-next-line no-underscore-dangle
-        // console.log(message);
         const {
           _data
         } = message;
@@ -384,6 +402,7 @@ class Home extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
+        if(result.length >0)
         Navigation.showOverlay({
           component: {
             name: 'Event Detail Screen',
@@ -567,6 +586,7 @@ class Home extends React.Component {
               />
             )
         }
+        <Text style={{color : '#fff', fontSize : 20}}>{this.state.volume} </Text>
         {
           channels.length === 0
           && (

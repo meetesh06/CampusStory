@@ -150,6 +150,7 @@ class GoingDetails extends React.Component {
             }}
           >
             <TextInput
+              keyboardAppearance = 'dark'
               autoCapitalize="none"
               style={{
                 textAlign: 'center',
@@ -166,6 +167,7 @@ class GoingDetails extends React.Component {
             <TextInput
               autoCapitalize="none"
               keyboardType = 'email-address'
+              keyboardAppearance = 'dark'
               style={{
                 textAlign: 'center',
                 fontSize: 15,
@@ -181,6 +183,7 @@ class GoingDetails extends React.Component {
             <TextInput
               autoCapitalize="none"
               keyboardType = 'phone-pad'
+              keyboardAppearance = 'dark'
               style={{
                 textAlign: 'center',
                 fontSize: 15,

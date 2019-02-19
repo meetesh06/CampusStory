@@ -50,7 +50,6 @@ class EventDetail extends React.Component {
     this.opacity = new Animated.Value(0.3);
     this.opacity1 = new Animated.Value(0);
     this.partial = true;
-    console.log('EVENT', this.props.item);
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: props.item,
@@ -100,7 +99,6 @@ class EventDetail extends React.Component {
   componentDidMount() {
     const { item } = this.state;
     const { _id } = item;
-
     Animated.parallel([
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
@@ -116,6 +114,7 @@ class EventDetail extends React.Component {
     ]).start();
 
     const { interested, going, remind } = this.state;
+    console.log('ID', _id, item);
     axios.post(urls.FETCH_EVENT_DATA, { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +151,9 @@ class EventDetail extends React.Component {
               console.log(e);
             }
           });
-          this.setState({ item: el });
+          el.dummy = false
+          console.log('UPDATED');
+          this.setState({ item: el, });
         });
       }
     }).catch(err => console.log(err));
@@ -357,6 +358,7 @@ class EventDetail extends React.Component {
     const {
       handleChannelOpenNetwork
     } = this;
+    console.log(item.dummy);
     return (
       <SafeAreaView
         style={{
@@ -448,32 +450,13 @@ class EventDetail extends React.Component {
               </View>
               <View style={{ flex: 1 }} />
             </View>
-            {/* <View
-              style={{
-                top : (WIDTH - 50) * 0.75 ,
-                position : 'absolute',
-                flexDirection: 'row',
-              }}
-            >
-              <TouchableOpacity
-                onPress={this.handleRemind}
-                style={{
-                  paddingLeft : 10,
-                  paddingRight : 10,
-                  padding : 5,
-                  borderRadius : 30,
-                  backgroundColor: remind === 'false' ? '#FF6A15' : '#222',
-                  flexDirection: 'row'
-                }}
-              >
-                <IconIonicons size={25} style={{ color: remind === 'false' ? '#fff' : '#c0c0c0' }} name="ios-notifications" />
-              </TouchableOpacity>
-            </View> */}
           </View>
           {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" hidden />)
         }
+          {
+            !item.dummy &&
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             style={{
@@ -855,7 +838,7 @@ Views
             <TouchableOpacity
               onPress={this.handleClick}
               style={{
-                padding: 10,
+                padding: 15,
                 backgroundColor: '#666',
                 flex: 1
               }}
@@ -886,7 +869,7 @@ Views
                     <TouchableOpacity
                       onPress={this.handleGoing}
                       style={{
-                        padding: 10,
+                        padding: 15,
                         backgroundColor: '#fa3e3e',
                         flex: 1
                       }}
@@ -916,7 +899,7 @@ Views
                     <TouchableOpacity
                       activeOpacity = {0.2}
                       style={{
-                        padding: 10,
+                        padding: 15,
                         backgroundColor: '#2E8B57',
                         flex: 1
                       }}
@@ -936,6 +919,7 @@ Views
           </View>
         
           </ScrollView>
+          }
         </Animated.View>
       
       </SafeAreaView>
