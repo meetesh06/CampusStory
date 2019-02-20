@@ -48,10 +48,8 @@ class StoryScreen extends React.Component {
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: () => {
-        console.log('GRANT')
       },
       onPanResponderMove: (evt, gestureState) => {
-        console.log('TOUCH')
         const {
           pan
         } = this.state;
@@ -63,7 +61,6 @@ class StoryScreen extends React.Component {
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
-        console.log('TOUCH END')
         if (((gestureState.dy / HEIGHT) * 100) > 30) {
           Animated.parallel([
             Animated.spring(this.topHeight, {
@@ -114,13 +111,13 @@ class StoryScreen extends React.Component {
   state = {
     stories: [],
     current: 0,
-    channel: { media: '""' },
+    channel: { media: '"xxx"' },
     loading: true,
     muted: new SessionStore().getValue(MUTED),
     pan: new Animated.ValueXY()
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     Animated.parallel([
       Animated.spring(this.topHeight, {
         toValue: 0,
@@ -130,44 +127,45 @@ class StoryScreen extends React.Component {
         toValue: 1,
         duration: 200
       })
-    ]).start();
-
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    const { _id } = this.props;
-    Realm.getRealm((realm) => {
-      const d = new Date(new Date().getTime() - (24  * 3600 * 1000)); /* LAST 24 HOURS */
-      const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
-      const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
-      const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
-      const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
-      processRealmObj(channel, (channelResult) => {
-        realm.write(() => {
-          realm.create('Channels', { _id, updates: 'false' }, true);
-        });
-        let Final;
-        processRealmObj(readActivity, (result1) => {
-          processRealmObj(unreadActivity, (result2) => {
-            Final = result2.concat(result1);
-            let current;
-            if(result2.length === 0){ /* NO NEW UPDATE */
-              if(result1.length === 0){ /* NO OLD DATA */
-                current = 0;
+    ]).start(() => {
+      BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+      const { _id } = this.props;
+      Realm.getRealm((realm) => {
+        const d = new Date(new Date().getTime() - (24  * 3600 * 1000)); /* LAST 24 HOURS */
+        const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
+        const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
+        const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
+        const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
+        processRealmObj(channel, (channelResult) => {
+          realm.write(() => {
+            realm.create('Channels', { _id, updates: 'false' }, true);
+          });
+          let Final;
+          processRealmObj(readActivity, (result1) => {
+            processRealmObj(unreadActivity, (result2) => {
+              Final = result2.concat(result1);
+              let current;
+              if(result2.length === 0){ /* NO NEW UPDATE */
+                if(result1.length === 0){ /* NO OLD DATA */
+                  current = 0;
+                } else {
+                  current = Final.length - 1;
+                }
               } else {
-                current = Final.length - 1;
+                current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
               }
-            } else {
-              current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
-            }
-            this.setState({
-              current,
-              stories: Final,
-              loading: false,
-              channel: channelResult[0]
-            }, () => this.updateRead());
+              this.setState({
+                current,
+                stories: Final,
+                loading: false,
+                channel: channelResult[0]
+              }, () => this.updateRead());
+            });
           });
         });
       });
     });
+
   }
 
   fetch_event_data = async (_id, token) =>{

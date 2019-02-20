@@ -25,7 +25,18 @@ class StoryFeed extends React.PureComponent {
       feed : []
     }
 
+    componentWillReceiveProps(nextProp){
+      if(nextProp !== this.props){
+        this.fetch_data();
+      }
+    }
+
     componentDidMount(){
+      console.log('FEED DID MOUNT');
+      this.fetch_data();
+    }
+
+    fetch_data = () =>{
       const { item } = this.props;
       axios.post(Urls.GET_STORY_URL, {channel_id : item._id}, {
         headers: {

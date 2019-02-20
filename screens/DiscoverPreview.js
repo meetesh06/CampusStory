@@ -23,11 +23,12 @@ class DiscoverPreview extends React.Component {
   constructor(props) {
     super(props);
     this.position = new Animated.Value(0);
+    this.opacity = new Animated.Value(0);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   state = {
-    channel : {media : '["dummy"]', name : 'dummy'}
+    channel : {media : this.props.image, name : this.props.item.channel_name }
   }
 
   componentDidMount() {
@@ -37,12 +38,13 @@ class DiscoverPreview extends React.Component {
     const store = new SessionStore();
     store.pushUpdate(item._id);
     store.pushViews(item.channel, item._id);
-    this.setState({ channel : { name : item.channel_name, media : image}});
+    // this.setState({ channel : { name : item.channel_name, media : image}});
     try {
       Animated.spring(
-        this.position,
+        // this.position,
+        this.opacity,
         {
-          toValue: 400,
+          toValue: 1,
           friction: 7,
         }
       ).start();
@@ -132,7 +134,9 @@ class DiscoverPreview extends React.Component {
           marginLeft: 10,
           borderRadius: 10,
           overflow: 'hidden',
-          height: this.position,
+          height: 400,
+          // height: this.position,
+          opacity: this.opacity,
           backgroundColor: '#fff'
         }}
         >

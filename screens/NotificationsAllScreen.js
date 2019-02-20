@@ -1,11 +1,8 @@
 /* eslint-disable global-require */
 import React from 'react';
 import {
-  ScrollView,
-  RefreshControl,
   View,
   FlatList,
-  AsyncStorage,
   TouchableOpacity,
   Text,
   SafeAreaView
@@ -13,7 +10,7 @@ import {
 
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { processRealmObj } from '../screens/helpers/functions';
+import { processRealmObj, timelapse } from '../screens/helpers/functions';
 import Realm from '../realm';
 
 class NotificationsAllScreen extends React.Component {
@@ -103,9 +100,11 @@ class NotificationsAllScreen extends React.Component {
                 textAlign: 'right', fontFamily: 'Roboto', fontSize: 10, color: '#333', marginRight: 10, marginBottom: 10
               }}
               >
-                {' '}
+                {/* {' '}
                 {JSON.stringify(value.item.timestamp)}
-                {' '}
+                {' '} */}
+                {timelapse(new Date(value.item.timestamp))}
+                  {' ago'}
               </Text>
             </TouchableOpacity>
           )}

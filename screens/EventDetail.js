@@ -111,52 +111,53 @@ class EventDetail extends React.Component {
         duration: 200,
         //useNativeDriver : true,
       })
-    ]).start();
-
-    const { interested, going, remind } = this.state;
-    console.log('ID', _id, item);
-    axios.post(urls.FETCH_EVENT_DATA, { _id }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': new SessionStore().getValue(TOKEN)
-      }
-    }).then((response) => {
-      console.log(response);
-      const responseObj = response.data;
-      if (!responseObj.error) {
-        Realm.getRealm((realm) => {
-          const el = responseObj.data[0];
-          realm.write(() => {
-            const current = realm.objects('Events').filtered(`_id="${_id}"`);
-            realm.delete(current);
-            el.reach = JSON.stringify(el.reach);
-            el.views = JSON.stringify(el.views);
-            el.enrollees = JSON.stringify(el.enrollees);
-            el.name = JSON.stringify(el.name);
-            el.audience = JSON.stringify(el.audience);
-            el.media = JSON.stringify(el.media);
-            el.timestamp = new Date(el.timestamp);
-            el.time = new Date(el.time);
-            const ts = Date.parse(`${el.date}`);
-            el.date = new Date(el.date);
-            el.ms = ts;
-            el.reg_end = new Date(el.reg_end);
-            el.reg_start = new Date(el.reg_start);
-            el.interested = interested;
-            el.going = going;
-            el.remind = remind;
-            try {
-              realm.create('Events', el, true);
-            } catch (e) {
-              console.log(e);
-            }
+    ]).start( () => {
+      const { interested, going, remind } = this.state;
+      console.log('ID', _id, item);
+      axios.post(urls.FETCH_EVENT_DATA, { _id }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': new SessionStore().getValue(TOKEN)
+        }
+      }).then((response) => {
+        console.log(response);
+        const responseObj = response.data;
+        if (!responseObj.error) {
+          Realm.getRealm((realm) => {
+            const el = responseObj.data[0];
+            realm.write(() => {
+              const current = realm.objects('Events').filtered(`_id="${_id}"`);
+              realm.delete(current);
+              el.reach = JSON.stringify(el.reach);
+              el.views = JSON.stringify(el.views);
+              el.enrollees = JSON.stringify(el.enrollees);
+              el.name = JSON.stringify(el.name);
+              el.audience = JSON.stringify(el.audience);
+              el.media = JSON.stringify(el.media);
+              el.timestamp = new Date(el.timestamp);
+              el.time = new Date(el.time);
+              const ts = Date.parse(`${el.date}`);
+              el.date = new Date(el.date);
+              el.ms = ts;
+              el.reg_end = new Date(el.reg_end);
+              el.reg_start = new Date(el.reg_start);
+              el.interested = interested;
+              el.going = going;
+              el.remind = remind;
+              try {
+                realm.create('Events', el, true);
+              } catch (e) {
+                console.log(e);
+              }
+            });
+            el.dummy = false
+            console.log('UPDATED');
+            this.setState({ item: el, });
           });
-          el.dummy = false
-          console.log('UPDATED');
-          this.setState({ item: el, });
-        });
-      }
-    }).catch(err => console.log(err));
+        }
+      }).catch(err => console.log(err));
+    });
+
   }
 
   handleClick = async () => {

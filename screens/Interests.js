@@ -511,7 +511,7 @@ class Interests extends React.Component {
           <InformationCard
             touchable = {false}
             title="Thank You"
-            content="Thank you for installing Campus Story. This app collects app usage data to improve user experience. All of your data shared on this platform will be safe and never shared with anyone."
+            content="Thank you for installing Campus Story. This app collects app usage data to improve user experience. All of your data shared on this platform will be safe and never shared with anyone.Read all the terms & conditions under settings tab."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
             style_card={{ backgroundColor: '#555', marginTop : 15 }}
             style_title={{ color: '#d0d0d0' }}

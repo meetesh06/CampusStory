@@ -22,6 +22,7 @@ class DiscoverFeed extends React.PureComponent {
 
   state = {
     channels : [],
+    update: false,
     error : false,
     refreshing : true,
     mssg : '',
@@ -56,13 +57,13 @@ class DiscoverFeed extends React.PureComponent {
     }).then((response) => {
       console.log('FEED', response);
       if(!response.data.error){
-        this.setState({channels : response.data.data, error : false, refreshing : false});
+        this.setState({ channels: response.data.data, error : false, refreshing : false, update: !this.state.update });
         new SessionStore().putValueTemp(category, response.data.data);
       } else {
         console.log(response.data.mssg);
         this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
-    }).catch((e)=>console.log(e));
+    }).catch((e)=>this.setState({error : true, mssg : 'No Internet Connection', refreshing : false}));
   }
 
   onEmpty = (index) =>{
@@ -98,7 +99,7 @@ class DiscoverFeed extends React.PureComponent {
           data={this.state.channels}
           extraData = {this.state.update}
           renderItem={({ item, index }) => (
-          <StoryFeed item = {item} onEmpty = {this.onEmpty} index = {index} />
+          <StoryFeed update = { this.update } item = {item} onEmpty = {this.onEmpty} index = {index} />
           )}
         />
       </View>

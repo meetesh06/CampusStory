@@ -185,6 +185,7 @@ class Home extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
+      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.reach = JSON.stringify(el.reach);
@@ -206,7 +207,7 @@ class Home extends React.Component {
         });
         const responseObject = response.data;
         const { data } = responseObject;
-        if (data.length === 0) return;
+        if (data.length === 0) return this.setState({ refreshing: false, newUpdates: false });;
         Realm.getRealm((realm) => {
           realm.write(() => {
             let i;
@@ -226,11 +227,11 @@ class Home extends React.Component {
         } else {
           this.setState({ refreshing: false, newUpdates: true });
         }
-      }
-    }).catch(err => this.setState({ refreshing: false }))
-      .finally(() => {
+      } else {
         this.setState({ refreshing: false });
-      });
+      }
+    }).catch(err => this.setState({ refreshing: false }));
+
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('channels_list', JSON.stringify(channelsList));
@@ -273,9 +274,10 @@ class Home extends React.Component {
                   //  make a logic to update the purecomponent based on shouldupdate
                   realm.create('Channels', { _id: key, updates: 'true' }, true);
                 });
-                console.log('new channels');
-                if (this.props.first) this.fetchChannelsFromRealm();
-                else this.setState({ newUpdates: true });
+                // console.log('new channels');
+                this.fetchChannelsFromRealm();
+                // if (this.props.first) this.fetchChannelsFromRealm();
+                // else this.setState({ newUpdates: true });
               }
             }
           );
@@ -292,15 +294,16 @@ class Home extends React.Component {
       const Events = realm.objects('Events').sorted('timestamp', true);
       const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
       const cs = Date.parse(new Date());
+      const final = {};
       interests.forEach((value) => {
         const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
         processRealmObj(current, (result) => {
-          this.setState({ [value]: result });
+          final[value] = result;
         });
       });
       const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
       processRealmObj(latestEvents, (result) => {
-        this.setState({ eventList: result });
+        this.setState({ eventList: result, ...final });
       });
     });
   }
