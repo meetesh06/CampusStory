@@ -92,7 +92,6 @@ class GoingDetails extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log(response);
       if (!response.data.error) {
         Realm.getRealm((realm) => {
           realm.write(() => {
@@ -101,7 +100,10 @@ class GoingDetails extends React.Component {
           handleClose();
         });
       } else { this.setState({ loading: false }); }
-    }).catch(() => this.setState({ loading: false }));
+    }).catch((e) => {
+      this.setState({ loading: false });
+      new SessionStore().pushLogs({type : 'error', line : 105, file : 'GoindDetails.js', err : e});
+    });
   }
 
   render() {

@@ -130,7 +130,6 @@ class ChannelDetailScreen extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.priority = JSON.stringify(el.priority);
@@ -158,7 +157,10 @@ class ChannelDetailScreen extends React.Component {
         });
         this.setState({ item: data[0] });
       }
-    }).catch(err => console.log(err));
+    }).catch(err => {
+      console.log(err);
+      new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : err});
+    });
   }
 
   handleNotify = () => {
@@ -252,6 +254,9 @@ handleSubscribe = () =>{
           });
         });
       }
+    }).catch(e =>{
+      console.log(e);
+      new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : e});
     });
   }
 

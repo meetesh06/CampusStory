@@ -36,7 +36,7 @@ class Profile extends React.Component {
 
   componentDidMount() {
     this.navigationEventListener = Navigation.events().bindComponent(this);
-    if (this.props.first) this.handleDisplayData();
+    this.handleUpdateData();
   }
 
   handleDisplayData = () => {
@@ -89,7 +89,6 @@ class Profile extends React.Component {
       }).then((response) => {
         const responseErr = response.data.error;
         const responseData = response.data.data;
-        console.log(response);
         if (!responseErr) {
           responseData.forEach((value) => {
             realm.write(() => {
@@ -102,13 +101,16 @@ class Profile extends React.Component {
           });
           this.handleDisplayData();
         }
-      }).catch(err => console.log(err))
+      }).catch(err => {
+        console.log(err)
+        new SessionStore().pushLogs({type : 'error', line : 106, file : 'Profile.js', err : err});
+      })
         .finally(() => this.setState({ refreshing: false }));
     });
   }
 
   handleLogout = async () => {
-    console.log('CLIKING');
+    new SessionStore().pushTrack({type : 'LOGOUT'});
     const {
       count
     } = this.state;

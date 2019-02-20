@@ -27,7 +27,6 @@ import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
 import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
 import urls from '../URLS';
-import SystemSetting from 'react-native-system-setting'
 
 const { TOKEN, INTERESTS, CONFIG } = Constants;
 const WIDTH = Dimensions.get('window').width;
@@ -81,6 +80,8 @@ class Home extends React.Component {
         } else {
           console.log(response.data.error);
         }
+    }).catch(e=>{
+      new SessionStore().pushLogs({type : 'error', line : 84, file : 'Home.js', err : e});
     });
   }
 
@@ -220,7 +221,6 @@ class Home extends React.Component {
             }
           });
         });
-        console.log('new events', response.data.data);
         if (this.props.first) {
           this.setState({ refreshing: false, newUpdates: false });
           this.fetchEventsFromRealm();
@@ -230,7 +230,10 @@ class Home extends React.Component {
       } else {
         this.setState({ refreshing: false });
       }
-    }).catch(err => this.setState({ refreshing: false }));
+    }).catch(err => {
+      this.setState({ refreshing: false });
+      new SessionStore().pushLogs({type : 'error', line : 235, file : 'Home.js', err : err});
+    });
 
     // eslint-disable-next-line no-undef
     const formData = new FormData();
@@ -274,16 +277,16 @@ class Home extends React.Component {
                   //  make a logic to update the purecomponent based on shouldupdate
                   realm.create('Channels', { _id: key, updates: 'true' }, true);
                 });
-                // console.log('new channels');
                 this.fetchChannelsFromRealm();
-                // if (this.props.first) this.fetchChannelsFromRealm();
-                // else this.setState({ newUpdates: true });
               }
             }
           );
         });
       }
-    }).catch(err => console.log(err));
+    }).catch(err => {
+      console.log(err);
+      new SessionStore().pushLogs({type : 'error', line : 84, file : 'GoindDetails.js', err : err});
+    });
   }
 
   fetchEventsFromRealm = () => {
@@ -373,7 +376,6 @@ class Home extends React.Component {
   }
 
   handleEventOpenNotification = (_id) => {
-    new SessionStore().pushTrack({type : 'open_event_notification', event : _id});
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
@@ -443,7 +445,7 @@ class Home extends React.Component {
 
   handleEventPressSpotlight = (item) => {
     const { _id } = item;
-    new SessionStore().pushTrack({type: 'open_event', event: _id});
+    new SessionStore().pushTrack({type : 'SPOT_OPEN', event : _id});
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
@@ -506,7 +508,7 @@ class Home extends React.Component {
   }
 
   handleStoryOpenNotification = (_id) => {
-    new SessionStore().pushTrack({type : 'open_story_notification'});
+    new SessionStore().pushTrack({type : 'STORY_OPEN_NOTI', _id});
     Navigation.showOverlay({
       component: {
         name: 'Story Screen',
@@ -524,7 +526,7 @@ class Home extends React.Component {
     const { channels } = this.state;
     const { _id } = item;
     const old = [...channels];
-    new SessionStore().pushTrack({type : 'open_story', channel : _id});
+    new SessionStore().pushTrack({type : 'STORY_VIEW', _id});
     Navigation.showOverlay({
       component: {
         name: 'Story Screen',

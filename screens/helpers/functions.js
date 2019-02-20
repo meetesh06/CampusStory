@@ -56,6 +56,7 @@ export async function logout() {
   Realm.getRealm((realm) => {
     realm.write(async () => {
       realm.deleteAll();
+      await new SessionStore().setValueBulk();
       await new SessionStore().reset();
       goInitializing();
     });

@@ -120,7 +120,6 @@ class EventDetail extends React.Component {
           'x-access-token': new SessionStore().getValue(TOKEN)
         }
       }).then((response) => {
-        console.log(response);
         const responseObj = response.data;
         if (!responseObj.error) {
           Realm.getRealm((realm) => {
@@ -151,11 +150,13 @@ class EventDetail extends React.Component {
               }
             });
             el.dummy = false
-            console.log('UPDATED');
             this.setState({ item: el, });
           });
         }
-      }).catch(err => console.log(err));
+      }).catch(err => {
+        console.log(err)
+        new SessionStore().pushLogs({type : 'error', line : 158, file : 'EventDetails.js', err : err});
+      });
     });
 
   }
@@ -185,8 +186,10 @@ class EventDetail extends React.Component {
           });
         });
       }
-    }).catch(err => console.log(err))
-      .finally(() => this.setState({ loading: false }));
+    }).catch(err => {
+      console.log(err)
+      new SessionStore().pushLogs({type : 'error', line : 191, file : 'EventDetails.js', err : err});
+    }).finally(() => this.setState({ loading: false }));
   }
 
   handleClose = () => {

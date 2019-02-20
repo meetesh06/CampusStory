@@ -32,6 +32,7 @@ class ShowTagScreen extends React.Component {
   }
 
   componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_TAG'});
     this.fetch_data();
   }
 
@@ -54,6 +55,7 @@ class ShowTagScreen extends React.Component {
       }
     }).catch((e)=>{
       console.log(e);
+      new SessionStore().pushLogs({type : 'error', line : 84, file : 'ShowTagScreen.js', err : e});
       this.setState({error : 'Try Again! Something gone wrong :(', loading : false});
     });
   }

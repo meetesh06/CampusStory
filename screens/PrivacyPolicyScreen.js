@@ -11,9 +11,7 @@ import {
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconIon from 'react-native-vector-icons/Ionicons';
-import IconFeather from 'react-native-vector-icons/Feather';
-import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconMat from 'react-native-vector-icons/MaterialIcons';
+import SessionStore from '../SessionStore';
 
 class PrivacyPolicyScreen extends React.Component {
   constructor(props) {
@@ -21,6 +19,10 @@ class PrivacyPolicyScreen extends React.Component {
   }
 
   state = {
+  }
+
+  componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_T_N_C'});
   }
 
   render() {

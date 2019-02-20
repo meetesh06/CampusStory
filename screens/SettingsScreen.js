@@ -11,10 +11,15 @@ import {
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconIon from 'react-native-vector-icons/Ionicons';
+import SessionStore from '../SessionStore';
 
 class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_SETTINGS'});
   }
 
   state = {

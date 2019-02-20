@@ -13,10 +13,15 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import IconIon from 'react-native-vector-icons/Ionicons';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import SessionStore from '../SessionStore';
 
 class HelpScreen extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_HELP'});
   }
 
   state = {

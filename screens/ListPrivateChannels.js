@@ -37,11 +37,11 @@ class ListPrivateChannels extends React.Component {
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"').filtered('private=true');
       processRealmObj(Subs, (result) => {
-        console.log('PRIVATE', result);
         this.setState({already : result});
         this.fetch_data();
       });
     });
+    new SessionStore().pushTrack({type : 'OPEN_PRIVATE_CHANNELS'});
   }
 
   fetch_data = () =>{
@@ -52,7 +52,6 @@ class ListPrivateChannels extends React.Component {
         'x-access-token': new SessionStore().getValue(Constants.TOKEN)
       }
     }).then((response) => {
-      console.log('FEED', response);
       if(!response.data.error){
         const list = response.data.data;
         const already = this.state.already;
@@ -70,7 +69,10 @@ class ListPrivateChannels extends React.Component {
         console.log(response.data.mssg);
         this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
-    }).catch((e)=>console.log(e));
+    }).catch((e)=>{
+      console.log(e);
+      new SessionStore().pushLogs({type : 'error', line : 75, file : 'ListPrivateChannels.js', err : e});
+    });
   }
 
   hanleOpen = (_id, channel_name) =>{
@@ -124,7 +126,7 @@ class ListPrivateChannels extends React.Component {
               marginLeft: 5
             }}
           >
-            {'Private Channels  '}
+            {'Private Channels'}
           </Text>
           <IconIon name = 'ios-search' size = {22} color = '#ddd' />
           <TouchableOpacity

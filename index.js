@@ -202,7 +202,11 @@ onAppStateChanged = async (nextAppState) => {
     const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
     const cs = new Date().getTime();
     const timespent = (cs - ts) /1000;
-    new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
+    if(timespent > 10000){
+      new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
+    } else {
+      new SessionStore().putValueTemp(Constants.TRACKS, []);
+    }
     new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
     await new SessionStore().setValueBulk();
   }

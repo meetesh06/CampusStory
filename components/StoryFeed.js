@@ -54,7 +54,10 @@ class StoryFeed extends React.PureComponent {
         } else {
           this.setState({error : true});
         }
-      }).catch((e)=>console.log(e));
+      }).catch((e)=>{
+        console.log(e)
+        new SessionStore().pushLogs({type : 'error', line : 59, file : 'StoryFeed.js', err : e});
+      });
     }
 
     handleChannelClick = (id, name) => {

@@ -88,8 +88,7 @@ class Interests extends React.Component {
         config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       } catch (error) {
-        console.log('PERMISSION DENIED');
-        new SessionStore().pushLogs({type : 'error_firebase', line : new Error().stack, file : 'Interest.js', err : error});
+        new SessionStore().pushLogs({type : 'error_firebase', line : 92, file : 'Interest.js', err : error});
         const config = store.getValue(CONFIG);
         config.firebase_enabled = false;
         config.platform = Platform.OS === 'android' ? 'android' : 'ios';
@@ -168,7 +167,7 @@ class Interests extends React.Component {
         }
       }).catch((err) => {
         console.log(err);
-        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 170, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -265,7 +264,7 @@ class Interests extends React.Component {
           this.setState({ loading: false, error : 'Something went wrong on server :('});
         }
       }).catch((err) => {
-        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 267, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -291,7 +290,7 @@ class Interests extends React.Component {
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {
             console.log(e);
-            new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err : e});
+            new SessionStore().pushLogs({type : 'error', line : 293, file : 'Interest.js', err : e});
           }
         }
       });
@@ -335,7 +334,7 @@ class Interests extends React.Component {
       })
       .catch(err => {
         console.log(err)
-        new SessionStore().pushLogs({type : 'error', line : new Error().stack, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 337, file : 'Interest.js', err});
       })
       .finally(() => {
         this.setState({ refreshing: false });

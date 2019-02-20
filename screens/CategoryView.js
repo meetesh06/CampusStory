@@ -51,10 +51,8 @@ class Home extends React.PureComponent {
 
   componentDidMount() {
     const { category } = this.props;
-    console.log('loading ', category);
     this.mounted = true;
     this.handleUpdateData(category);
-    // this.getTrendingContent(category);
   }
 
   componentWillUnmount() {
@@ -128,8 +126,10 @@ class Home extends React.PureComponent {
     }).then((response) => {
       const items = response.data.data;
       this.setState({ trending: items, refreshing: false });
-    }).catch(err => console.log(err))
-      .finally(() => { this.setState({ refreshing: false }); });
+    }).catch(err => {
+      console.log(err)
+      new SessionStore().pushLogs({type : 'error', line : 133, file : 'CategoryView.js', err : err});
+    }).finally(() => { this.setState({ refreshing: false }); });
   }
 
   handleChannelClick = (id, name) => {
@@ -199,7 +199,6 @@ class Home extends React.PureComponent {
 
   handlePreview = (item) => {
     if (!this.mounted) return;
-    console.log('long press');
     this.setState({ peek: true }, () => {
       Navigation.showOverlay({
         component: {
@@ -266,10 +265,8 @@ class Home extends React.PureComponent {
     await realm_manager.getItemById(id, 'Channels', (result)=>{
       if(result === null) img = 'null';
       else img =  result.media[0];
-      console.log('EXECUTION STOPPED');
       return img;
     });
-    console.log('RETURNING', img);
     return img;
   }
 
@@ -327,18 +324,6 @@ class Home extends React.PureComponent {
             {
               trending.length > 0 && (
                 <View>
-                  {/* <Text style={{
-                    fontFamily: 'Roboto',
-                    fontSize: 18,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 10,
-                    marginBottom: 10,
-                    color: '#f0f0f0'
-                  }}
-                  >
-                    Trending Now
-                  </Text> */}
                   <FlatList
                     keyExtractor={(item, index) => `${index}`}
                     extraData={categorySelected}

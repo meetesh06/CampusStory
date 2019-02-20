@@ -30,6 +30,7 @@ class HelpScreen extends React.Component {
   }
 
   componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_PROFILE'});
     let user_data = new SessionStore().getValue(Constants.USER_DATA);
     if(user_data === null || user_data === undefined) return;
     this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, gender : user_data.gender === undefined ? 'f' : user_data.gender});

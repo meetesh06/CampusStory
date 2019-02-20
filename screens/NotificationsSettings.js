@@ -10,7 +10,6 @@ import {
 
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconIon from 'react-native-vector-icons/Ionicons';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class HelpScreen extends React.Component {

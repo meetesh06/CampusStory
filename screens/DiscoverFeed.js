@@ -55,7 +55,6 @@ class DiscoverFeed extends React.PureComponent {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log('FEED', response);
       if(!response.data.error){
         this.setState({ channels: response.data.data, error : false, refreshing : false, update: !this.state.update });
         new SessionStore().putValueTemp(category, response.data.data);
@@ -63,7 +62,10 @@ class DiscoverFeed extends React.PureComponent {
         console.log(response.data.mssg);
         this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
-    }).catch((e)=>this.setState({error : true, mssg : 'No Internet Connection', refreshing : false}));
+    }).catch((e)=>{
+      this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
+      new SessionStore().pushLogs({type : 'error', line : 67, file : 'DicoverFeed.js', err : e});
+    });
   }
 
   onEmpty = (index) =>{

@@ -50,6 +50,8 @@ class PrivateChannel extends React.Component {
       } else {
         this.setState({error : response.data.mssg, hash : ''});
       }
+    }).catch(e=>{
+      new SessionStore().pushLogs({type : 'error', line : 54, file : 'PrivateChannels.js', err : e});
     });
   }
 

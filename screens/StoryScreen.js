@@ -176,7 +176,6 @@ class StoryScreen extends React.Component {
       }
     }).then((response) => {
       const responseObj = response.data;
-      console.log('Something', responseObj);
       if (!responseObj.error) {
         Realm.getRealm((realm) => {
           const el = responseObj.data[0];
@@ -208,6 +207,7 @@ class StoryScreen extends React.Component {
       }
     }).catch((err)=>{
       console.log(err);
+      new SessionStore().pushLogs({type : 'error', line : 210, file : 'StoryScreen.js', err : err});
     });
   }
 

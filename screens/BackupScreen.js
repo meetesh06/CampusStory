@@ -13,6 +13,8 @@ import urls from '../URLS';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import firebase from 'react-native-firebase';
+import SessionStore from '../SessionStore';
+
 
 class BackupScreen extends React.Component {
   constructor(props){
@@ -24,6 +26,10 @@ class BackupScreen extends React.Component {
     done : 0,
     log : '',
     total : 0
+  }
+
+  componentDidMount(){
+    new SessionStore().pushTrack({type : 'OPEN_HELP'});
   }
 
   fetchBackup = async () =>{
@@ -53,7 +59,6 @@ class BackupScreen extends React.Component {
   }
 
   fetch_channel =(_id, token) => {
-    console.log('Fetching Channel', _id);
     let is_private = false;
     axios.post(urls.FETCH_CHANNEL_DATA, { _id }, {
       headers: {
@@ -81,7 +86,6 @@ class BackupScreen extends React.Component {
             for (i = 0; i < data.length; i += 1) {
               try {
                 realm.create('Channels', data[i], true);
-                console.log('Creating Channel', _id);
               } catch (e) {
                 console.log(e);
               }
@@ -92,6 +96,7 @@ class BackupScreen extends React.Component {
     })
     .catch((err)=>{
       console.log(err);
+      new SessionStore().pushLogs({type : 'error', line : 93, file : 'BackupScreen.js', err : err});
     })
     .finally(()=>{
       this.subscribe(_id, is_private);
@@ -144,6 +149,7 @@ class BackupScreen extends React.Component {
     })
     .catch((err)=>{
       console.log(err);
+      new SessionStore().pushLogs({type : 'error', line : 146, file : 'Interest.js', err : err});
     })
     .finally(()=>{
       const done = this.state.total > this.state.done ? this.state.done+ 1 : this.state.total;
