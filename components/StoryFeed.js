@@ -46,10 +46,11 @@ class StoryFeed extends React.PureComponent {
       }).then((response) => {
         if(!response.data.error){
           const data = response.data.data;
+          console.log(data.length);
           if(data.length > 0){
-            this.setState({feed : data, hidden : false});
+            this.setState({feed : data, hidden : true});
           } else {
-            this.setState({hidden : true});
+            this.setState({hidden : false});
           }
         } else {
           this.setState({error : true});
@@ -140,10 +141,10 @@ class StoryFeed extends React.PureComponent {
       const { item } = this.props;
       const image = item.media[0];
       return(
-          <View style={{flex : 1, marginTop : 10,}}>
+          <View style={{flex : 1}}>
             {
               this.state.hidden &&
-              <View>
+              <View style={{marginTop : 10,}}>
               <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
               <FastImage
                 style={{
