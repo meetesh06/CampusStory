@@ -20,8 +20,8 @@ class PostVideoThumbnail extends React.PureComponent {
         }}
       >
         <Video
-          muted
-          volume = {0}
+          muted={true}
+          // volume = {0}
           source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
           style={{
             backgroundColor: '#efefef',
