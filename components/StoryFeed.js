@@ -46,7 +46,6 @@ class StoryFeed extends React.PureComponent {
       }).then((response) => {
         if(!response.data.error){
           const data = response.data.data;
-          console.log(data.length);
           if(data.length > 0){
             this.setState({feed : data, hidden : true});
           } else {
@@ -144,7 +143,7 @@ class StoryFeed extends React.PureComponent {
           <View style={{flex : 1}}>
             {
               this.state.hidden &&
-              <View style={{marginTop : 10,}}>
+              <View style={{marginTop : 10, marginBottom : 5}}>
               <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
               <FastImage
                 style={{
@@ -157,11 +156,12 @@ class StoryFeed extends React.PureComponent {
                 resizeMode={FastImage.resizeMode.cover}
                 source={{ uri: `https://www.mycampusdock.com/${image}` }}
               />
-              <Text style={{color : '#f0f0f0', fontSize : 15, margin : 5}}>{item.name}</Text>
+              <Text numberOfLines = {1} lineBreakMode = 'tail' style={{color : '#f0f0f0', fontSize : 15, margin : 5, maxWidth : 160}}>{item.name}</Text>
               <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
               </TouchableOpacity>
 
             <FlatList
+              showsHorizontalScrollIndicator = {false}
               horizontal
               style={{marginTop : 5}}
               keyExtractor={(item, index) => `${index}`}

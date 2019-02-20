@@ -15,10 +15,8 @@ export default class RealmManager {
 
   processRealmObj = (RealmObject, callback)=>{
     this.process_one(RealmObject, (result)=>{
-      // console.log('Realm Processed Result 1', result);
     });
     this.process_two(RealmObject, (result)=>{
-      //console.log('Realm Processed Result 2', result);
       callback(result);
     });
   }

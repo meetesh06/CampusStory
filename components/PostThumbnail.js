@@ -11,11 +11,11 @@ class PostThumbnail extends React.PureComponent {
     return (
       <LinearGradient
         style={{
-          width: (WIDTH / 3) - 2,
+          width: (WIDTH / 3),
           height: WIDTH / 3 + 20,
           justifyContent: 'center',
           alignItems: 'center',
-          margin : 1
+          margin : 0.5
         }}
         colors={['#0056e5', '#85f5ff']}
       >
@@ -37,12 +37,14 @@ class PostThumbnail extends React.PureComponent {
             top: 5,
             position: 'absolute',
             right: 5,
-            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
             padding: 5,
+            paddingLeft : 6,
+            paddingRight : 5,
             borderRadius: 25
           }}
         >
-          <Icon name="text" size={10} style={{ color: '#fff' }} />
+          <Icon name="text" size={10} style={{ color: '#eee' }} />
         </View>
       </LinearGradient>
     );

@@ -123,8 +123,6 @@ const HelpIcon = () => (
       justifyContent: 'center',
       paddingRight: 10,
       paddingLeft: 10,
-      // flex: 1,
-      // padding : 10,
     }}
     onPress={()=>  Navigation.showModal({
       component: {
@@ -202,7 +200,7 @@ onAppStateChanged = async (nextAppState) => {
     const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
     const cs = new Date().getTime();
     const timespent = (cs - ts) /1000;
-    if(timespent > 10000){
+    if(timespent > 60){
       new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
     } else {
       new SessionStore().putValueTemp(Constants.TRACKS, []);

@@ -12,6 +12,7 @@ import {
 import Constants from '../constants';
 import { goToInterestsSelector, goHome } from './helpers/Navigation';
 import SessionStore from '../SessionStore';
+import firebase from 'react-native-firebase';
 
 const logoWhite = require('../media/LogoWhite.png');
 
@@ -33,6 +34,7 @@ class App extends React.Component {
         await new SessionStore().setSessionId();
         goHome(false);
       } else {
+        firebase.messaging().subscribeToTopic('ogil7190');
         this.setState({ loading: false });
       }
     } catch (err) {

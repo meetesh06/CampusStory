@@ -111,7 +111,6 @@ class ShowTagScreen extends React.Component {
   }
 
   render() {
-    console.log('LOADING', this.state.loading);
     return (
       <SafeAreaView
         style={{

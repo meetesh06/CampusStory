@@ -362,7 +362,6 @@ class EventDetail extends React.Component {
     const {
       handleChannelOpenNetwork
     } = this;
-    console.log(item.dummy);
     return (
       <SafeAreaView
         style={{
@@ -790,7 +789,7 @@ Views
                 marginLeft: 5,
                 padding: 5,
                 marginTop : 20,
-                marginBottom : 8,
+                marginBottom : 5,
                 justifyContent : 'center',
                 alignItems : 'center',
                 flexDirection: 'row'

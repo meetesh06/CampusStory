@@ -170,9 +170,10 @@ class BackupScreen extends React.Component {
   }
 
   reset = () =>{
-    this.setState({ enabled: false, log : 'Resetting your data, please wait', help : 'Resetting you identity, profile & other data'});
+    this.setState({ enabled: false, log : 'Resetting Please wait', help : 'Resetting you profile & other data'});
     this.props.reset();
   }
+  
   render() {
     return (
       <SafeAreaView

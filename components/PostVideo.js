@@ -19,7 +19,6 @@ const WIDTH = Dimensions.get('window').width;
 const {MUTED} = constants;
 
 class PostVideo extends React.PureComponent {
-
   constructor(props) {
     super(props);
     this.state = {

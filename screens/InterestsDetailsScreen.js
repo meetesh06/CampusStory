@@ -16,6 +16,7 @@ import IconIon from 'react-native-vector-icons/Ionicons';
 import AdvertCard from '../components/AdvertCard';
 import SessionStore from '../SessionStore';
 import Constants from '../constants';
+import firebase from 'react-native-firebase';
 import { categoriesNoHottest } from './helpers/values';
 
 class InterestsDetailsScreen extends React.Component {
@@ -50,10 +51,18 @@ class InterestsDetailsScreen extends React.Component {
   }
 
   handleSubmit = () =>{
-    if(this.state.selections.length > 2){
-      const val = this.state.selections.join();
+    const selections = this.state.selections;
+    if(selections.length > 1){
+      const prev_selections = new SessionStore().getValue(Constants.INTERESTS);
+      for(let i=0; i<prev_selections.length; i++){
+        firebase.messaging().unsubscribeFromTopic(prev_selections[i]);
+      }
+      for(let i=0; i<selections.length; i++){
+        firebase.messaging().subscribeToTopic(selections[i]);
+      }
+      const val = selections.join();
       new SessionStore().putValue(Constants.INTERESTS, val);
-      Navigation.dismissModal(this.props.componentId)
+      Navigation.dismissModal(this.props.componentId);
     } else {
       Alert.alert('Select at least 2 interests.');
     }

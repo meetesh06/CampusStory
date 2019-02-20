@@ -12,16 +12,15 @@ class PostVideoThumbnail extends React.PureComponent {
     return (
       <View
         style={{
-          width: (WIDTH / 3) - 2,
+          width: (WIDTH / 3),
           height: (1 * WIDTH) / 3 + 20,
           alignItems: 'center',
           justifyContent: 'center',
-          margin : 1
+          margin : 0.5
         }}
       >
         <Video
           muted={true}
-          // volume = {0}
           source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
           style={{
             backgroundColor: '#efefef',
@@ -37,7 +36,7 @@ class PostVideoThumbnail extends React.PureComponent {
             top: 5,
             position: 'absolute',
             right: 5,
-            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
             padding: 5,
             borderRadius: 25
           }}
@@ -46,7 +45,7 @@ class PostVideoThumbnail extends React.PureComponent {
             name="video-camera"
             size={12}
             style={{
-              color: '#fff'
+              color: '#eee'
             }}
           />
         </View>

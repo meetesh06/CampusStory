@@ -36,7 +36,6 @@ class DiscoverFeed extends React.PureComponent {
       this.fetch_data(category);
     }
     else {
-      console.log('CACHE HIT');
       this.setState({channels : value, error : false, refreshing : false});
     }
   }
@@ -59,7 +58,6 @@ class DiscoverFeed extends React.PureComponent {
         this.setState({ channels: response.data.data, error : false, refreshing : false, update: !this.state.update });
         new SessionStore().putValueTemp(category, response.data.data);
       } else {
-        console.log(response.data.mssg);
         this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>{

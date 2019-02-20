@@ -66,7 +66,6 @@ class ListPrivateChannels extends React.Component {
         }
         this.setState({channels : final_list, error : false, refreshing : false});
       } else {
-        console.log(response.data.mssg);
         this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>{

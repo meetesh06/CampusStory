@@ -5,9 +5,7 @@ import FastImage from 'react-native-fast-image'
 import LinearGradient from 'react-native-linear-gradient';
 
 class AdvertCardText extends React.Component {
-
     render() {
-        console.log(this.props);
         return(
                 <TouchableOpacity onPress={ () => this.props.clicked(this.props.id) }>
                     <View style={{ overflow: 'hidden', flex: 1 , height: this.props.height, backgroundColor: '#505050', margin: 10, borderRadius: 10 }}>

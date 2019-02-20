@@ -241,7 +241,6 @@ class StoryScreen extends React.Component {
   }
 
   navigateTag = (tag) =>{
-    console.log(tag);
     Navigation.showOverlay({
       component: {
         name: 'Show Tag Screen',
@@ -270,10 +269,8 @@ class StoryScreen extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, async (result) => {
-        console.log(result);
         if(result.length > 0) this.navigateEvent(result[0], _id);
         else{
-          console.log('TRYING');
           this.navigateEvent({_id, media : '["xxx"]', dummy : true}, _id);
         }
       });
@@ -313,7 +310,6 @@ class StoryScreen extends React.Component {
   }
 
   gotoTag = (tag) =>{
-    console.log('Tag', tag);
     this.navigateTag(tag);
   }
 

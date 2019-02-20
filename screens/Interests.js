@@ -152,7 +152,6 @@ class Interests extends React.Component {
       .then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
-          console.log('RESPONSE RESET', resultObj);
           try {
             this.subsribeFB(config.temp, config.college, () => {
               this.updateLocalState(config.college, config.interestsProcessed, resultObj.data, {_id : config.id, token : resultObj.data});
@@ -219,6 +218,7 @@ class Interests extends React.Component {
       );
       return;
     }
+
     this.setState({ loading: true, error : null});
     interestsProcessed = interestsProcessed.join();
     // eslint-disable-next-line no-undef

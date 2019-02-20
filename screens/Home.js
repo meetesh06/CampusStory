@@ -77,8 +77,6 @@ class Home extends React.Component {
     }).then((response) => {
         if(!response.data.error){
           this.setState({weekEventList : response.data.data});
-        } else {
-          console.log(response.data.error);
         }
     }).catch(e=>{
       new SessionStore().pushLogs({type : 'error', line : 84, file : 'Home.js', err : e});
@@ -186,7 +184,6 @@ class Home extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      console.log(response);
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.reach = JSON.stringify(el.reach);
@@ -449,7 +446,6 @@ class Home extends React.Component {
     Realm.getRealm((realm) => {
       const current = realm.objects('Events').filtered(`_id="${_id}"`);
       processRealmObj(current, (result) => {
-        console.log(result.length === 0, item);
         if (result.length === 0) {
           Navigation.showOverlay({
             component: {

@@ -12,11 +12,11 @@ class PostImageThumbnail extends React.PureComponent {
     return (
       <View
         style={{
-          width: (WIDTH / 3) - 2,
+          width: (WIDTH / 3),
           height: WIDTH / 3 + 20,
           alignItems: 'center',
           justifyContent: 'center',
-          margin: 1,
+          margin: 0.5,
           backgroundColor: '#efefef'
         }}
       >
@@ -33,12 +33,12 @@ class PostImageThumbnail extends React.PureComponent {
             top: 5,
             position: 'absolute',
             right: 5,
-            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
             padding: 5,
             borderRadius: 25
           }}
         >
-          <Icon name="image" size={10} style={{ color: '#fff' }} />
+          <Icon name="image" size={10} style={{ color: '#eee' }} />
         </View>
       </View>
     );
