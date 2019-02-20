@@ -22,7 +22,8 @@ class StoryFeed extends React.PureComponent {
     }
 
     state = {
-      feed : []
+      feed : [],
+      hidden : false
     }
 
     componentWillReceiveProps(nextProp){
@@ -32,7 +33,6 @@ class StoryFeed extends React.PureComponent {
     }
 
     componentDidMount(){
-      console.log('FEED DID MOUNT');
       this.fetch_data();
     }
 
@@ -47,9 +47,9 @@ class StoryFeed extends React.PureComponent {
         if(!response.data.error){
           const data = response.data.data;
           if(data.length > 0){
-            this.setState({feed : data});
+            this.setState({feed : data, hidden : false});
           } else {
-            this.props.onEmpty(this.props.index);
+            this.setState({hidden : true});
           }
         } else {
           this.setState({error : true});
@@ -141,21 +141,24 @@ class StoryFeed extends React.PureComponent {
       const image = item.media[0];
       return(
           <View style={{flex : 1, marginTop : 10,}}>
-            <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
-            <FastImage
-              style={{
-                width: 36,
-                height: 36,
-                margin: 5,
-                marginLeft : 10,
-                borderRadius: 20
-              }}
-              resizeMode={FastImage.resizeMode.cover}
-              source={{ uri: `https://www.mycampusdock.com/${image}` }}
-            />
-            <Text style={{color : '#f0f0f0', fontSize : 15, margin : 5}}>{item.name}</Text>
-            <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
-            </TouchableOpacity>
+            {
+              this.state.hidden &&
+              <View>
+              <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
+              <FastImage
+                style={{
+                  width: 36,
+                  height: 36,
+                  margin: 5,
+                  marginLeft : 10,
+                  borderRadius: 20
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+                source={{ uri: `https://www.mycampusdock.com/${image}` }}
+              />
+              <Text style={{color : '#f0f0f0', fontSize : 15, margin : 5}}>{item.name}</Text>
+              <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
+              </TouchableOpacity>
 
             <FlatList
               horizontal
@@ -209,6 +212,8 @@ class StoryFeed extends React.PureComponent {
                   return null;
               }}
             />
+            </View>
+            }
           </View>
       );
     }

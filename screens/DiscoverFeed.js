@@ -68,12 +68,6 @@ class DiscoverFeed extends React.PureComponent {
     });
   }
 
-  onEmpty = (index) =>{
-    const data = this.state.channels;
-    data.splice(index, 1);
-    this.setState({channels : data, update : !this.state.update});
-  }
-
   render(){
     return(
       <View style={{flex : 1, backgroundColor: '#333'}}>
@@ -101,7 +95,7 @@ class DiscoverFeed extends React.PureComponent {
           data={this.state.channels}
           extraData = {this.state.update}
           renderItem={({ item, index }) => (
-          <StoryFeed update = { this.update } item = {item} onEmpty = {this.onEmpty} index = {index} />
+          <StoryFeed update = { this.update } item = {item} index = {index} />
           )}
         />
       </View>
