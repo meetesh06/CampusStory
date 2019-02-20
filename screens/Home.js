@@ -178,7 +178,7 @@ class Home extends React.Component {
     }
   }
 
-  updateLists = async (lastUpdated, channelsList, should_not_update) => {
+  updateLists = (lastUpdated, channelsList, should_not_update) => {
     axios.post(urls.GET_EVENT_LIST, { last_updated: lastUpdated }, {
       headers: {
         'Content-Type': 'application/json',
@@ -220,10 +220,17 @@ class Home extends React.Component {
           });
         });
         console.log('new events', response.data.data);
-        if (this.props.first) this.fetchEventsFromRealm();
-        else this.setState({ newUpdates: true });
+        if (this.props.first) {
+          this.setState({ refreshing: false, newUpdates: false });
+          this.fetchEventsFromRealm();
+        } else {
+          this.setState({ refreshing: false, newUpdates: true });
+        }
       }
-    }).catch(err => console.log(err));
+    }).catch(err => this.setState({ refreshing: false }))
+      .finally(() => {
+        this.setState({ refreshing: false });
+      });
     // eslint-disable-next-line no-undef
     const formData = new FormData();
     formData.append('channels_list', JSON.stringify(channelsList));
@@ -350,7 +357,7 @@ class Home extends React.Component {
     updateLists(lastUpdated, subList, is_first_time);
   }
 
-  updateContent = async () => {
+  updateContent = () => {
     this.setState({ refreshing: true });
     const {
       fetchEventsFromRealm,
@@ -359,8 +366,7 @@ class Home extends React.Component {
     } = this;
     fetchEventsFromRealm();
     fetchChannelsFromRealm();
-    await checkForChanges();
-    this.setState({ refreshing: false, newUpdates: false });
+    checkForChanges();
   }
 
   handleEventOpenNotification = (_id) => {
@@ -586,7 +592,7 @@ class Home extends React.Component {
               />
             )
         }
-        <Text style={{color : '#fff', fontSize : 20}}>{this.state.volume} </Text>
+        {/* <Text style={{color : '#fff', fontSize : 20}}>{this.state.volume} </Text> */}
         {
           channels.length === 0
           && (
