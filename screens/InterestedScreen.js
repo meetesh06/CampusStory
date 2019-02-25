@@ -168,11 +168,25 @@ class InterestedScreen extends React.Component {
             />
           )}
         >
-
           { 
                 this.state.loading
                 && <ActivityIndicator size="small" color="#fff" style={{margin : 10}} />
           }
+
+          {
+            going.length > 0 &&
+            <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> You have {going.length} registered events.</Text>
+          }
+
+          <FlatList
+            numColumns = {2}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => `${index}`}
+            data={going}
+            renderItem={({ item }) => (
+              <EventCard onPress={this.handleEventPress} width={WIDTH / 2 - 20} height={140} item={item} />
+            )}
+          />
           
           {
             interested.length > 0 &&
@@ -188,21 +202,8 @@ class InterestedScreen extends React.Component {
             )}
           />
           {
-            going.length > 0 &&
-                  <Text style={{color : '#ddd', textAlign : 'center', margin : 10, fontSize : 14}}> You have {going.length} registered events.</Text>
-          }
-          <FlatList
-            numColumns = {2}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => `${index}`}
-            data={going}
-            renderItem={({ item }) => (
-              <EventCard onPress={this.handleEventPress} width={WIDTH / 2 - 20} height={140} item={item} />
-            )}
-          />
-          {
             going.length === 0 && interested.length === 0 && !this.state.loading &&
-            <View style={{position : 'absolute', top : 100, alignSelf : 'center', alignItems : 'center'}}>
+            <View style={{alignSelf : 'center', alignItems : 'center'}}>
               <IconMaterial name = "delete-empty" size={180} style={{color : "#444",}} />
               <Text style={{color : '#fff', textAlign : 'center', marginLeft : 10, marginRight : 10, fontSize : 15, fontFamily : 'Roboto-Light'}}> Huh! You have no events in your list.</Text>
             </View>

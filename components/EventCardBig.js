@@ -106,7 +106,7 @@ const EventCardBig = (props) => {
       <Text
         numberOfLines={1}
         style={{
-          fontFamily: 'Roboto',
+          fontFamily: 'Roboto-Light',
           fontSize: 12,
           left: 15,
           right: 0,
@@ -136,7 +136,7 @@ const EventCardBig = (props) => {
       <Text
         numberOfLines={1}
         style={{
-          fontFamily: 'Roboto',
+          fontFamily: 'Roboto-Light',
           fontSize: 15,
           left: 15,
           right: 0,
@@ -169,7 +169,7 @@ const EventCardBig = (props) => {
         <Text
           numberOfLines={1}
           style={{
-            fontFamily: 'Roboto',
+            fontFamily: 'Roboto-Light',
             fontSize: 18,
             marginLeft: 5,
             textAlign: 'left',

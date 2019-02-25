@@ -59,6 +59,7 @@ class Home extends React.Component {
     eventsChannels: [],
     refreshing: false,
     newUpdates: false,
+    CAN_OPEN_EVENT : true,
     volume : 0
   }
 
@@ -292,17 +293,25 @@ class Home extends React.Component {
 
     Realm.getRealm((realm) => {
       const Events = realm.objects('Events').sorted('timestamp', true);
-      const ts = Date.parse(new Date()) + (7 * 24 * 60 * 60 * 1000);
       const cs = Date.parse(new Date());
       const final = {};
       interests.forEach((value) => {
-        const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date', true);
+        const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date');
         processRealmObj(current, (result) => {
           final[value] = result;
         });
       });
       const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
       processRealmObj(latestEvents, (result) => {
+        const keys = Object.keys(final);
+        for(let i=0; i<keys.length; i++){
+          const cat = keys[i];
+          const array = final[cat];
+          for(let j=0; j<array.length; j++){
+            const pos = result.map(function(x) {return x._id; }).indexOf(array[j]._id);
+            if(pos !== -1) result.splice(pos, 1);
+          }
+        }
         this.setState({ eventList: result, ...final });
       });
     });
@@ -404,81 +413,25 @@ class Home extends React.Component {
     });
   }
 
-  handleEventPress = (item) => {
-    const { _id } = item;
-    new SessionStore().pushTrack({type : 'open_event', event : _id});
-    Realm.getRealm((realm) => {
-      const current = realm.objects('Events').filtered(`_id="${_id}"`);
-      processRealmObj(current, (result) => {
-        if(result.length >0)
-        Navigation.showOverlay({
-          component: {
-            name: 'Event Detail Screen',
-            passProps: {
-              item: result[0],
-              id: result[0].title
-            },
-            options: {
-              modalPresentationStyle: 'overCurrentContext',
-              topBar: {
-                animate: true,
-                visible: true,
-                drawBehind: false,
-                title: {
-                  text: result[0].title,
-                },
-              },
-              bottomTabs: {
-                visible: false,
-                drawBehind: true,
-                animate: true
-              },
-            }
-          }
-        });
-      });
-    });
+  onEventClose = () =>{
+    this.setState({CAN_OPEN_EVENT : true});
   }
 
-  handleEventPressSpotlight = (item) => {
-    const { _id } = item;
-    new SessionStore().pushTrack({type : 'SPOT_OPEN', event : _id});
-    Realm.getRealm((realm) => {
-      const current = realm.objects('Events').filtered(`_id="${_id}"`);
-      processRealmObj(current, (result) => {
-        if (result.length === 0) {
-          Navigation.showOverlay({
-            component: {
-              name: 'Event Detail Screen',
-              passProps: {
-                item: { ...item, date: new Date(item.date), media: JSON.stringify(item.media) },
-                id: item.title
-              },
-              options: {
-                modalPresentationStyle: 'overCurrentContext',
-                topBar: {
-                  animate: true,
-                  visible: true,
-                  drawBehind: false,
-                  title: {
-                    text: item.title,
-                  },
-                },
-                bottomTabs: {
-                  visible: false,
-                  drawBehind: true,
-                  animate: true
-                },
-              }
-            }
-          });
-        } else {
+  handleEventPress = (item) => {
+    if(this.state.CAN_OPEN_EVENT){
+      const { _id } = item;
+      this.setState({CAN_OPEN_EVENT : false});
+      Realm.getRealm((realm) => {
+        const current = realm.objects('Events').filtered(`_id="${_id}"`);
+        processRealmObj(current, (result) => {
+          if(result.length >0)
           Navigation.showOverlay({
             component: {
               name: 'Event Detail Screen',
               passProps: {
                 item: result[0],
-                id: result[0].title
+                id: result[0].title,
+                onClose : this.onEventClose
               },
               options: {
                 modalPresentationStyle: 'overCurrentContext',
@@ -498,9 +451,78 @@ class Home extends React.Component {
               }
             }
           });
-        }
+        });
       });
-    });
+      new SessionStore().pushTrack({type : 'open_event', event : _id});
+    }
+  }
+
+  handleEventPressSpotlight = (item) => {
+    if(this.state.CAN_OPEN_EVENT){
+      const { _id } = item;
+      this.setState({CAN_OPEN_EVENT : false});
+      Realm.getRealm((realm) => {
+        const current = realm.objects('Events').filtered(`_id="${_id}"`);
+        processRealmObj(current, (result) => {
+          if (result.length === 0) {
+            Navigation.showOverlay({
+              component: {
+                name: 'Event Detail Screen',
+                passProps: {
+                  item: { ...item, date: new Date(item.date), media: JSON.stringify(item.media) },
+                  id: item.title,
+                  onClose : this.onEventClose
+                },
+                options: {
+                  modalPresentationStyle: 'overCurrentContext',
+                  topBar: {
+                    animate: true,
+                    visible: true,
+                    drawBehind: false,
+                    title: {
+                      text: item.title,
+                    },
+                  },
+                  bottomTabs: {
+                    visible: false,
+                    drawBehind: true,
+                    animate: true
+                  },
+                }
+              }
+            });
+          } else {
+            Navigation.showOverlay({
+              component: {
+                name: 'Event Detail Screen',
+                passProps: {
+                  item: result[0],
+                  id: result[0].title,
+                  onClose : this.onEventClose
+                },
+                options: {
+                  modalPresentationStyle: 'overCurrentContext',
+                  topBar: {
+                    animate: true,
+                    visible: true,
+                    drawBehind: false,
+                    title: {
+                      text: result[0].title,
+                    },
+                  },
+                  bottomTabs: {
+                    visible: false,
+                    drawBehind: true,
+                    animate: true
+                  },
+                }
+              }
+            });
+          }
+        });
+      });
+      new SessionStore().pushTrack({type : 'SPOT_OPEN', event : _id});
+    }
   }
 
   handleStoryOpenNotification = (_id) => {
@@ -593,7 +615,6 @@ class Home extends React.Component {
               />
             )
         }
-        {/* <Text style={{color : '#fff', fontSize : 20}}>{this.state.volume} </Text> */}
         {
           channels.length === 0
           && (
@@ -638,11 +659,16 @@ class Home extends React.Component {
               <Swiper
                 showsButtons={false}
                 autoplay
-                loop={false}
-                showsPagination={false}
+                loop={true}
+                activeDotColor = 'red'
                 loadMinimal
-                style={{ backgroundColor: '#333', height: 250 }}
-                autoplayTimeout={5}
+                loadMinimalSize = {2}
+                paginationStyle = {{ position : 'absolute', bottom : 0,}}
+                dotStyle = {{top : 0}}
+                dot = {<View style={{backgroundColor:'#444', width: 10, height: 4,borderRadius: 2, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
+                activeDot = {<View style={{backgroundColor: '#FF6A16', width: 10, height: 4, borderRadius: 2, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
+                style={{ backgroundColor: '#222', height: 250 }}
+                autoplayTimeout={7}
               >
                 {
                   weekEventList !== undefined
@@ -701,7 +727,6 @@ class Home extends React.Component {
         }
         <FlatList
           horizontal={false}
-          showsHorizontalScrollIndicator={false}
           keyExtractor={(item, index) => `${index}`}
           data={eventList}
           renderItem={({ item }) => (

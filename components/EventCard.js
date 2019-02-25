@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import {getMonthName, formatAMPM} from '../screens/helpers/functions'
 
 const EventCard = (props) => {
   const { item, width, height } = props;
@@ -60,7 +61,7 @@ const EventCard = (props) => {
       <Text
         numberOfLines={1}
         style={{
-          fontFamily: 'Roboto',
+          fontFamily: 'Roboto-Light',
           fontSize: 12,
           left: 10,
           right: 0,
@@ -83,10 +84,10 @@ const EventCard = (props) => {
       <Text
         numberOfLines={1}
         style={{
-          fontFamily: 'Roboto', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 50, color: '#fff'
+          fontFamily: 'Roboto-Light', fontSize: 12, left: 10, right: 0, textAlign: 'left', position: 'absolute', top: 50, color: '#fff'
         }}
       >
-        { item.location }
+        { `${new Date(item.date).getDate()}-${getMonthName(new Date(item.date).getMonth() + 1)}, ${formatAMPM(new Date(item.date))}` }
       </Text>
     </TouchableOpacity>
   );

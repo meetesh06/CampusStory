@@ -12,6 +12,7 @@ import {
   PanResponder,
   Animated,
   SafeAreaView,
+  BackHandler,
   ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -158,7 +159,16 @@ class EventDetail extends React.Component {
         new SessionStore().pushLogs({type : 'error', line : 158, file : 'EventDetails.js', err : err});
       });
     });
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
 
+  handleBackButtonClick = () =>{
+    this.handleClose();
+    return true;
+  }
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   handleClick = async () => {
@@ -201,15 +211,14 @@ class EventDetail extends React.Component {
         toValue: HEIGHT + this.topHeight._value,
         duration: 200,
         friction: 7,
-        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity, {
         toValue: 0,
         duration: 200,
-        //useNativeDriver : true,
       })
     ]).start();
     setTimeout(() => Navigation.dismissOverlay(componentId), 180);
+    this.props.onClose();
   }
 
   handleFull = () => {
@@ -532,7 +541,7 @@ class EventDetail extends React.Component {
                   <Text
                     numberOfLines={1}
                     style={{
-                    // fontFamily: 'Roboto-Thin',
+                      fontFamily : 'Roboto-Light',
                       fontSize: 15,
                       color: '#a0a0a0',
                     }}
@@ -825,7 +834,7 @@ Views
                     color: '#a0a0a0',
                   }}
                 >
-                  {remind === 'false' ? 'Click the bell icon to get notified for all future updates for this event.' : 'You are now subscribed for all future updates for this event.'}
+                  {remind === 'false' ? 'Click the bell icon to get notified for all the future updates for this event.' : 'You are now subscribed for all the future updates for this event.'}
                 </Text>
               </View>
 
@@ -834,7 +843,7 @@ Views
           <View
             style={{
               flexDirection: 'row',
-              marginBottom:  Platform.OS === 'ios' ? 0 : 50
+              marginBottom:  Platform.OS === 'ios' ? 0 : 20
             }}
           >
             { item.interested === 'false' && (
@@ -842,7 +851,7 @@ Views
               onPress={this.handleClick}
               style={{
                 padding: 15,
-                backgroundColor: '#666',
+                backgroundColor: '#444',
                 flex: 1
               }}
             >

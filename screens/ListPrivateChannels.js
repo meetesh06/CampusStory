@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -101,9 +101,10 @@ class ListPrivateChannels extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -125,9 +126,9 @@ class ListPrivateChannels extends React.Component {
               marginLeft: 5
             }}
           >
-            {'Private Channels'}
+            {'Private Channels  '}
           </Text>
-          <IconIon name = 'ios-search' size = {22} color = '#ddd' />
+          <IconIon name = 'ios-search' size = {25} color = '#ddd' />
           <TouchableOpacity
             style={{
               flex: 1,
@@ -167,16 +168,15 @@ class ListPrivateChannels extends React.Component {
               />
             )}
           />
-
           {
             this.state.channels.length === 0 &&
-            <View style={{position : 'absolute', top : 100, alignSelf : 'center', alignItems : 'center'}}>
+            <View style={{alignSelf : 'center', alignItems : 'center'}}>
               <IconIon name = "ios-albums" size={180} style={{color : "#444",}} />
               <Text style={{color : '#fff', textAlign : 'center', marginLeft : 10, marginRight : 10, fontSize : 15, fontFamily : 'Roboto-Light'}}> Oho! There are no private channels.</Text>
             </View>
           }
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 }

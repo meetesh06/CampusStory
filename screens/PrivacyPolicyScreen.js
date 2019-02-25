@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -27,9 +27,10 @@ class PrivacyPolicyScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -112,10 +113,7 @@ class PrivacyPolicyScreen extends React.Component {
           </View>
         </View>
         </ScrollView>
-        <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
-            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
-          </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

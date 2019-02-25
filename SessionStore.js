@@ -175,14 +175,15 @@ export default class SessionStore {
     this.publishUpdates();
     this.publishViews();
     this.publishVisits();
+    this.publishUserData();
     this.publishLogs();
     this.publishTracks();
-    this.publishUserData();
   }
 
   publishUpdates = () =>{
     if(this.temp[UPDATES].length > 0){
       const formData = new FormData();
+      this.temp[UPDATES] = [];
       formData.append('activity_list', JSON.stringify(this.temp[UPDATES]));
       axios.post(urls.UPDATE_READ, formData, {
         headers: {
@@ -190,7 +191,7 @@ export default class SessionStore {
           'x-access-token': this.state[TOKEN]
         }
       }).then((response) => {
-        console.log(response)
+        console.log('UPDATE', response)
       }).catch(err => {
         console.log(err)
       });
@@ -198,9 +199,10 @@ export default class SessionStore {
   }
 
   publishViews = () =>{
-    if(this.temp[VIEWS].length > 0){
+    if(this.temp[VIEWS]!== null || this.temp[VIEWS] !== undefined){
       const formData = new FormData();
       this.format(this.temp[VIEWS], (views)=>{
+        this.temp[VIEWS] = {}
         formData.append('views', JSON.stringify(views));
         formData.append('dummy', [{_id : 'something'}]);
         axios.post(urls.UPDATE_STORY_VIEWS, formData, {
@@ -209,7 +211,7 @@ export default class SessionStore {
             'x-access-token': this.state[TOKEN]
           }
         }).then((response) => {
-          console.log(response);
+          console.log('VIEWS', response);
         }).catch(err => console.log(err));
       });
     }
@@ -217,7 +219,6 @@ export default class SessionStore {
 
   publishUserData = () =>{
     const formData = new FormData();
-    console.log(this.getValue([USER_DATA]), this.state);
     formData.append(Constants.INTERESTS, this.getValue([INTERESTS]));
     formData.append(Constants.USER_DATA, JSON.stringify(this.getValue([USER_DATA])));
     formData.append('dummy', [{_id : 'something'}]);
@@ -227,16 +228,17 @@ export default class SessionStore {
         'x-access-token': this.state[TOKEN]
       }
     }).then((response) => {
-      console.log(response);
+      console.log('USER',response);
     }).catch(err => {
       console.log(err)
     });
 }
 
   publishVisits = () =>{
-    if(this.temp[VISITS].length > 0){
+    if(this.temp[VISITS]!== null || this.temp[VISITS] !== undefined){
       const formData = new FormData();
       this.format(this.temp[VISITS], (visits)=>{
+        this.temp[VISITS] = {}
         formData.append('visits', JSON.stringify(visits));
         formData.append('dummy', [{_id : 'something'}]);
         axios.post(urls.UPDATE_CHANNEL_VISITS, formData, {
@@ -245,7 +247,7 @@ export default class SessionStore {
             'x-access-token': this.state[TOKEN]
           }
         }).then((response) => {
-          console.log(response);
+          console.log('VISIT', response);
         }).catch(err => console.log(err));
       });
     }
@@ -254,6 +256,7 @@ export default class SessionStore {
   publishLogs = () =>{
     if(this.temp[LOGS].length > 0){
       const formData = new FormData();
+      this.temp[LOGS] = [];
       formData.append('logs', JSON.stringify(this.temp[LOGS]));
       formData.append('session_id', JSON.stringify(this.state[SESSION_ID]));
       formData.append('dummy', [{_id : 'something'}]);
@@ -263,7 +266,7 @@ export default class SessionStore {
           'x-access-token': this.state[TOKEN]
         }
       }).then((response) => {
-        console.log(response);
+        console.log('LOGS',response);
       }).catch(err => console.log(err));
     }
   }
@@ -271,6 +274,7 @@ export default class SessionStore {
   publishTracks = () =>{
     if(this.temp[TRACKS].length > 0){
       const formData = new FormData();
+      this.temp[TRACKS] = [];
       formData.append('logs', JSON.stringify(this.temp[TRACKS]));
       formData.append('session_id', JSON.stringify(this.state[SESSION_ID]));
       formData.append('dummy', [{_id : 'something'}]);
@@ -280,7 +284,7 @@ export default class SessionStore {
           'x-access-token': this.state[TOKEN]
         }
       }).then((response) => {
-        console.log(response);
+        console.log('TRACKS', response);
       }).catch(err => console.log(err));
     }
   }

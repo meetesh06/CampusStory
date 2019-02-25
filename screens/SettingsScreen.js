@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -40,9 +40,10 @@ class SettingsScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -116,7 +117,7 @@ class SettingsScreen extends React.Component {
           <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
             <View>
               <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>My Channels</Text>
-              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>List your subscribed channels.</Text>
+              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>List your subscribed channels</Text>
             </View>
             <View style={{flex : 1}} />
             <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
@@ -129,37 +130,11 @@ class SettingsScreen extends React.Component {
           <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
             <View>
               <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>Discover Private Channels ⋆</Text>
-              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>Find private channels here.</Text>
+              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>Find private channels here</Text>
             </View>
             <View style={{flex : 1}} />
             <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
               <IconIon name = 'ios-search' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        {/* <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}}>
-          <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
-            <View>
-              <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>Notification Settings</Text>
-              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5, }}>Modify notification setting here.</Text>
-            </View>
-            <View style={{flex : 1}} />
-            <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
-              <IconIon name = 'ios-notifications' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
-            </View>
-          </View>
-        </TouchableOpacity> */}
-
-        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}} onPress = {()=>this.gotoScreen('About Us Screen')}>
-          <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
-            <View>
-              <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>About Us</Text>
-              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>Why we started?</Text>
-            </View>
-            <View style={{flex : 1}} />
-            <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
-              <IconIon name = 'ios-people' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
             </View>
           </View>
         </TouchableOpacity>
@@ -177,11 +152,21 @@ class SettingsScreen extends React.Component {
           </View>
         </TouchableOpacity>
 
-        </ScrollView>
-        <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
-            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
+        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}} onPress = {()=>this.gotoScreen('About Us Screen')}>
+          <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
+            <View>
+              <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>About Us</Text>
+              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>how we started?</Text>
+            </View>
+            <View style={{flex : 1}} />
+            <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
+              <IconIon name = 'ios-people' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
+            </View>
           </View>
-      </SafeAreaView>
+        </TouchableOpacity>
+
+        </ScrollView>
+      </View>
     );
   }
 }

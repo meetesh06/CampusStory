@@ -10,6 +10,7 @@ import {
   StatusBar,
   Alert,
   PanResponder,
+  BackHandler,
   Animated,
   ScrollView
 } from 'react-native';
@@ -117,6 +118,16 @@ class ChannelDetailScreen extends React.Component {
         this.setState({ item: result[0] }, () => fetchChannelRequest(result[0] !== undefined));
       });
     });
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    this.handleClose();
+    return true;
+  }
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   fetchChannelRequest = async (already) => {
@@ -365,6 +376,7 @@ handleSubscribe = () =>{
               <FastImage
                 style={{
                   width: WIDTH - 20,
+                  //backgroundColor : '#222',
                   height: (WIDTH - 20) * 0.75,
                   borderRadius: 10
                 }}
@@ -401,8 +413,8 @@ handleSubscribe = () =>{
                 {getCategoryName(item !== null && item !== undefined && item.category !== undefined && item.category)}
               </Text>
             </View>
-            <View style={{ flex: 1 }} />
             
+            <View style={{ flex: 1 }} />
           </View>
         </View>
         <ScrollView
@@ -414,7 +426,7 @@ handleSubscribe = () =>{
           <Text
             style={{
               textAlign: 'center',
-              fontSize: 24,
+              fontSize: 22,
               margin : 10,
               color : '#fff',
               fontFamily: 'Roboto'
@@ -425,6 +437,7 @@ handleSubscribe = () =>{
           <Text style={{
             color : '#999',
             fontSize : 15,
+            fontFamily : 'Roboto-Light',
             textAlign : 'center',
             marginBottom : 8,
             margin : 5,
@@ -447,7 +460,7 @@ handleSubscribe = () =>{
             margin: 10,
             borderRadius: 10,
           }}>
-          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#999'}}>Description</Text>
+          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#999', marginBottom : 5}}>Description</Text>
           <Text
             selectable
             style={{
@@ -465,7 +478,7 @@ handleSubscribe = () =>{
           </Text>
           </View>
 
-          <Text style={{ fontSize: 12, color: '#888', textAlign: 'center', textAlignVertical : 'center'}}><Icon name = 'infocirlceo' size = {11} /> {' Subscribe channels for easy updates on home screen.'}</Text>
+          <Text style={{ fontSize: 12, color: '#888', textAlign: 'center', textAlignVertical : 'center', fontFamily : 'Roboto-Light'}}><Icon name = 'infocirlceo' size = {11} /> {' Subscribe channels for easy updates on home screen.'}</Text>
           
           <View style={{flex : 1}} />
           <View
@@ -530,7 +543,7 @@ handleSubscribe = () =>{
               paddingLeft : 5,
               backgroundColor : subscribed ? '#666' : '#fa3e3e',
               paddingRight : 5,
-              marginBottom: Platform.OS === 'ios' ? 0 : 50,
+              marginBottom: Platform.OS === 'ios' ? 0 : 20,
               flex: 1
             }}
           >

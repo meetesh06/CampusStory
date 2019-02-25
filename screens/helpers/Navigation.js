@@ -2,7 +2,6 @@ import { Navigation } from 'react-native-navigation';
 import Icon1 from 'react-native-vector-icons/Foundation';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import { Platform } from 'react-native';
-// import Icon3 from 'react-native-vector-icons/MaterialIcons';
 
 export const goToInterestsSelector = () => Navigation.setRoot({
   root: {
@@ -53,15 +52,15 @@ export const goInitializing = () => Navigation.setRoot({
 
 const androidRight = [
   {
-    id: 'Settings',
-    component: {
-      name: 'app.SettingsIcon'
-    }
-  },
-  {
     id : 'help',
     component : {
       name : 'app.HelpIcon'
+    }
+  },
+  {
+    id: 'Settings',
+    component: {
+      name: 'app.SettingsIcon'
     }
   }
 ];
@@ -87,9 +86,9 @@ const iosLeft = [
 ];
 
 export const goHome = async (first) => {
-  const homeIcon = await Icon1.getImageSource('home', 25);
-  const discoverIcon = await Icon2.getImageSource('free-breakfast', 25);
-  const profileIcon = await Icon2.getImageSource('notifications', 25);
+  const homeIcon = await Icon1.getImageSource('home', 22);
+  const discoverIcon = await Icon2.getImageSource('free-breakfast', 22);
+  const profileIcon = await Icon2.getImageSource('notifications-active', 22);
   return Navigation.setRoot({
     root: {
       bottomTabs: {

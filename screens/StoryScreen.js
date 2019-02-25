@@ -524,7 +524,7 @@ class StoryScreen extends React.Component {
             onPress = {()=>this.gotoEvent(stories[current].event_link)}
             >
             <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
-            <Text style = {{color : '#ddd', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
+            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
           </TouchableOpacity>
       }
 
@@ -544,7 +544,7 @@ class StoryScreen extends React.Component {
             onPress = {()=>this.gotoTag(stories[current].tag)}
             >
             <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
-            <Text style = {{color : '#ddd', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
+            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
           </TouchableOpacity>
       }
       </Animated.View>

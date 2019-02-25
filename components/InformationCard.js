@@ -43,8 +43,7 @@ class InformationCard extends React.Component {
                 <Text
                     style={[{
                         marginTop: 10,
-                        fontFamily: 'Roboto-Thin',
-                        fontWeight : '300',
+                        fontFamily: 'Roboto-Light',
                         textAlign: 'center',
                         fontSize : 12,
                         margin : 10,

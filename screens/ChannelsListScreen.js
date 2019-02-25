@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -72,9 +72,10 @@ class HelpScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -141,13 +142,13 @@ class HelpScreen extends React.Component {
 
           {
             this.state.channels.length === 0 &&
-            <View style={{position : 'absolute', top : 100, alignSelf : 'center', alignItems : 'center'}}>
+            <View style={{alignSelf : 'center', alignItems : 'center'}}>
               <IconIon name = "ios-albums" size={180} style={{color : "#444",}} />
               <Text style={{color : '#fff', textAlign : 'center', marginLeft : 10, marginRight : 10, fontSize : 15, fontFamily : 'Roboto-Light'}}> Oho! You have no subscribed channels.</Text>
             </View>
           }
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 }

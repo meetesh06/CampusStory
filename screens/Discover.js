@@ -12,9 +12,12 @@ export default class Discover extends React.Component {
       { key: 'food', title: 'Food' },
       { key: 'mad', title: 'Music and Dance' },
       { key: 'art', title: 'Art and Theatre' },
-      { key: 'fun', title: 'Fun' },
+      { key: 'tech', title: 'Technology' },
       { key: 'society', title: 'Society' },
       { key: 'sports', title: 'Sports' },
+      { key: 'fashion', title: 'Fashion' },
+      { key: 'fun', title: 'Fun' },
+      { key: 'business', title: 'Business' },
     ],
   };
 

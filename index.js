@@ -14,7 +14,6 @@ import EventDetail from './screens/EventDetail';
 import ChannelDetailScreen from './screens/ChannelDetailScreen';
 import StoryScreen from './screens/StoryScreen';
 import GoingDetails from './screens/GoingDetails';
-import PreviewOverlayScreen from './screens/PreviewOverlayScreen';
 import DiscoverPreview from './screens/DiscoverPreview';
 import EventRegister from './screens/EventRegister';
 import InterestedScreen from './screens/InterestedScreen';
@@ -32,6 +31,7 @@ import NotificationsSettings from './screens/NotificationsSettings';
 import AboutUsScreen from './screens/AboutUsScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import ShowTagScreen from './screens/ShowTagScreen';
+import CollegeSelectionScreen from './screens/CollegeSelectionScreen';
 
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -93,10 +93,9 @@ const HeartIcon = () => (
 const SettingsIcon = () => (
   <TouchableOpacity
     style={{
-      // flex: 1,
       justifyContent: 'center',
-      paddingRight: 5
-      // marginRight: 5
+      paddingRight: 5,
+      paddingLeft : 15
     }}
     onPress={
       () => {
@@ -153,7 +152,6 @@ Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('app.HeartIcon', () => HeartIcon);
 Navigation.registerComponent('app.SettingsIcon', () => SettingsIcon);
 Navigation.registerComponent('app.HelpIcon', () => HelpIcon);
-Navigation.registerComponent('Preview Overlay Screen', () => PreviewOverlayScreen);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
 Navigation.registerComponent('Event Register', () => EventRegister);
 Navigation.registerComponent('Interested Screen', () => InterestedScreen);
@@ -169,6 +167,7 @@ Navigation.registerComponent('Notifications Settings', () => NotificationsSettin
 Navigation.registerComponent('About Us Screen', () => AboutUsScreen);
 Navigation.registerComponent('Privacy Policy Screen', () => PrivacyPolicyScreen);
 Navigation.registerComponent('Show Tag Screen', () => ShowTagScreen);
+Navigation.registerComponent('College Selection Screen', () => CollegeSelectionScreen);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
@@ -187,26 +186,30 @@ init = () =>{
   });
 };
 
-onAppStateChanged = async (nextAppState) => {
-  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){
-    console.log('Background - Forground'); /* forground */
-  } else if(nextAppState === 'background') {
-    console.log('Background'); /* background */
-  } else if(nextAppState === 'active'){
-    console.log('Forground'); /* from background to forground */
+submission = async () =>{
+  const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
+  const cs = new Date().getTime();
+  const timespent = (cs - ts) /1000;
+  if(timespent > 60){
+    new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
+  } else {
+    new SessionStore().putValueTemp(Constants.TRACKS, []);
   }
-  else if(nextAppState === 'inactive'){
-    console.log('Inactive'); /* User not in app. */
-    const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
-    const cs = new Date().getTime();
-    const timespent = (cs - ts) /1000;
-    if(timespent > 60){
-      new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
-    } else {
-      new SessionStore().putValueTemp(Constants.TRACKS, []);
-    }
-    new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
-    await new SessionStore().setValueBulk();
+  new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
+  await new SessionStore().setValueBulk();
+}
+
+onAppStateChanged = (nextAppState) => {
+  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){
+    console.log('Background - Forground');
+  } else if(nextAppState === 'background') {
+    console.log('Background');
+    if(Platform.OS === 'android') this.submission();
+  } else if(nextAppState === 'active'){
+    console.log('Forground');
+  } else if(nextAppState === 'inactive'){
+    console.log('Inactive');
+    if(Platform.OS === 'ios') this.submission();
   }
   this.state.appState = nextAppState;
 };

@@ -7,7 +7,7 @@ import {
   Alert,
   TouchableOpacity,
   Text,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -25,7 +25,8 @@ class HelpScreen extends React.Component {
       name : '',
       email : '',
       phone : '',
-      gender : 'f',
+      gender : 'm',
+      count : 0,
     };
   }
 
@@ -33,7 +34,7 @@ class HelpScreen extends React.Component {
     new SessionStore().pushTrack({type : 'OPEN_PROFILE'});
     let user_data = new SessionStore().getValue(Constants.USER_DATA);
     if(user_data === null || user_data === undefined) return;
-    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, gender : user_data.gender === undefined ? 'f' : user_data.gender});
+    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, gender : user_data.gender === undefined ? 'm' : user_data.gender});
   }
 
   handleSubmit = async () => {
@@ -65,14 +66,22 @@ class HelpScreen extends React.Component {
     Navigation.dismissModal(this.props.componentId)
   }
 
+  handleMysteryLogout = () =>{
+    this.setState({count : this.state.count + 1});
+    if(this.state.count > 20){
+      logout();
+    }
+  }
+
   render() {
     const {
       name, email, phone,
     } = this.state;
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -97,13 +106,14 @@ class HelpScreen extends React.Component {
             {'My Profile  '}
           </Text>
           
-          <TouchableOpacity onPress={logout}>
+          <TouchableOpacity onPress={this.handleMysteryLogout}>
             <Text><IconIon name = 'md-person' size = {25} color = '#ddd' /></Text>
           </TouchableOpacity>
+          <View style={{flex : 1}} />
           <TouchableOpacity
             style={{
-              flex: 1,
               padding : 10,
+              paddingLeft : 30
             }}
             onPress={() => {
               Navigation.dismissModal(this.props.componentId)
@@ -227,7 +237,7 @@ class HelpScreen extends React.Component {
           </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 }

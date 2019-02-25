@@ -51,11 +51,11 @@ class EventNotification extends React.Component {
 
   render() {
     const {
-      item,
-      all
+      item
     } = this.state;
     const {
-      updates
+      updates,
+      touchable
     } = this.props;
     return (
       <View>
@@ -85,6 +85,7 @@ class EventNotification extends React.Component {
                 data={updates}
                 renderItem={(value) => (
                   <TouchableOpacity
+                    activeOpacity = {touchable ? 0.5 : 0.9}
                     style={{
                       backgroundColor: '#f0f0f0',
                       margin: 5,

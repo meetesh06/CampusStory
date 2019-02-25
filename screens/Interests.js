@@ -26,20 +26,12 @@ import AdvertCard from '../components/AdvertCard';
 import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
 import InformationCard from '../components/InformationCard';
-import { categoriesNoHottest } from './helpers/values';
+import { categories } from './helpers/values';
 import SessionStore from '../SessionStore';
 import DeviceInfo from 'react-native-device-info';
 import { Navigation } from 'react-native-navigation';
 
 const uniqueId = DeviceInfo.getUniqueID();
-const one = []; const two = []; let i;
-for (i = 0; i < categoriesNoHottest.length; i += 1) {
-  if (i < categoriesNoHottest.length / 2) {
-    one.push(categoriesNoHottest[i]);
-  } else {
-    two.push(categoriesNoHottest[i]);
-  }
-}
 
 const {
   SET_UP_STATUS,
@@ -88,7 +80,7 @@ class Interests extends React.Component {
         config.platform = Platform.OS === 'android' ? 'android' : 'ios';
         store.putValue(CONFIG, config);
       } catch (error) {
-        new SessionStore().pushLogs({type : 'error_firebase', line : 92, file : 'Interest.js', err : error});
+        new SessionStore().pushLogs({type : 'error_firebase', line : 83, file : 'Interest.js', err : error});
         const config = store.getValue(CONFIG);
         config.firebase_enabled = false;
         config.platform = Platform.OS === 'android' ? 'android' : 'ios';
@@ -166,7 +158,7 @@ class Interests extends React.Component {
         }
       }).catch((err) => {
         console.log(err);
-        new SessionStore().pushLogs({type : 'error', line : 170, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 161, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -208,13 +200,15 @@ class Interests extends React.Component {
 
     if (interestsProcessed.length < 2) {
       Alert.alert(
-        'Please select atleast 2 interests!',
+        'Fill data correctly',
+        'Please select at least 2 interests.'
       );
       return;
     }
     if (college === '') {
       Alert.alert(
-        'Please select a college',
+        'Fill data correctly',
+        'Please select your college',
       );
       return;
     }
@@ -264,7 +258,7 @@ class Interests extends React.Component {
           this.setState({ loading: false, error : 'Something went wrong on server :('});
         }
       }).catch((err) => {
-        new SessionStore().pushLogs({type : 'error', line : 267, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 261, file : 'Interest.js', err});
         this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
@@ -278,9 +272,6 @@ class Interests extends React.Component {
             realm.create('Firebase', { _id: 'ogil7190', notify: 'true', type: 'universe' }, true);
             firebase.messaging().subscribeToTopic('ogil7190');
             
-            realm.create('Firebase', { _id: 'admin$' + clg, notify: 'true', type: 'admin' }, true);
-            firebase.messaging().subscribeToTopic('admin$' + clg);
-            
             for (i = 0; i < array.length; i += 1) {
               realm.create('Firebase', { _id: array[i], notify: 'true', type: 'category' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
@@ -290,7 +281,7 @@ class Interests extends React.Component {
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {
             console.log(e);
-            new SessionStore().pushLogs({type : 'error', line : 293, file : 'Interest.js', err : e});
+            new SessionStore().pushLogs({type : 'error', line : 284, file : 'Interest.js', err : e});
           }
         }
       });
@@ -334,11 +325,40 @@ class Interests extends React.Component {
       })
       .catch(err => {
         console.log(err)
-        new SessionStore().pushLogs({type : 'error', line : 337, file : 'Interest.js', err});
+        new SessionStore().pushLogs({type : 'error', line : 328, file : 'Interest.js', err});
       })
       .finally(() => {
         this.setState({ refreshing: false });
       });
+  }
+
+  showCollegeSelectionOverlay = (data) => {
+    Navigation.showOverlay({
+      component: {
+        name: 'College Selection Screen',
+        passProps: {
+          data,
+          onSelection : this.onSelection
+        },
+        options: {
+          modalPresentationStyle: 'overCurrentContext',
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false,
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
+        }
+      }
+    });
+  }
+
+  onSelection = (data) =>{
+    this.setState({collegeSelection: data});
   }
 
   render() {
@@ -358,11 +378,6 @@ class Interests extends React.Component {
       handleInterestSelection
     } = this;
     return (
-      <View style={{ flex: 1, backgroundColor: '#222' }}>
-        {
-          Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" translucent />)
-        }
         <ScrollView
           style={{ flex: 1, backgroundColor: '#333' }}
           refreshControl={(
@@ -372,6 +387,10 @@ class Interests extends React.Component {
             />
           )}
         >
+        {
+          Platform.OS === 'ios'
+          && (<StatusBar barStyle="light-content" translucent />)
+        }
           <Text
             style={{
               color: '#f0f0f0',
@@ -387,7 +406,7 @@ class Interests extends React.Component {
             backgroundColor: '#c5c5c5', borderRadius: 10, height: 2, width: 120, marginTop: 4, marginBottom: 10, alignSelf: 'center'
           }}
           />
-          <View
+          <TouchableOpacity
             style={{
               backgroundColor: '#444',
               borderRadius: 10,
@@ -400,6 +419,9 @@ class Interests extends React.Component {
               marginRight: 10,
               flexDirection: 'row'
             }}
+            onPress={
+              () => this.showCollegeSelectionOverlay(colleges)
+            }
           >
             <FastImage
               style={{ width: 90, height: 75, borderRadius: 10 }}
@@ -408,13 +430,13 @@ class Interests extends React.Component {
             />
             <View style={{ flex: 1, marginLeft: 10, marginTop: 5 }}>
               <Text
-                style={{ fontFamily: 'Roboto', fontSize: 13, color: '#fff' }}
+                style={{ fontFamily: 'Roboto', fontSize: 14, color: '#fff' }}
               >
                 {name}
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Roboto',
+                  fontFamily: 'Roboto-Light',
                   color: '#c5c5c5',
                   marginTop: 5,
                   fontSize: 12
@@ -424,16 +446,7 @@ class Interests extends React.Component {
               </Text>
 
             </View>
-            <TouchableOpacity
-              onPress={
-                    () => this.setState({ showModal: !showModal })
-                  }
-              style={{ alignSelf: 'center', marginRight: 5 }}
-            >
-              <Icon style={{ color: '#f0f0f0' }} size={30} name="circle-edit-outline" />
-
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
           <Text style={{
             color: '#f0f0f0',
             textAlign: 'center',
@@ -458,26 +471,11 @@ class Interests extends React.Component {
               alignSelf : 'center',
               paddingTop: 10,
             }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
+            numColumns = {3}
+            contentContainerStyle = {{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => `${index}`}
-            data={one}
-            renderItem={({ item }) => (
-              <AdvertCard
-                width={100}
-                height={100}
-                onChecked={() => handleInterestSelection(item.value)}
-                image={item.image}
-                text={item.title}
-              />
-            )}
-          />
-          <FlatList
-            style = {{alignSelf : 'center',}}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => `${index}`}
-            data={two}
+            data={categories}
             renderItem={({ item }) => (
               <AdvertCard
                 width={100}
@@ -510,7 +508,7 @@ class Interests extends React.Component {
           <InformationCard
             touchable = {false}
             title="Thank You"
-            content="Thank you for installing Campus Story. This app collects app usage data to improve user experience. All of your data shared on this platform will be safe and never shared with anyone.Read all the terms & conditions under settings tab."
+            content="Thank you for installing Campus Story. This app collects app usage data to improve your user experience. All of your data shared on this platform will always be safe with us and never shared with anyone. Read all the terms & conditions under privacy policy tab in settings menu."
             icon={<IconSimple name="emotsmile" size={40} color="#f0f0f0" style={{ margin: 10, alignSelf: 'center' }} />}
             style_card={{ backgroundColor: '#555', marginTop : 15 }}
             style_title={{ color: '#d0d0d0' }}
@@ -544,19 +542,11 @@ class Interests extends React.Component {
               }}
               onPress={this.handleNextScreen}
             >
-              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 22, textAlignVertical : 'center', textAlign : 'center'}}>{' Next'}</Text>
-              <IconMaterial name="navigate-next" size={32} color="#fff" />
+              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 20, textAlignVertical : 'center', textAlign : 'center'}}>{' Next'}</Text>
+              <IconMaterial name="navigate-next" size={30} color="#fff" />
             </TouchableOpacity>
           </View>
         </ScrollView>
-        <CustomModal
-          newSelection={(data) => {
-            this.setState({ showModal: false, collegeSelection: data });
-          }}
-          data={colleges}
-          visible={showModal}
-        />
-      </View>
     );
   }
 }

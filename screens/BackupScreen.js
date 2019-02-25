@@ -247,8 +247,8 @@ class BackupScreen extends React.Component {
       </View>
       
       <View style={{position : 'absolute', bottom : 30, alignSelf : 'center'}}>
-          <Text style={{margin : 5, color : '#777', fontSize : 14}}>
-            {<IconAnt name='infocirlceo' size = {14} style={{color : '#777'}}/>}
+          <Text style={{margin : 5, color : '#777', fontSize : 14, fontFamily : 'Roboto-Light'}}>
+            {<IconAnt name='infocirlceo' size = {14} style={{color : '#999'}}/>}
             {'  Removing permanently deletes the backup!'}
           </Text>
       </View>

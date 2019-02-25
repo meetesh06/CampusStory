@@ -7,7 +7,8 @@ import {
   Text,
   FlatList,
   Alert,
-  SafeAreaView
+  ToastAndroid,
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -17,7 +18,7 @@ import AdvertCard from '../components/AdvertCard';
 import SessionStore from '../SessionStore';
 import Constants from '../constants';
 import firebase from 'react-native-firebase';
-import { categoriesNoHottest } from './helpers/values';
+import { categories } from './helpers/values';
 
 class InterestsDetailsScreen extends React.Component {
   constructor(props) {
@@ -35,8 +36,8 @@ class InterestsDetailsScreen extends React.Component {
     else selections  = data.split(',');
 
     const interests = [];
-    for (i = 0; i < categoriesNoHottest.length; i++) {
-      interests.push(categoriesNoHottest[i]);
+    for (i = 0; i < categories.length; i++) {
+      interests.push(categories[i]);
     }
     this.setState({selections, interests});
   }
@@ -53,7 +54,9 @@ class InterestsDetailsScreen extends React.Component {
   handleSubmit = () =>{
     const selections = this.state.selections;
     if(selections.length > 1){
-      const prev_selections = new SessionStore().getValue(Constants.INTERESTS);
+      const prev_selections_str = new SessionStore().getValue(Constants.INTERESTS);
+      const prev_selections = prev_selections_str.split(',');
+
       for(let i=0; i<prev_selections.length; i++){
         firebase.messaging().unsubscribeFromTopic(prev_selections[i]);
       }
@@ -64,15 +67,16 @@ class InterestsDetailsScreen extends React.Component {
       new SessionStore().putValue(Constants.INTERESTS, val);
       Navigation.dismissModal(this.props.componentId);
     } else {
-      Alert.alert('Select at least 2 interests.');
+      Alert.alert('Fill data correctly','Select at least 2 interests');
     }
   }
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -120,15 +124,15 @@ class InterestsDetailsScreen extends React.Component {
               alignSelf : 'center',
               paddingTop: 10,
             }}
-            numColumns = {2}
+            numColumns = {3}
             keyExtractor={(item, index) => `${index}`}
             data={this.state.interests}
             extraData = {this.state.selections}
             renderItem={({ item }) => (
               <AdvertCard
-                width={150}
+                width={100}
                 checked = {this.state.selections.includes(item.value)}
-                height={150}
+                height={100}
                 onChecked={() => this.handleInterestSelection(item.value)}
                 image={item.image}
                 text={item.title}
@@ -162,7 +166,7 @@ class InterestsDetailsScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 }

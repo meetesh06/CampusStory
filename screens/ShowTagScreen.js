@@ -5,8 +5,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
-  ActivityIndicator,
-  SafeAreaView,
+  Platform,
   RefreshControl
 } from 'react-native';
 
@@ -32,14 +31,14 @@ class ShowTagScreen extends React.Component {
   }
 
   componentDidMount(){
-    new SessionStore().pushTrack({type : 'OPEN_TAG'});
+    new SessionStore().pushTrack({type : 'OPEN_TAG', tag : this.props.tag});
     this.fetch_data();
   }
 
   fetch_data = () =>{
     const tag = this.props.tag;
     if(tag.length < 3){
-      return this.setState({error : 'Not a possible hashtag'});
+      return this.setState({error : 'Not a possible hashtag, try again'});
     }
     this.setState({loading : true, error : ''});
     axios.post(urls.GET_TAG, {tag}, {
@@ -55,17 +54,13 @@ class ShowTagScreen extends React.Component {
       }
     }).catch((e)=>{
       console.log(e);
-      new SessionStore().pushLogs({type : 'error', line : 84, file : 'ShowTagScreen.js', err : e});
+      new SessionStore().pushLogs({type : 'error', line : 57, file : 'ShowTagScreen.js', err : e});
       this.setState({error : 'Try Again! Something gone wrong :(', loading : false});
     });
   }
 
   handleClose = () => {
-    const {
-      peek
-    } = this.state;
-    if (!peek) return;
-    Navigation.dismissOverlay('preview_overlay1');
+    Navigation.dismissOverlay(this.props.componentId);
   }
 
   handleChannelClickStory = (item, image) => {
@@ -76,6 +71,7 @@ class ShowTagScreen extends React.Component {
           passProps: {
             item,
             image,
+            hide_image : true,
             peek: false
           },
           name: 'Discover Preview',
@@ -97,6 +93,7 @@ class ShowTagScreen extends React.Component {
           passProps: {
             item,
             image,
+            hide_image : true,
             peek: true
           },
           name: 'Discover Preview',
@@ -112,9 +109,10 @@ class ShowTagScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -181,9 +179,7 @@ class ShowTagScreen extends React.Component {
                   if (item.type === 'post') {
                     return (
                       <TouchableOpacity
-                        onPress={() => this.handleChannelClickStory(item, null)}
-                        onLongPress={() => this.handlePreview(item, null)}
-                        onPressOut={() => this.handleClose()}
+                        onPress={() => this.handleChannelClickStory(item, 'xxx')}
                         activeOpacity={0.9}
                       >
                         <PostThumbnail message={item.message}/>
@@ -196,9 +192,7 @@ class ShowTagScreen extends React.Component {
                         style={{
                           overflow: 'hidden'
                         }}
-                        onPress={() => {this.handleChannelClickStory(item, null)}}
-                        onLongPress={() => this.handlePreview(item, null)}
-                        onPressOut={() => this.handleClose()}
+                        onPress={() => {this.handleChannelClickStory(item, 'xxx')}}
                         activeOpacity={0.9}
                       >
                         <PostImageThumbnail image={item.media[0]} />
@@ -212,9 +206,7 @@ class ShowTagScreen extends React.Component {
                         style={{
                           overflow: 'hidden'
                         }}
-                        onPress={() => {this.handleChannelClickStory(item, null)}}
-                        onLongPress={() => this.handlePreview(item, null)}
-                        onPressOut={() => this.handleClose()}
+                        onPress={() => {this.handleChannelClickStory(item, 'xxx')}}
                         activeOpacity={0.9}
                       >
                         <PostVideoThumbnail video={item.media} />
@@ -225,7 +217,7 @@ class ShowTagScreen extends React.Component {
               }}
             />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

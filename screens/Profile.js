@@ -9,7 +9,6 @@ import axios from 'axios';
 import { Navigation } from 'react-native-navigation';
 import SessionStore from '../SessionStore';
 import Realm from '../realm';
-import { goInitializing } from './helpers/Navigation';
 import EventNotification from '../components/EventNotification';
 import NormalNotification from '../components/NormalNotification';
 import Constants from '../constants';
@@ -22,7 +21,6 @@ const today = new Date();
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.handleLogout = this.handleLogout.bind(this);
     this.handleUpdateData = this.handleUpdateData.bind(this);
     this.handleDisplayData = this.handleDisplayData.bind(this);
   }
@@ -109,23 +107,6 @@ class Profile extends React.Component {
     });
   }
 
-  handleLogout = async () => {
-    new SessionStore().pushTrack({type : 'LOGOUT'});
-    const {
-      count
-    } = this.state;
-    this.setState({ count: count + 1 });
-    if (count > 30) {
-      Realm.getRealm((realm) => {
-        realm.write(async () => {
-          await new SessionStore().reset();
-          realm.deleteAll();
-          goInitializing();
-        });
-      });
-    }
-  }
-
   componentDidAppear() {
     this.handleDisplayData();
   }
@@ -168,7 +149,8 @@ class Profile extends React.Component {
                   _id={item._id}
                   title="Latest Updates"
                   updates={item.updates}
-                  onPressNotification = {this.handleLogout}
+                  touchable = {false}
+                  onPressNotification = {()=>console.log('Clicked')}
                   timestamp={item.updates[0].timestamp}
                 />
               );

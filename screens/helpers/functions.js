@@ -2,7 +2,6 @@ import Realm from '../../realm';
 import SessionStore from '../../SessionStore';
 import { goInitializing } from './Navigation';
 import firebase from 'react-native-firebase';
-import constants from '../../constants';
 
 export function processRealmObj(RealmObject, callback) {
   const result = Object.keys(RealmObject).map(key => ({ ...RealmObject[key] }));
@@ -50,32 +49,34 @@ export function getMonthName(num) {
     case 12:
       return 'DEC';
     default:
-      return 'FUCK';
+      return 'OPS';
   }
 }
 
 export function logout() {
-  Realm.getRealm((realm) => {
-    realm.write(() => {
-      const subs = realm.objects('Firebase');
-      processRealmObj(subs, (result)=>{
-        arrObjToArray('_id', result, (output)=>{
-          const store = new SessionStore();
-          const cat = store.getValue(constants.INTERESTS);
-          output.push(...cat);
-          resetSubscriptions(output, async ()=>{
-            realm.deleteAll();
-            await store.setValueBulk();
-            await store.reset();
-            goInitializing();
+  try{
+    Realm.getRealm((realm) => {
+      realm.write(() => {
+        const subs = realm.objects('Firebase');
+        processRealmObj(subs, (result)=>{
+          objArrayToArray('_id', result, (output)=>{
+            resetSubscriptions(output, async ()=>{
+              const store = new SessionStore();
+              realm.deleteAll();
+              await store.setValueBulk();
+              await store.reset();
+              goInitializing();
+            });
           });
         });
       });
     });
-  });
+  } catch(e){
+    new SessionStore().pushLogs({line : 75, error : e, file : 'functions.js'});
+  }
 }
 
-export function arrObjToArray(field, arrayObj, callback){
+export function objArrayToArray(field, arrayObj, callback){
   let array = [];
   for(let i=0; i<arrayObj.length; i++){
     array.push(arrayObj[i][field])

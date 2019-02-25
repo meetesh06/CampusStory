@@ -51,10 +51,7 @@ class App extends React.Component {
     const { loading } = this.state;
     return (
       <View style={{ flex: 1, backgroundColor : '#333' }}>
-      {
-          Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" translucent />)
-        }
+        <StatusBar barStyle="light-content" hidden />
           <View style={{ flex: 2, justifyContent: 'center' }}>
           <View style={{padding : 3, borderRadius : 100, alignSelf : 'center'}}>
             <View style={{backgroundColor : '#555', padding : 15, borderRadius : 100, alignSelf : 'center'}}>
@@ -107,7 +104,7 @@ class App extends React.Component {
             }
           </View>
           <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
-            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
+            <Text style={{fontSize : 12, color : '#888'}}>Campus Story © 2019</Text>
           </View>
       </View>
     );

@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -28,9 +28,10 @@ class AboutUsScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -97,7 +98,7 @@ class AboutUsScreen extends React.Component {
 
         <View style={{backgroundColor : '#555', margin : 10, borderRadius :10, padding : 10}}>
           <View>
-            <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'Who can use this? '} <IconMat name = 'person-pin-circle' size = {18} /></Text>
+            <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'Who can use this? '} <IconMat name = 'person-pin-circle' size = {20} /></Text>
             <Text style={{fontSize : 14, color : '#eee', marginBottom : 10, fontFamily : 'Roboto-Light'}}>
             {
               'It\'s fun to use apps anonymously. Anyone can use this, without sharing much of your data, get started with the basic setup screen and you are all ready to receive the relevant information in no time.'
@@ -122,16 +123,13 @@ class AboutUsScreen extends React.Component {
             <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'Contact Us '} <IconMat name = 'email' size = {18} /></Text>
             <Text style={{fontSize : 14, color : '#eee', marginBottom : 10, fontFamily : 'Roboto-Light'}}>
             {
-              'For any of your queries contact us at info@mycampusdock.com\nYou can reach us through our Instagram handle.Feel free to share your advice.'
+              'For any of your queries contact us at info@mycampusdock.com\nYou can reach us through our Instagram handle. Feel free to share your advice.'
             }
             </Text>
           </View>
         </View>
         </ScrollView>
-        <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
-            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
-          </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

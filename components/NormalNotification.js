@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
 import { Navigation } from 'react-native-navigation';
 import { timelapse} from '../screens/helpers/functions';
 
@@ -32,7 +31,7 @@ class NormalNotification extends React.Component {
     const {
       title,
       updates,
-      timestamp
+      touchable
     } = this.props;
     return (
       <View>
@@ -59,6 +58,7 @@ class NormalNotification extends React.Component {
             data={updates}
             renderItem={(value) => (
               <TouchableOpacity
+                activeOpacity = {touchable ? 0.5 : 0.9}
                 style={{
                   backgroundColor: '#f0f0f0',
                   borderRadius: 5,

@@ -38,16 +38,11 @@ class DiscoverPreview extends React.Component {
     const store = new SessionStore();
     store.pushUpdate(item._id);
     store.pushViews(item.channel, item._id);
-    // this.setState({ channel : { name : item.channel_name, media : image}});
     try {
-      Animated.spring(
-        // this.position,
-        this.opacity,
-        {
-          toValue: 1,
-          friction: 7,
-        }
-      ).start();
+      Animated.spring(this.opacity,{
+        toValue: 1,
+        friction: 7,
+      }).start();
     } catch(e) {
       console.log(e);
     }
@@ -95,11 +90,14 @@ class DiscoverPreview extends React.Component {
     Navigation.dismissOverlay(this.props.componentId);
   }
 
-  async componentWillUnmount() {
+  componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
-  close = (componentId) =>{
+  close = () =>{
+    const {
+      componentId
+    } = this.props;
     Animated.timing(
       this.position,
       {
@@ -112,17 +110,15 @@ class DiscoverPreview extends React.Component {
   }
 
   handleBackButtonClick = () => {
-    const {
-      componentId
-    } = this.props;
-    this.close(componentId);
+    this.close();
     return true;
   }
 
   render() {
-    const {item, image} = this.props;
+    const {item, image, hide_image} = this.props;
     return (
-      <View
+      <TouchableOpacity
+        onPress = {()=> this.close()}
         style={{
           flex: 1,
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -135,7 +131,6 @@ class DiscoverPreview extends React.Component {
           borderRadius: 10,
           overflow: 'hidden',
           height: 400,
-          // height: this.position,
           opacity: this.opacity,
           backgroundColor: '#fff'
         }}
@@ -155,14 +150,17 @@ class DiscoverPreview extends React.Component {
           <View style={{position : 'absolute', flexDirection : 'row', top : 3, left : 0, padding : 5, justifyContent : 'center', alignItems : 'center'}}>
           
           <TouchableOpacity onPress ={()=>this.gotoChannel(item)} style={{flexDirection : 'row', justifyContent : 'center', alignItems : 'center', }}>
-            <FastImage
-              style={{
-                width : 36, height : 36, borderRadius : 20, marginLeft : 10,
-              }}
+            {
+              !hide_image &&
+              <FastImage
+                style={{
+                  width : 36, height : 36, borderRadius : 20, marginLeft : 10,
+                }}
 
-              source={{ uri: `https://www.mycampusdock.com/${image}` }}
-              resizeMode={FastImage.resizeMode.cover}
-            />
+                source={{ uri: `https://www.mycampusdock.com/${image}` }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            }
             <Text style={{fontSize : 15, color : '#dfdfdf', margin : 5, fontFamily : 'Roboto', fontWeight : 'bold'}}>{item.channel_name}</Text>
           </TouchableOpacity>
           
@@ -177,13 +175,13 @@ class DiscoverPreview extends React.Component {
                 backgroundColor: '#ffffff99',
                 borderRadius: 20
               }}
-              onPress={() => this.close(this.props.componentId)}
+              onPress={() => this.close()}
             >
               <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
             </TouchableOpacity>
           </View>
         </Animated.View>
-      </View>
+      </TouchableOpacity>
     );
   }
 }

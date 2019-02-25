@@ -118,9 +118,6 @@ class HelpScreen extends React.Component {
           </View>
         </View>
         </ScrollView>
-        <View style={{position : 'absolute', bottom : 20, alignSelf : 'center'}}>
-            <Text style={{fontSize : 12, color : '#888'}}>Campus Dock © 2019</Text>
-          </View>
       </SafeAreaView>
     );
   }
