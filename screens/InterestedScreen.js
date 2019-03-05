@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Text,
-  SafeAreaView
+  Platform
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -44,8 +44,8 @@ class InterestedScreen extends React.Component {
 
   updateContent = () => {
     Realm.getRealm((realm) => {
-      const interested = realm.objects('Events').filtered('interested = "true"').filtered('going = "false"').sorted('date');
-      const going = realm.objects('Events').filtered('going = "true"').sorted('date');
+      const interested = realm.objects('Events').filtered(`interested=${true}`).filtered(`going != ${true}`).sorted('date');
+      const going = realm.objects('Events').filtered(`going = ${true}`).sorted('date');
       processRealmObj(interested, (result) => {
         this.setState({ interested: result });
       });
@@ -118,9 +118,10 @@ class InterestedScreen extends React.Component {
       updateContent
     } = this;
     return (
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
+          paddingTop : Platform.OS === 'ios' ? 45 : 8,
           backgroundColor: '#222'
         }}
       >
@@ -209,7 +210,7 @@ class InterestedScreen extends React.Component {
             </View>
           }
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 }

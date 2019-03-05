@@ -31,17 +31,17 @@ class ShowTagScreen extends React.Component {
   }
 
   componentDidMount(){
-    new SessionStore().pushTrack({type : 'OPEN_TAG', tag : this.props.tag});
+    new SessionStore().pushTrack({type : 'OPEN_TAG', hashtag : this.props.hashtag});
     this.fetch_data();
   }
 
   fetch_data = () =>{
-    const tag = this.props.tag;
-    if(tag.length < 3){
+    const hashtag = this.props.hashtag;
+    if(hashtag.length < 3){
       return this.setState({error : 'Not a possible hashtag, try again'});
     }
     this.setState({loading : true, error : ''});
-    axios.post(urls.GET_TAG, {tag}, {
+    axios.post(urls.GET_TAG, {hashtag}, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': new SessionStore().getValue(Constants.TOKEN)
@@ -161,7 +161,7 @@ class ShowTagScreen extends React.Component {
             </View>
 
             <View>
-              <Text style={{color : '#fff', fontSize : 20, margin : 10, marginLeft : 15, marginBottom : 5, marginTop : 15}}>{'#'}{this.props.tag}</Text>
+              <Text style={{color : '#fff', fontSize : 20, margin : 10, marginLeft : 15, marginBottom : 5, marginTop : 15}}>{'#'}{this.props.hashtag}</Text>
               <Text style={{color : '#bbb', fontSize : 14, margin : 10, marginLeft : 15, marginTop : 0,}}>{this.state.activites.length}{' Posts'}</Text>
             </View>
           </View>
@@ -182,7 +182,7 @@ class ShowTagScreen extends React.Component {
                         onPress={() => this.handleChannelClickStory(item, 'xxx')}
                         activeOpacity={0.9}
                       >
-                        <PostThumbnail message={item.message}/>
+                        <PostThumbnail data={item}/>
                       </TouchableOpacity>
                     );
                   }

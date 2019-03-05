@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  ActivityIndicator,
   SafeAreaView
 } from 'react-native';
 
@@ -69,13 +70,11 @@ class BackupScreen extends React.Component {
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.priority = JSON.stringify(el.priority);
+          el.reactions = JSON.stringify(el.reactions);
           el.media = JSON.stringify(el.media);
           el.followers = JSON.stringify(el.followers);
-          el.channel_already = 'false';
-          el.category_found = 'false';
-          el.recommended = 'true';
           el.subscribed = 'true';
-          el.updates = 'true';
+          el.updates = true;
           is_private = el.private === undefined ? false : el.private;
         });
         const { data } = response.data;
@@ -130,14 +129,10 @@ class BackupScreen extends React.Component {
             el.media = JSON.stringify(el.media);
             el.timestamp = new Date(el.timestamp);
             el.time = new Date(el.time);
-            const ts = Date.parse(`${el.date}`);
+            el.ms = Date.parse(`${el.date}`);
             el.date = new Date(el.date);
-            el.ms = ts;
-            el.reg_end = new Date(el.reg_end);
-            el.reg_start = new Date(el.reg_start);
-            el.interested = 'true';
-            el.going = 'true';
-            el.remind = 'true';
+            el.going = true;
+            el.interested = true;
             try {
               realm.create('Events', el, true);
             } catch (e) {
@@ -163,7 +158,7 @@ class BackupScreen extends React.Component {
   subscribe = (_id, is_private) => {
     Realm.getRealm((realm) => {
       realm.write(() => {
-        realm.create('Firebase', { _id, notify: 'true', type: 'channel', private : is_private});
+        realm.create('Firebase', { _id, notify: true, type: 'channel', private : is_private});
         firebase.messaging().subscribeToTopic(_id);
       });
     });
@@ -239,6 +234,7 @@ class BackupScreen extends React.Component {
           <View style={{
             margin : 10,
           }}>
+            <ActivityIndicator style={{alignSelf : 'center', margin : 5}} color = '#ddd' size = 'small' />
             <Text style={{color : '#ddd', fontSize : 14, marginBottom : 5, textAlign : 'center'}}>{this.state.log}</Text>
             <Text style={{color : '#999', fontSize : 12, marginBottom : 5, textAlign : 'center'}}>{this.state.help}</Text>
           </View>

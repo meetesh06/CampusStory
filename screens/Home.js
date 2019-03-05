@@ -34,17 +34,6 @@ const WIDTH = Dimensions.get('window').width;
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.handleEventPress = this.handleEventPress.bind(this);
-    this.handleEventPressSpotlight = this.handleEventPressSpotlight.bind(this);
-    this.handleStoryPress = this.handleStoryPress.bind(this);
-    this.updateContent = this.updateContent.bind(this);
-    this.updateLists = this.updateLists.bind(this);
-    this.fetchEventsFromRealm = this.fetchEventsFromRealm.bind(this);
-    this.fetchChannelsFromRealm = this.fetchChannelsFromRealm.bind(this);
-    this.checkForChanges = this.checkForChanges.bind(this);
-    this.checkPermission = this.checkPermission.bind(this);
-    this.handleStoryOpenNotification = this.handleStoryOpenNotification.bind(this);
-    
   }
 
   state = {
@@ -64,12 +53,26 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    this.updateContent();
-    this.checkPermission();
-    this.fetchTrendingEvents();
+    this.checkNotifications();
+    this.callBackgroundRefresh();
   }
 
-  fetchTrendingEvents = () =>{
+  callBackgroundRefresh = ()=>{
+    this.setState({refreshing : true});
+    this.fetchEventsNetwork(()=>{
+      this.fetchEventsFromRealm(()=>{
+        this.fetchStoriesFromNetwork(()=>{
+          this.fetchChannelsFromRealm(()=>{
+            this.fetchTrendingEvents(()=>{
+              this.setState({refreshing : false});
+            });
+          });
+        });
+      });
+    });
+  }
+
+  fetchTrendingEvents = (callback) =>{
     axios.post(urls.FETCH_TRENDING_EVENTS, {}, {
       headers: {
         'Content-Type': 'application/json',
@@ -78,42 +81,18 @@ class Home extends React.Component {
     }).then((response) => {
         if(!response.data.error){
           this.setState({weekEventList : response.data.data});
+          callback();
+        } else {
+          callback();
         }
     }).catch(e=>{
-      new SessionStore().pushLogs({type : 'error', line : 84, file : 'Home.js', err : e});
+      new SessionStore().pushLogs({type : 'error', line : 83, file : 'Home.js', err : e});
+      callback();
     });
   }
 
-  checkPermission = async () => {
+  checkNotifications = async () => {
     const store = new SessionStore();
-    const enabled = await firebase.messaging().hasPermission();
-
-    if (!enabled) {
-      console.log('REQUESTING PERMISSION');
-      try {
-        await firebase.messaging().requestPermission();
-        console.log('PERMISSION GRANTED');
-        const config = store.getValue(CONFIG);
-        config.firebase_enabled = true;
-        const fcmToken = await firebase.messaging().getToken();
-        config.firebase_token = fcmToken;
-        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
-        store.putValue(CONFIG, config);
-      } catch (error) {
-        console.log('PERMISSION DENIED');
-        const config = store.getValue(CONFIG);
-        config.firebase_enabled = false;
-        config.platform = Platform.OS === 'android' ? 'android' : 'ios';
-        store.putValue(CONFIG, config);
-      }
-    } else {
-      const config = store.getValue(CONFIG);
-      config.firebase_enabled = true;
-      const fcmToken = await firebase.messaging().getToken();
-      config.firebase_token = fcmToken;
-      config.platform = Platform.OS === 'android' ? 'android' : 'ios';
-      store.putValue(CONFIG, config);
-    }
     this.navigationEventListener = Navigation.events().bindComponent(this);
     const interests = store.getValue(INTERESTS);
     const {
@@ -178,64 +157,27 @@ class Home extends React.Component {
     }
   }
 
-  updateLists = (lastUpdated, channelsList, should_not_update) => {
-    axios.post(urls.GET_EVENT_LIST, { last_updated: lastUpdated }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': new SessionStore().getValue(TOKEN)
-      }
-    }).then((response) => {
-      if (!response.data.error) {
-        response.data.data.forEach((el) => {
-          el.reach = JSON.stringify(el.reach);
-          el.views = JSON.stringify(el.views);
-          el.enrollees = JSON.stringify(el.enrollees);
-          el.name = JSON.stringify(el.name);
-          el.audience = JSON.stringify(el.audience);
-          el.media = JSON.stringify(el.media);
-          el.timestamp = new Date(el.timestamp);
-          el.time = new Date(el.time);
-          const ts = Date.parse(`${el.date}`);
-          el.date = new Date(el.date);
-          el.ms = ts;
-          el.reg_end = new Date(el.reg_end);
-          el.reg_start = new Date(el.reg_start);
-          el.interested = 'false';
-          el.going = 'false';
-          el.remind = 'false';
+  fetchStoriesFromNetwork = (callback) =>{
+    const subList = {}
+    Realm.getRealm((realm)=>{
+      const Subs = realm.objects('Firebase').filtered('type="channel"');
+      processRealmObj(Subs, (result) => {
+        result.forEach((value) => {
+          const { _id } = value;
+          const activity = realm.objects('Activity').filtered(`channel="${_id}"`).sorted('timestamp', true);
+          let timestamp = 'NIL';
+          if (activity.length > 0) {
+            // eslint-disable-next-line prefer-destructuring
+            timestamp = activity[0].timestamp;
+          }
+          // eslint-disable-next-line no-underscore-dangle
+          subList[_id] = timestamp;
         });
-        const responseObject = response.data;
-        const { data } = responseObject;
-        if (data.length === 0) return this.setState({ refreshing: false, newUpdates: false });;
-        Realm.getRealm((realm) => {
-          realm.write(() => {
-            let i;
-            for (i = 0; i < data.length; i += 1) {
-              try {
-                realm.create('Events', data[i], !should_not_update);
-              } catch (e) {
-                console.log(e);
-              }
-            }
-          });
-        });
-        if (this.props.first) {
-          this.setState({ refreshing: false, newUpdates: false });
-          this.fetchEventsFromRealm();
-        } else {
-          this.setState({ refreshing: false, newUpdates: true });
-        }
-      } else {
-        this.setState({ refreshing: false });
-      }
-    }).catch(err => {
-      this.setState({ refreshing: false });
-      new SessionStore().pushLogs({type : 'error', line : 235, file : 'Home.js', err : err});
+      });
     });
 
-    // eslint-disable-next-line no-undef
     const formData = new FormData();
-    formData.append('channels_list', JSON.stringify(channelsList));
+    formData.append('channels_list', JSON.stringify(subList));
 
     axios.post(urls.FETCH_ACTIVITY_LIST, formData, {
       headers: {
@@ -245,6 +187,7 @@ class Home extends React.Component {
     }).then((response) => {
       const responseObject = response.data;
       if (!responseObject.error) {
+        console.log(responseObject);
         Realm.getRealm((realm) => {
           Object.entries(responseObject.data).forEach(
             ([key, value]) => {
@@ -253,41 +196,49 @@ class Home extends React.Component {
                 data.forEach((el) => {
                   el.reach = JSON.stringify(el.reach);
                   el.views = JSON.stringify(el.views);
+                  el.reactions = JSON.stringify(el.reactions);
+                  el.my_reactions = JSON.stringify(el.my_reactions);
                   el.audience = JSON.stringify(el.audience);
                   el.timestamp = new Date(el.timestamp);
-                  el.poll_type = el.poll_type === undefined ? '' : el.poll_type;
-                  el.options = JSON.stringify(el.options === undefined ? '' : el.options);
-                  el.answered = el.answered === undefined ? '' : el.answered;
                   if (el.type === 'post-video') { el.media = el.media; } else { el.media = JSON.stringify(el.media === undefined ? '' : el.media); }
-                  el.name = JSON.stringify(el.name);
-                  el.read = 'false';
+                  el.read = false;
                 });
                 realm.write(() => {
-                  let i;
-                  for (i = 0; i < data.length; i += 1) {
+                  let update = false;
+                  for (let i = 0; i < data.length; i += 1) {
                     try {
-                      realm.create('Activity', data[i], true);
+                      realm.create('Activity', data[i]); 
+                      update = true; /* PROCEED ONLY IF HAVE UPDATE */
+                      console.log('Creating New');
                     } catch (e) {
-                      console.log(e);
+                      try {
+                        activity = realm.objects('Activity').filtered(`_id="${data[i]._id}"`);
+                        data[i].read = activity[0].read;
+                        realm.create('Activity', data[i], true); 
+                        console.log('Updating Old');
+                      } catch(e){
+                        console.log('ERR', e);
+                      }
                     }
                   }
-                  // TODO HERE
-                  //  make a logic to update the purecomponent based on shouldupdate
-                  realm.create('Channels', { _id: key, updates: 'true' }, true);
+                  if(update) realm.create('Channels', { _id: key, updates: true }, true);
                 });
-                this.fetchChannelsFromRealm();
+                callback();
+              } else {
+                callback();
               }
-            }
-          );
+            });
         });
+      } else {
+        callback();
       }
     }).catch(err => {
       console.log(err);
-      new SessionStore().pushLogs({type : 'error', line : 84, file : 'GoindDetails.js', err : err});
+      callback();
     });
   }
 
-  fetchEventsFromRealm = () => {
+  fetchEventsFromRealm = (callback) => {
     let interests = new SessionStore().getValue(INTERESTS);
     interests = interests.split(',');
 
@@ -296,12 +247,13 @@ class Home extends React.Component {
       const cs = Date.parse(new Date());
       const final = {};
       interests.forEach((value) => {
-        const current = Events.filtered(`ms > ${cs}`).filtered('going="false"').filtered(`category="${value}"`).sorted('date');
+        const current = Events.filtered(`ms > ${cs}`).filtered(`going!=${true}`).filtered(`category="${value}"`).sorted('date');
         processRealmObj(current, (result) => {
           final[value] = result;
         });
       });
-      const latestEvents = realm.objects('Events').filtered('going = "false"').filtered(`ms > ${cs}`).sorted('date', true);
+
+      const latestEvents = realm.objects('Events').filtered(`going!=${true}`).filtered(`ms > ${cs}`).sorted('date', true);
       processRealmObj(latestEvents, (result) => {
         const keys = Object.keys(final);
         for(let i=0; i<keys.length; i++){
@@ -313,11 +265,12 @@ class Home extends React.Component {
           }
         }
         this.setState({ eventList: result, ...final });
+        callback();
       });
     });
   }
 
-  fetchChannelsFromRealm = () => {
+  fetchChannelsFromRealm = (callback) => {
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"');
       processRealmObj(Subs, (result) => {
@@ -326,13 +279,69 @@ class Home extends React.Component {
         result.forEach((value) => {
           const { _id } = value;
           const current = Channels.filtered(`_id="${_id}"`);
-          if (current[0].updates === 'true') final.unshift(current[0]);
+          if (current[0].updates) final.unshift(current[0]);
           else final.push(current[0]);
         });
         processRealmObj(final, (channels) => {
           this.setState({ channels });
+          callback();
         });
       });
+    });
+  }
+
+  fetchEventsNetwork = (callback)=>{
+    let lastUpdated;
+    Realm.getRealm((realm) => {
+      const Events = realm.objects('Events').sorted('timestamp', true);
+      try {
+        lastUpdated = Events[0].timestamp;
+      } catch (e) {
+        lastUpdated = 'NONE';
+      }
+    });
+
+    const form = new FormData();
+    form.append('last_updated', lastUpdated);
+    axios.post(urls.GET_EVENT_LIST, form , {
+      headers: {
+        'x-access-token': new SessionStore().getValue(TOKEN)
+      }
+    }).then((response) => {
+      if (!response.data.error) {
+        response.data.data.forEach((el) => {
+          el.reach = JSON.stringify(el.reach);
+          el.views = JSON.stringify(el.views);
+          el.enrollees = JSON.stringify(el.enrollees);
+          el.audience = JSON.stringify(el.audience);
+          el.media = JSON.stringify(el.media);
+          el.timestamp = new Date(el.timestamp);
+          el.time = new Date(el.time);
+          el.ms = Date.parse(`${el.date}`);
+          el.date = new Date(el.date);
+        });
+        const responseObject = response.data;
+        const { data } = responseObject;
+        if (data.length === 0) return;
+        Realm.getRealm((realm) => {
+          realm.write(() => {
+            let i;
+            for (i = 0; i < data.length; i += 1) {
+              try {
+                realm.create('Events', data[i], true);
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          });
+        });
+        callback();
+      } else {
+        callback();
+      }
+    }).catch(err => {
+      console.log(err);
+      callback();
     });
   }
 
@@ -367,18 +376,6 @@ class Home extends React.Component {
     const is_first_time = new SessionStore().getValue(Constants.FIRST_TIME);
     if(is_first_time) new SessionStore().putValue(Constants.FIRST_TIME, false);
     updateLists(lastUpdated, subList, is_first_time);
-  }
-
-  updateContent = () => {
-    this.setState({ refreshing: true });
-    const {
-      fetchEventsFromRealm,
-      fetchChannelsFromRealm,
-      checkForChanges
-    } = this;
-    fetchEventsFromRealm();
-    fetchChannelsFromRealm();
-    checkForChanges();
   }
 
   handleEventOpenNotification = (_id) => {
@@ -556,17 +553,10 @@ class Home extends React.Component {
         }
       }
     });
-    if (old[index].updates === 'true') {
-      old[index].updates = 'false';
+    if (old[index].updates) {
+      old[index].updates = false;
       this.setState({ channels: old });
     }
-  }
-
-  componentDidAppear() {
-    this.fetchChannelsFromRealm();
-    this.fetchEventsFromRealm();
-    this.setState({ newUpdates: false });
-    this.checkForChanges();
   }
 
   render() {
@@ -587,7 +577,7 @@ class Home extends React.Component {
         refreshControl={(
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={updateContent}
+            onRefresh={this.callBackgroundRefresh}
           />
         )}
       >
@@ -630,7 +620,7 @@ class Home extends React.Component {
                 }
               }
               title="Discover Channels"
-              content="You can watch stories from your subscribed channels here. Explore for more channels."
+              content="You can watch stories from your subscribed channels here. Tap to explore more channels."
               icon={(
                 <FastImage
                   style={{
@@ -660,9 +650,8 @@ class Home extends React.Component {
                 showsButtons={false}
                 autoplay
                 loop={true}
-                activeDotColor = 'red'
                 loadMinimal
-                loadMinimalSize = {2}
+                loadMinimalSize = {5}
                 paginationStyle = {{ position : 'absolute', bottom : 0,}}
                 dotStyle = {{top : 0}}
                 dot = {<View style={{backgroundColor:'#444', width: 10, height: 4,borderRadius: 2, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
@@ -739,40 +728,6 @@ class Home extends React.Component {
           )
           }
         />
-        {
-          this.state.newUpdates && (
-            <View
-              style={{
-                flex: 1,
-                position: 'absolute',
-                top: 20,
-                left: 0,
-                right: 0
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  width: 100,
-                  alignSelf: 'center',
-                  padding: 10,
-                  borderRadius: 50,
-                  backgroundColor: '#4475c4',
-                }}
-                disabled={refreshing}
-                onPress={updateContent}
-              >
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: '#fff',
-                    textAlign: 'center'
-                  }}
-                >
-                  NEW UPDATES
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
       </ScrollView>
     );
   }

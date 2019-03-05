@@ -1,17 +1,11 @@
 import React from 'react';
 import {
-  View, Platform, TouchableNativeFeedback, TouchableOpacity, Text
+  View, TouchableOpacity, Text
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
-// let BaseComponent;
-// if (Platform.OS === 'android') {
-//   BaseComponent = TouchableOpacity;
-// } else {
-//   BaseComponent = TouchableOpacity;
-// }
+import urls from '../URLS';
 
 const getMonthName = (num) => {
   switch (num) {
@@ -90,7 +84,7 @@ const EventCardBig = (props) => {
           borderRadius: 10,
           position: 'absolute'
         }}
-        source={{ uri: `https://mycampusdock.com/${JSON.parse(media)[0]}` }}
+        source={{ uri: encodeURI(urls.PREFIX + '/' +  `${JSON.parse(media)[0]}`) }}
         resizeMode={FastImage.resizeMode.cover}
       />
       <LinearGradient
@@ -181,9 +175,9 @@ const EventCardBig = (props) => {
       </View>
       <Icon
         size={20}
-        name={interested === 'true' ? 'heart' : 'hearto'}
+        name={interested ? 'heart' : 'hearto'}
         style={{
-          color: interested === 'true' ? '#fa3e3e' : '#fff',
+          color: interested ? '#fa3e3e' : '#fff',
           alignSelf: 'center',
           position: 'absolute',
           bottom: 15,

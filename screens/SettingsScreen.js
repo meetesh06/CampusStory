@@ -11,6 +11,7 @@ import {
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconIon from 'react-native-vector-icons/Ionicons';
+import IconFontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import SessionStore from '../SessionStore';
 
 class SettingsScreen extends React.Component {
@@ -135,6 +136,19 @@ class SettingsScreen extends React.Component {
             <View style={{flex : 1}} />
             <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
               <IconIon name = 'ios-search' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{backgroundColor : '#555', marginBottom : 8}} onPress = {()=>this.gotoScreen('Join Creators Club')}>
+          <View style={{padding : 5, flexDirection : 'row', alignItems : 'center' }}>
+            <View>
+              <Text style={{color : '#ddd', fontSize : 18 ,marginLeft : 10}}>Join Creator's Club</Text>
+              <Text style={{color : '#aaa', fontSize : 12 ,marginLeft : 10, marginTop : 5, marginBottom : 5,}}>Become a verified creator for Campus Story</Text>
+            </View>
+            <View style={{flex : 1}} />
+            <View style={{padding : 5, borderRadius : 20, backgroundColor : '#777', width : 30, height : 30, marginRight : 5}}>
+              <IconFontAwesome5 name = 'user-tie' color = '#fff' size = {20} style={{alignSelf : 'center',}} />
             </View>
           </View>
         </TouchableOpacity>

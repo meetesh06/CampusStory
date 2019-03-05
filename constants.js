@@ -14,7 +14,9 @@ const constants = {
   SESSION_ID : 'sessions_id',
   LOGS : 'logs',
   TRACKS : 'tracks',
-  APP_USAGE_TIME : 'app_usage_time'
+  APP_USAGE_TIME : 'app_usage_time',
+  STORY_THRESHOLD : 3,
+  REACTIONS_LIMIT : 25,
 };
 
 export default constants;

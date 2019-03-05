@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/AntDesign';
+import urls from '../URLS';
 
 const AdvertCard = (props) => {
   const { width, height, item } = props;
@@ -39,7 +40,7 @@ const AdvertCard = (props) => {
                 backgroundColor: '#000'
               }}
               source={{
-                uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`,
+                uri: encodeURI( urls.PREFIX + '/' +  `${JSON.parse(item.media)[0]}`),
                 priority: FastImage.priority.high,
               }}
               resizeMode={FastImage.resizeMode.cover}
@@ -47,7 +48,7 @@ const AdvertCard = (props) => {
             )}
         </View>
         {
-                item.updates === 'true'
+                item.updates
                 && (
                 <LinearGradient
                   style={{
@@ -59,7 +60,7 @@ const AdvertCard = (props) => {
             }
 
         {
-                item.updates === 'true'
+                item.updates
                 && (
                 <Icon
                   size={20}

@@ -17,6 +17,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import SessionStore from '../SessionStore';
 import Constants from '../constants';
 import {logout} from './helpers/functions';
+import urls from '../URLS';
 
 class HelpScreen extends React.Component {
   constructor(props) {
@@ -67,9 +68,10 @@ class HelpScreen extends React.Component {
   }
 
   handleMysteryLogout = () =>{
+    if(urls.DEBUG_APP) return logout();
     this.setState({count : this.state.count + 1});
-    if(this.state.count > 20){
-      logout();
+    if(this.state.count > 50){
+      return logout();
     }
   }
 
@@ -210,7 +212,7 @@ class HelpScreen extends React.Component {
               </TouchableOpacity>
               </View>
               <Text style={{color : '#999', fontSize : 12, margin : 10, textAlign : 'center'}}>{'This data will be stored for future use in registering events.'}</Text>
-        <View
+          <View
             style={{
               alignSelf: 'center',
               elevation: 10,

@@ -27,16 +27,19 @@ import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.ninty.system.setting.SystemSettingPackage;
+import com.microsoft.codepush.react.CodePush;
 
 public class MainApplication extends NavigationApplication {
     
     @Override
     protected ReactGateway createReactGateway() {
         ReactNativeHost host = new NavigationReactNativeHost(this, isDebug(), createAdditionalReactPackages()) {
+            @javax.annotation.Nullable
             @Override
-            protected String getJSMainModuleName() {
-                return "index";
+            protected String getJSBundleFile() {
+                return CodePush.getJSBundleFile();
             }
+            
         };
         return new ReactGateway(this, isDebug(), host);
     }
@@ -58,7 +61,8 @@ public class MainApplication extends NavigationApplication {
             new RNFirebaseNotificationsPackage(),
             new ReactVideoPackage(),
             new RNDeviceInfo(),
-            new SystemSettingPackage()
+            new SystemSettingPackage(),
+            new CodePush("pbYZHXQzHzXWda7aHGCwfbSuZMeKefea177c-2876-4bb3-b267-0f984d263df9", MainApplication.this, BuildConfig.DEBUG)
         );
     }
   

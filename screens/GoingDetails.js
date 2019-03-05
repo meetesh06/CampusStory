@@ -1,24 +1,20 @@
 /* eslint-disable consistent-return */
 import React from 'react';
 import {
-  ActivityIndicator,
   Alert,
   TextInput,
   TouchableOpacity,
   Animated,
   View,
   Text,
+  Switch,
   Dimensions
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import axios from 'axios';
 import Constants from '../constants';
-import Realm from '../realm';
 import SessionStore from '../SessionStore';
-import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
-const { TOKEN } = Constants;
 
 class GoingDetails extends React.Component {
   constructor(props) {
@@ -31,7 +27,8 @@ class GoingDetails extends React.Component {
     name: '',
     email: '',
     phone: '',
-    loading: false
+    auto : false,
+    future : true,
   }
 
   componentDidMount() {
@@ -44,36 +41,31 @@ class GoingDetails extends React.Component {
     ).start();
     let user_data = new SessionStore().getValue(Constants.USER_DATA);
     if(user_data === null || user_data === undefined) return;
-    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone});
+    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, auto : true});
   }
 
   handleClose = () => {
-    const { componentId, updateStatus } = this.props;
+    const { componentId } = this.props;
     Animated.timing(
       this.position,
       {
         duration: 300,
         toValue: 0,
       }
-    ).start(() => { updateStatus(); Navigation.dismissOverlay(componentId); });
+    ).start(() => { Navigation.dismissOverlay(componentId); });
   }
 
   clear = () => {
-    this.setState({ name: '', email: '', phone: '' });
+    this.setState({ name: '', email: '', phone: '', auto : false, future : true });
   }
 
   handleSubmit = async () => {
     const {
-      loading,
       name,
       email,
-      phone
+      phone,
+      future
     } = this.state;
-    const {
-      _id
-    } = this.props;
-    const { handleClose } = this;
-    if (loading) return;
 
     // eslint-disable-next-line no-useless-escape
     const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -83,39 +75,30 @@ class GoingDetails extends React.Component {
     if (name.length < 3) return Alert.alert('Please put valid name.');
     if (!re.test(email.toLowerCase())) return Alert.alert('Please put valid email.');
     if (!re1.test(phone.toLowerCase())) return Alert.alert('Please put valid phone.');
-    this.setState({ loading: true });
-    axios.post(urls.SET_ENROLLED, {
-      _id, name, email, phone
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': new SessionStore().getValue(TOKEN)
-      }
-    }).then((response) => {
-      if (!response.data.error) {
-        Realm.getRealm((realm) => {
-          realm.write(() => {
-            realm.create('Events', { _id, going: 'true' }, true);
-          });
-          handleClose();
-        });
-      } else { this.setState({ loading: false }); }
-    }).catch((e) => {
-      this.setState({ loading: false });
-      new SessionStore().pushLogs({type : 'error', line : 105, file : 'GoindDetails.js', err : e});
-    });
+    
+    const data = {
+      name, email, phone
+    };
+    this.props.submit(data);
+    if(future){
+      let user_data = {}
+      user_data['name'] = name;
+      user_data['email'] = email;
+      user_data['phone'] = phone;
+      new SessionStore().putValue(Constants.USER_DATA, user_data);
+    }
+    this.handleClose();
   }
 
   render() {
     const {
-      loading,
       name,
       email,
-      phone
+      phone,
+      auto,
+      future
     } = this.state;
-    const {
-      going
-    } = this.props;
+
     return (
       <View
         style={{
@@ -199,7 +182,15 @@ class GoingDetails extends React.Component {
               value={phone}
             />
 
-
+            {
+              <View style={{flexDirection : 'row'}}>
+                <Text style={{fontSize : 14, color : '#555', flex : 1, margin : 10, marginLeft : 15}}>
+                {'Save these details for future use.'}
+                </Text>
+                <Switch value = {future} onValueChange = {val=>this.setState({future : val})} style={{margin : 5}} />
+              </View>
+            }
+            
           </View>
           <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity style={{ backgroundColor: '#c0c0c0', width: '50%' }} onPress={this.clear}>
@@ -216,7 +207,7 @@ class GoingDetails extends React.Component {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ backgroundColor: going === 'true' ? '#c0c0c0' : '#2E8B57', width: '50%' }} onPress={this.handleSubmit}>
+            <TouchableOpacity style={{ backgroundColor: '#2E8B57', width: '50%' }} onPress={this.handleSubmit}>
               <Text
                 style={{
                   fontSize: 22,
@@ -238,13 +229,8 @@ class GoingDetails extends React.Component {
             height: 100,
             justifyContent: 'center',
           }}
-          disabled={this.loading}
           onPress={this.handleClose}
         >
-          {
-            loading
-            && <ActivityIndicator size="small" color="#fff" />
-          }
 
           <Text
             style={{
@@ -253,8 +239,7 @@ class GoingDetails extends React.Component {
             }}
           >
             {
-              !loading
-              && 'Cancel'
+              'Cancel'
             }
           </Text>
         </TouchableOpacity>

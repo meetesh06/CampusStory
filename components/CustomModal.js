@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Button, View, Text, Dimensions, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/'
 import FastImage from 'react-native-fast-image';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -36,7 +37,7 @@ class CustomModal extends React.Component {
 						>
 							<FastImage
 								style={{  width: 100, height: 80, borderRadius: 15 }}
-								source={{ uri: "https://www.mycampusdock.com/" + item.media }}
+								source={{ uri: encodeURI(urls.PREFIX + '/' + item.media) }}
 								resizeMode={ FastImage.resizeMode.contain }
 							/>
 							<View style={{ flex: 1, marginLeft: 10, marginTop: 5}}>

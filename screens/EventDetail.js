@@ -8,7 +8,6 @@ import {
   View,
   Platform,
   Text,
-  StatusBar,
   PanResponder,
   Animated,
   SafeAreaView,
@@ -51,12 +50,11 @@ class EventDetail extends React.Component {
     this.opacity = new Animated.Value(0.3);
     this.opacity1 = new Animated.Value(0);
     this.partial = true;
+    console.log(props);
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: props.item,
-      interested: props.item.interested === undefined ? 'false' : props.item.interested,
-      going: props.item.going === undefined ? 'false' : props.item.going,
-      remind: props.item.remind === undefined ? 'false' : props.item.remind,
+      remind : props.item.remind,
       loading: false,
       partial: true,
       pan: new Animated.ValueXY()
@@ -98,68 +96,70 @@ class EventDetail extends React.Component {
   }
 
   componentDidMount() {
-    const { item } = this.state;
-    const { _id } = item;
     Animated.parallel([
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
         duration: 200,
         friction: 7,
-        //useNativeDriver : true,
       }),
       Animated.timing(this.opacity1, {
         toValue: 1 - (HEIGHT * 0.40 / HEIGHT),
         duration: 200,
-        //useNativeDriver : true,
       })
     ]).start( () => {
-      const { interested, going, remind } = this.state;
-      console.log('ID', _id, item);
-      axios.post(urls.FETCH_EVENT_DATA, { _id }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': new SessionStore().getValue(TOKEN)
-        }
-      }).then((response) => {
-        const responseObj = response.data;
-        if (!responseObj.error) {
-          Realm.getRealm((realm) => {
-            const el = responseObj.data[0];
-            realm.write(() => {
-              const current = realm.objects('Events').filtered(`_id="${_id}"`);
-              realm.delete(current);
-              el.reach = JSON.stringify(el.reach);
-              el.views = JSON.stringify(el.views);
-              el.enrollees = JSON.stringify(el.enrollees);
-              el.name = JSON.stringify(el.name);
-              el.audience = JSON.stringify(el.audience);
-              el.media = JSON.stringify(el.media);
-              el.timestamp = new Date(el.timestamp);
-              el.time = new Date(el.time);
-              const ts = Date.parse(`${el.date}`);
-              el.date = new Date(el.date);
-              el.ms = ts;
-              el.reg_end = new Date(el.reg_end);
-              el.reg_start = new Date(el.reg_start);
-              el.interested = interested;
-              el.going = going;
-              el.remind = remind;
-              try {
-                realm.create('Events', el, true);
-              } catch (e) {
-                console.log(e);
-              }
-            });
-            el.dummy = false
-            this.setState({ item: el, });
-          });
-        }
-      }).catch(err => {
-        console.log(err)
-        new SessionStore().pushLogs({type : 'error', line : 158, file : 'EventDetails.js', err : err});
+      BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+      this.fetchEventFromNetwork(()=>{
+
       });
     });
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  fetchEventFromNetwork = (callback) =>{
+    const { item } = this.state;
+    const { _id } = item;
+    
+    axios.post(urls.FETCH_EVENT_DATA, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(TOKEN)
+      }
+    }).then((response) => {
+      const responseObj = response.data;
+      if (!responseObj.error) {
+        Realm.getRealm((realm) => {
+          const el = responseObj.data[0];
+          realm.write(() => {
+            const current = realm.objects('Events').filtered(`_id="${_id}"`);
+            realm.delete(current);
+            el.reach = JSON.stringify(el.reach);
+            el.views = JSON.stringify(el.views);
+            el.enrollees = JSON.stringify(el.enrollees);
+            el.audience = JSON.stringify(el.audience);
+            el.media = JSON.stringify(el.media);
+            el.timestamp = new Date(el.timestamp);
+            el.time = new Date(el.time);
+            el.ms = Date.parse(`${el.date}`);
+            el.date = new Date(el.date);
+            el.going = item.going;
+            el.interested = item.interested;
+            el.remind = item.remind;
+            try {
+              realm.create('Events', el, true);
+            } catch (e) {
+              console.log(e);
+            }
+          });
+          el.dummy = false
+          this.setState({ item: el, });
+        });
+        callback();
+      } else {
+        callback();
+      }
+    }).catch(err => {
+      console.log(err);
+      callback();
+    });
   }
 
   handleBackButtonClick = () =>{
@@ -188,8 +188,8 @@ class EventDetail extends React.Component {
         Realm.getRealm((realm) => {
           realm.write(() => {
             try {
-              realm.create('Events', { _id, interested: 'true' }, true);
-              this.setState({ item: { ...item, interested: 'true' } });
+              realm.create('Events', { _id, interested: true }, true);
+              this.setState({ item: { ...item, interested: true } });
             } catch (e) {
               console.log(e);
             }
@@ -218,7 +218,7 @@ class EventDetail extends React.Component {
       })
     ]).start();
     setTimeout(() => Navigation.dismissOverlay(componentId), 180);
-    this.props.onClose();
+    this.props.onClose ? this.props.onClose() : console.log('not here');
   }
 
   handleFull = () => {
@@ -231,7 +231,6 @@ class EventDetail extends React.Component {
     Animated.spring(pan, {
       toValue: -(HEIGHT * 0.40) - offset,
       friction: 8,
-      //useNativeDriver : true,
     }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 
@@ -252,8 +251,7 @@ class EventDetail extends React.Component {
   handleGoing = () => {
     const { loading } = this.state;
     const { item } = this.props;
-    const { _id } = item;
-    const { updateStatus } = this;
+
     if (loading) return;
     if (item.reg_link !== '') {
       Navigation.dismissOverlay(this.props.componentId);
@@ -263,7 +261,7 @@ class EventDetail extends React.Component {
             component: {
               name: 'Event Register',
               passProps: {
-                uri: item.reg_link
+                uri: item.reg_link,
               },
               options: {
                 topBar: {
@@ -275,21 +273,11 @@ class EventDetail extends React.Component {
         }
       });
     } else {
-      let going = 'false';
-      Realm.getRealm((realm) => {
-        realm.write(() => {
-          const Final = realm.objects('Events').filtered(`_id="${_id}"`);
-          // eslint-disable-next-line prefer-destructuring
-          going = Final[0].going;
-        });
-      });
       Navigation.showOverlay({
         component: {
           name: 'Going Details',
           passProps: {
-            _id,
-            going,
-            updateStatus
+            submit : this.submit
           },
           options: {
             overlay: {
@@ -301,13 +289,36 @@ class EventDetail extends React.Component {
     }
   }
 
+  submit = (data) => {
+    const { _id } = this.props.item;
+    data._id = _id;
+    this.setState({ loading: true });
+    axios.post(urls.SET_ENROLLED, data, {
+      headers: {
+        'x-access-token': new SessionStore().getValue(TOKEN)
+      }
+    }).then((response) => {
+      if (!response.data.error) {
+        Realm.getRealm((realm) => {
+          realm.write(() => {
+            realm.create('Events', { _id, going: true }, true);
+            this.setState({ loading: false });
+            this.updateStatus();
+          });
+        });
+      } else { this.setState({ loading: false }); }
+    }).catch((e) => {
+      this.setState({ loading: false });
+    });
+  }
+
   success = () => {
     const { item } = this.props;
-    this.setState({ item: { ...item, going: 'true' } });
+    this.setState({ item: { ...item, going: true } });
   }
 
   handleChannelOpenNetwork = () => {
-    const { item, componentId } = this.props;
+    const { item } = this.props;
     Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
@@ -340,22 +351,22 @@ class EventDetail extends React.Component {
     if (item === null) return;
     Realm.getRealm((realm) => {
       realm.write(() => {
-        if (remind === 'false') {
+        if (!remind) {
           try {
-            realm.create('Firebase', { _id, notify: 'true', type: 'event' }, true);
-            realm.create('Events', { _id, remind: 'true' }, true);
+            realm.create('Firebase', { _id, notify: true, type: 'event' }, true);
+            realm.create('Events', { _id, remind: true }, true);
             firebase.messaging().subscribeToTopic(_id);
-            this.setState({ remind: 'true' });
+            this.setState({ remind: true });
           } catch (e) {
             console.log(e);
           }
         } else {
           try {
             const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
-            realm.create('Events', { _id, remind: 'false' }, true);
+            realm.create('Events', { _id, remind: false }, true);
             realm.delete(element);
             firebase.messaging().unsubscribeFromTopic(_id);
-            this.setState({ remind: 'false' });
+            this.setState({ remind: false });
           } catch (e) {
             console.log(e);
           }
@@ -427,53 +438,18 @@ class EventDetail extends React.Component {
                 borderRadius: 10
               }}
               source={{
-                uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}`
+                uri: encodeURI(urls.PREFIX + '/' +  `${JSON.parse(item.media)[0]}`)
               }}
               resizeMode={FastImage.resizeMode.cover}
             />
-            <View style={{
-              position: 'absolute',
-              top: 5,
-              flexDirection: 'row',
-              right: 15,
-              padding: 10
-            }}
-            >
-              <View
-                style={{
-                  backgroundColor: '#ffffff99',
-                  borderRadius: 5,
-                  justifyContent: 'center'
-                }}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    fontSize: 15,
-                    color: '#333',
-                    marginLeft: 10,
-                    marginRight: 10,
-                    margin: 5,
-                    alignSelf: 'center'
-                  }}
-                >
-                  {getCategoryName(item.category)}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }} />
-            </View>
           </View>
-          {
-          Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" hidden />)
-        }
           {
             !item.dummy &&
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             style={{
               flex: 1,
-              borderRadius: 10
+              backgroundColor: '#333',
             }}
           >
           <View>
@@ -542,15 +518,19 @@ class EventDetail extends React.Component {
                     numberOfLines={1}
                     style={{
                       fontFamily : 'Roboto-Light',
-                      fontSize: 15,
+                      fontSize: 14,
                       color: '#a0a0a0',
                     }}
                   >
 
-                    {'Hosted by ' }
+                    {getCategoryName(item.category)}
+                    {' event by '}
                     <Text
+                      numberOfLines = {1}
+                      lineBreakMode = 'tail'
                       style={{
                         color: '#FF6A15',
+                        fontSize: 14,
                         textDecorationLine: 'underline',
                         fontFamily: 'Roboto'
                       }}
@@ -791,14 +771,15 @@ Views
           <View style={{flex : 1}} />
         
           {
-            item.interested === 'true' && 
+            item.interested && 
           <View
               style={{
                 flex: 1,
                 marginLeft: 5,
                 padding: 5,
+                paddingBottom : 0,
                 marginTop : 20,
-                marginBottom : 5,
+                marginBottom : 10,
                 justifyContent : 'center',
                 alignItems : 'center',
                 flexDirection: 'row'
@@ -811,14 +792,12 @@ Views
                   marginRight: 10,
                   width: 50,
                   height: 50,
-                  paddingTop: 5,
-                  paddingBottom: 5,
                   borderRadius: 50,
-                  backgroundColor : remind === 'false' ? '#444' : '#2E8B57'
+                  backgroundColor : !remind ? '#555' : '#2E8B57'
                 }}
                 onPress={this.handleRemind}
               >
-                <Icon2 style={{ alignSelf: 'center', color: remind === 'false' ? '#777' : '#fff', }} size={23} name = { remind === 'false' ? 'notifications' : "notifications-active" } />
+                <Icon2 style={{ alignSelf: 'center', color: !remind  ? '#777' : '#fff', }} size={23} name = { !remind ? 'notifications' : "notifications-active" } />
               </TouchableOpacity>
               <View
                 style={{
@@ -829,12 +808,12 @@ Views
                 <Text
                   style={{
                     textAlign: 'left',
-                    fontSize: 14,
+                    fontSize: 12,
                     marginRight : 8,
                     color: '#a0a0a0',
                   }}
                 >
-                  {remind === 'false' ? 'Click the bell icon to get notified for all the future updates for this event.' : 'You are now subscribed for all the future updates for this event.'}
+                  {!remind ? 'Click the bell icon to get notified for all the future updates for this event.' : 'You are now subscribed for all the future updates for this event.'}
                 </Text>
               </View>
 
@@ -846,12 +825,12 @@ Views
               marginBottom:  Platform.OS === 'ios' ? 0 : 20
             }}
           >
-            { item.interested === 'false' && (
+            { !item.interested && (
             <TouchableOpacity
               onPress={this.handleClick}
               style={{
                 padding: 15,
-                backgroundColor: '#444',
+                backgroundColor: '#555',
                 flex: 1
               }}
             >
@@ -876,7 +855,7 @@ Views
             }
             </TouchableOpacity>
             ) }
-            { item.interested === 'true' && item.going === 'false'
+            { item.interested && !item.going
                     && (
                     <TouchableOpacity
                       onPress={this.handleGoing}
@@ -906,10 +885,10 @@ Views
                       </Text>
                     </TouchableOpacity>
                     ) }
-            { item.interested === 'true' && item.going === 'true'
+            { item.interested && item.going
                     && (
                     <TouchableOpacity
-                      activeOpacity = {0.2}
+                      activeOpacity = {0.95}
                       style={{
                         padding: 15,
                         backgroundColor: '#2E8B57',

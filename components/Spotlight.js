@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {getMonthName, formatAMPM} from '../screens/helpers/functions'
+import urls from '../URLS';
 
 
 class Spotlight extends React.PureComponent {
@@ -18,7 +19,7 @@ class Spotlight extends React.PureComponent {
         <FastImage
           style={{ height: 270, flexDirection: 'column' }}
           source={{
-            uri: `https://www.mycampusdock.com/${media[0]}`,
+            uri: encodeURI(urls.PREFIX + '/' +  `${media[0]}`),
             priority: FastImage.priority.high
           }}
           resizeMode={FastImage.resizeMode.cover}
@@ -58,7 +59,7 @@ class Spotlight extends React.PureComponent {
                 borderRadius: 10,
                 margin: 10
               }}
-              source={{ uri: `https://www.mycampusdock.com/${media[0]}` }}
+              source={{ uri: encodeURI( urls.PREFIX + '/' +  `${media[0]}`) }}
               resizeMode={FastImage.resizeMode.cover}
             />
           </TouchableOpacity>

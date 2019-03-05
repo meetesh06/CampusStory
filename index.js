@@ -32,6 +32,9 @@ import AboutUsScreen from './screens/AboutUsScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import ShowTagScreen from './screens/ShowTagScreen';
 import CollegeSelectionScreen from './screens/CollegeSelectionScreen';
+import JoinCreatorsClub from './screens/JoinCreatorsClub';
+import CodePush from 'react-native-code-push';
+import urls from './URLS';
 
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -139,6 +142,37 @@ const HelpIcon = () => (
   </TouchableOpacity>
 );
 
+checkCodePushUpdate  = () =>{
+  return  CodePush.sync({
+    checkFrequency: CodePush.CheckFrequency.ON_APP_START,
+    installMode: CodePush.InstallMode.ON_NEXT_SUSPEND,
+    deploymentKey: Platform.OS === 'ios' ? urls.CODEPUSH_IOS : urls.CODEPUSH_ANDROID,
+  });
+}
+
+init = () =>{
+  Navigation.setRoot({
+    root: {
+      component: {
+        name: 'Initializing Screen'
+      }
+    }
+  });
+};
+
+submission = async () =>{
+  const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
+  const cs = new Date().getTime();
+  const timespent = (cs - ts) /1000;
+  if(timespent > 60){
+    new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
+  } else {
+    new SessionStore().putValueTemp(Constants.TRACKS, []);
+  }
+  new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
+  await new SessionStore().setValueBulk();
+}
+
 Navigation.registerComponent('Initializing Screen', () => Initializing);
 Navigation.registerComponent('Interests Selection Screen', () => Interests);
 Navigation.registerComponent('Home Screen', () => Home);
@@ -168,36 +202,15 @@ Navigation.registerComponent('About Us Screen', () => AboutUsScreen);
 Navigation.registerComponent('Privacy Policy Screen', () => PrivacyPolicyScreen);
 Navigation.registerComponent('Show Tag Screen', () => ShowTagScreen);
 Navigation.registerComponent('College Selection Screen', () => CollegeSelectionScreen);
+Navigation.registerComponent('Join Creators Club', () => JoinCreatorsClub);
 
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
   const store = new SessionStore();
+  //this.checkCodePushUpdate();
   await store.getValueBulk();
   this.init();
 });
-
-init = () =>{
-  Navigation.setRoot({
-    root: {
-      component: {
-        name: 'Initializing Screen'
-      }
-    }
-  });
-};
-
-submission = async () =>{
-  const ts = new SessionStore().getValueTemp(Constants.APP_USAGE_TIME);
-  const cs = new Date().getTime();
-  const timespent = (cs - ts) /1000;
-  if(timespent > 60){
-    new SessionStore().pushTrack({timespent, type : Constants.APP_USAGE_TIME});
-  } else {
-    new SessionStore().putValueTemp(Constants.TRACKS, []);
-  }
-  new SessionStore().putValueTemp(Constants.APP_USAGE_TIME, cs);
-  await new SessionStore().setValueBulk();
-}
 
 onAppStateChanged = (nextAppState) => {
   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active'){

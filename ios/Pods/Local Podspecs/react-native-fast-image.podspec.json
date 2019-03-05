@@ -1,6 +1,6 @@
 {
   "name": "react-native-fast-image",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "summary": "🚩 FastImage, performant React Native image component.",
   "authors": {
     "Dylan Vann": "dylan@dylanvann.com"
@@ -25,6 +25,9 @@
 
     ],
     "SDWebImage/GIF": [
+
+    ],
+    "SDWebImage/WebP": [
 
     ],
     "FLAnimatedImage": [

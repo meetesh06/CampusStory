@@ -2,30 +2,31 @@
 import React from 'react';
 import {
   StatusBar,
-  BackHandler,
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
-  TouchableHighlight,
   Animated,
   PanResponder,
+  Alert,
   View,
   Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import FastImage from 'react-native-fast-image';
-import Constants from '../constants';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
+import ReactionButton from '../components/ReactionButton';
 import Realm from '../realm';
 import { processRealmObj, timelapse } from './helpers/functions';
 import SessionStore from '../SessionStore';
 import IconIon from 'react-native-vector-icons/Ionicons';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import urls from '../URLS';
 import axios from 'axios'
+import constants from '../constants';
 
-const { MUTED, } = Constants;
+const STORY_THRESHOLD = constants.STORY_THRESHOLD;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
@@ -35,12 +36,8 @@ class StoryScreen extends React.Component {
     this.position = new Animated.ValueXY();
     this.opacity = new Animated.Value(1);
     this.updateRead = this.updateRead.bind(true);
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.topHeight = new Animated.Value(HEIGHT);
 
-    const {
-      componentId
-    } = props;
     // eslint-disable-next-line no-underscore-dangle
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -62,18 +59,7 @@ class StoryScreen extends React.Component {
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
         if (((gestureState.dy / HEIGHT) * 100) > 30) {
-          Animated.parallel([
-            Animated.spring(this.topHeight, {
-              toValue: HEIGHT + this.topHeight._value,
-              duration: 200,
-              friction: 7
-            }),
-            Animated.timing(this.opacity, {
-              toValue: 0,
-              duration: 200
-            })
-          ]).start();
-          setTimeout(() => Navigation.dismissOverlay(componentId), 180);
+          this.closeWithAnimation();
         } else {
           const {
             pan
@@ -93,15 +79,58 @@ class StoryScreen extends React.Component {
           current,
           stories
         } = this.state;
-        if (gestureState.x0 > 0 && gestureState.x0 < WIDTH / 4) {
-          if (current === stories.length - 1) console.log('DO NOTHING')
-          else this.setState({ current: current + 1 }, () => this.updateRead());
-        } else if (gestureState.x0 > (WIDTH * 3) / 4) {
-          if (current === 0)this.close();
-          else this.setState({ current: current - 1 });
-        // eslint-disable-next-line no-sequences
+
+        if (gestureState.x0 > 0 && gestureState.x0 < WIDTH / 3) {
+          if(this.props.online){
+            if (current === 0){
+              console.log('END BACKWARD');
+            }
+            else {
+              console.log('BACKWARD');
+              this.setState({ current: current - 1 });
+            }
+          } else {
+            if (current === stories.length - 1){
+              console.log('END BACKWARD');
+            }
+            else {
+              console.log('BACKWARD');
+              this.setState({ current: current + 1 });
+            }
+          }
+        } else if (gestureState.x0 > (WIDTH * 2) / 3) {
+          if(this.props.online){
+            if (current === stories.length - 1) {
+              console.log('END');
+              this.updateRead(()=>{
+                this.closeWithAnimation();
+              });
+            }
+            else{
+              this.setState({ current: current + 1 }, ()=>{
+                this.updateRead(()=>{
+                  console.log('FORWARD');
+                });
+              });
+            }
+          } else {
+            if (current === 0) {
+              console.log('END');
+              this.updateRead(()=>{
+                this.closeWithAnimation();
+              });
+            }
+            else{
+              this.setState({ current: current - 1 }, ()=>{
+                this.updateRead(()=>{
+                  console.log('FORWARD');
+                });
+              });
+            }
+          }
         } else if (gestureState.dx < 5, gestureState.dy < 5) {
-          this.tapped();
+          console.log('TAP FORWARD');
+          this.tapped(this.props.online);
         }
       },
       onShouldBlockNativeResponder: () => true,
@@ -113,8 +142,25 @@ class StoryScreen extends React.Component {
     current: 0,
     channel: { media: '"xxx"' },
     loading: true,
-    muted: new SessionStore().getValue(MUTED),
     pan: new Animated.ValueXY()
+  }
+
+  closeWithAnimation = () =>{
+    const {
+      componentId
+    } = this.props;
+    Animated.parallel([
+      Animated.spring(this.topHeight, {
+        toValue: HEIGHT + this.topHeight._value,
+        duration: 200,
+        friction: 7
+      }),
+      Animated.timing(this.opacity, {
+        toValue: 0,
+        duration: 200
+      })
+    ]).start();
+    setTimeout(() => Navigation.dismissOverlay(componentId), 180);
   }
 
   componentDidMount() {
@@ -128,44 +174,62 @@ class StoryScreen extends React.Component {
         duration: 200
       })
     ]).start(() => {
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-      const { _id } = this.props;
-      Realm.getRealm((realm) => {
-        const d = new Date(new Date().getTime() - (24  * 3600 * 1000)); /* LAST 24 HOURS */
-        const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
-        const unreadActivity = Activity.filtered('read="false"').sorted('timestamp', true);
-        const readActivity = Activity.filtered('read="true"').sorted('timestamp', true);
-        const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
-        processRealmObj(channel, (channelResult) => {
-          realm.write(() => {
-            realm.create('Channels', { _id, updates: 'false' }, true);
-          });
-          let Final;
-          processRealmObj(readActivity, (result1) => {
-            processRealmObj(unreadActivity, (result2) => {
-              Final = result2.concat(result1);
-              let current;
-              if(result2.length === 0){ /* NO NEW UPDATE */
-                if(result1.length === 0){ /* NO OLD DATA */
-                  current = 0;
-                } else {
-                  current = Final.length - 1;
-                }
+      if(this.props.online){
+        this.setState({
+          current : 0,
+          stories: this.props.data,
+          loading: false,
+          channel: this.props.channel_data
+        }, () => this.updateRead(()=>{
+          
+        }));
+      } else {
+        this.fetchOrderedStories(()=>{
+
+        });
+      }
+    });
+  }
+
+  fetchOrderedStories = (callback) =>{
+    const { _id } = this.props;
+    Realm.getRealm((realm) => {
+      const d = new Date(new Date().getTime() - ( STORY_THRESHOLD * 24  * 3600 * 1000));
+      const Activity = realm.objects('Activity').filtered('timestamp > $0', d).filtered(`channel="${_id}"`).sorted('timestamp', true);
+      console.log(Activity, Activity[0]);
+      const unreadActivity = Activity.filtered(`read!=${true}`).sorted('timestamp', true);
+      const readActivity = Activity.filtered(`read=${true}`).sorted('timestamp', true);
+      const channel = realm.objects('Channels').filtered(`_id="${_id}"`);
+      processRealmObj(channel, (channelResult) => {
+        realm.write(() => {
+          realm.create('Channels', { _id, updates: false}, true);
+        });
+        let Final;
+        processRealmObj(readActivity, (result1) => {
+          processRealmObj(unreadActivity, (result2) => {
+            Final = result2.concat(result1);
+            let current;
+            if(result2.length === 0){ /* NO NEW UPDATE */
+              if(result1.length === 0){ /* NO OLD DATA */
+                current = 0;
               } else {
-                current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
+                current = Final.length - 1;
               }
-              this.setState({
-                current,
-                stories: Final,
-                loading: false,
-                channel: channelResult[0]
-              }, () => this.updateRead());
-            });
+            } else {
+              current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
+            }
+            this.setState({
+              current,
+              stories: Final,
+              loading: false,
+              channel: channelResult[0]
+            }, () => this.updateRead(()=>{
+              return callback();
+            }));
           });
         });
       });
     });
-
   }
 
   fetch_event_data = async (_id, token) =>{
@@ -190,11 +254,8 @@ class StoryScreen extends React.Component {
             el.media = JSON.stringify(el.media);
             el.timestamp = new Date(el.timestamp);
             el.time = new Date(el.time);
-            const ts = Date.parse(`${el.date}`);
+            el.ms = Date.parse(`${el.date}`);
             el.date = new Date(el.date);
-            el.ms = ts;
-            el.reg_end = new Date(el.reg_end);
-            el.reg_start = new Date(el.reg_start);
             /* MISSING */
             try {
               realm.create('Events', el, true);
@@ -240,12 +301,12 @@ class StoryScreen extends React.Component {
     Navigation.dismissOverlay(this.props.componentId);
   }
 
-  navigateTag = (tag) =>{
+  navigateTag = (hashtag) =>{
     Navigation.showOverlay({
       component: {
         name: 'Show Tag Screen',
         passProps: {
-          tag
+          hashtag
         },
         options: {
           modalPresentationStyle: 'overCurrentContext',
@@ -275,42 +336,87 @@ class StoryScreen extends React.Component {
         }
       });
     });
+    this.action_taken();
   }
 
-  async componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  action_taken = () =>{
+    const _id = this.state.stories[this.state.current]._id;
+    axios.post(urls.UPDATE_ACTION_TAKEN, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(constants.TOKEN)
+      }
+    }).then((response) => {
+      console.log(response);
+    });
   }
 
-  tapped = () => {
-    const {
-      muted
-    } = this.state;
-    new SessionStore().putValue(MUTED, !muted);
-    this.setState({ muted: !muted });
+  channel_visit = () =>{
+    const _id = this.state.stories[this.state.current]._id;
+    axios.post(urls.UPDATE_CHANNEL_VISITS, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(constants.TOKEN)
+      }
+    }).then((response) => {
+      console.log(response);
+    });
   }
 
-  updateRead = () => {
+  tapped = (online) => {
+    const {current, stories} = this.state;
+    if(online){
+      if (current === stories.length - 1){
+        this.updateRead(()=>{
+          this.closeWithAnimation();
+        });
+      }else this.setState({ current : current + 1 }, ()=>{
+        this.updateRead(()=>{
+          /* READ */
+        });
+      });
+    } else {
+      if (current === 0){
+        this.updateRead(()=>{
+          this.closeWithAnimation();
+        });
+      }else this.setState({ current: current - 1 }, ()=>{
+        this.updateRead(()=>{
+          /* READ */
+        });
+      });
+    }
+  }
+
+  updateRead = (callback) => {
+    const{online} = this.props;
+    if(online) return callback();
     const {
       stories,
+      channel,
       current
     } = this.state;
     const currentObj = stories[current];
-    if (currentObj === undefined) return;
+    if (currentObj === undefined) return callback();
     const {
       _id
     } = currentObj;
+
     const store = new SessionStore();
     store.pushUpdate(_id);
-    store.pushViews(this.state.channel._id, _id);
+    store.pushViews(channel._id, _id);
+    console.log('Updating Read');
     Realm.getRealm((realm) => {
       realm.write(() => {
-        realm.create('Activity', { _id, read: 'true' }, true);
+        realm.create('Activity', { _id, read: true }, true);
+        return callback();
       });
     });
   }
 
   gotoTag = (tag) =>{
     this.navigateTag(tag);
+    this.action_taken();
   }
 
   gotoChannel = (item) => {
@@ -325,7 +431,7 @@ class StoryScreen extends React.Component {
     }
     else {
       _id = currentObj._id;
-      new SessionStore().publishVisits(item.channel, _id);
+      this.channel_visit();
     }
     Navigation.showOverlay({
       component: {
@@ -354,16 +460,49 @@ class StoryScreen extends React.Component {
     Navigation.dismissOverlay(componentId);
   }
 
-  close = () => {
-    const {
-      componentId
-    } = this.props;
-    Navigation.dismissOverlay(componentId);
+  gotoLink = (link)=>{
+    Navigation.dismissOverlay(this.props.componentId);
+    Navigation.showModal({
+      stack: {
+        children: [{
+          component: {
+            name: 'Event Register',
+            passProps: {
+              uri: link,
+            },
+            options: {
+              topBar: {
+                visible: false
+              }
+            }
+          }
+        }]
+      }
+    });
+    this.action_taken();
   }
 
-  handleBackButtonClick() {
-    this.close();
-    return true;
+  handleReport = ()=>{
+    Alert.alert(
+      'Report this Story',
+      'Any abusive content on the story? Are you sure you want to report this story?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Report', onPress: () => this.reportStory()},
+      ]
+    );
+  }
+
+  reportStory = () =>{
+    /* REPORT SOMETHING */
+    Alert.alert(
+      'Story Reported',
+      'We have flagged this story as a report from you and we will look into it if it does not follow our content guidelines we will remove it as soon as possible.',
+    );
   }
 
   render() {
@@ -371,9 +510,11 @@ class StoryScreen extends React.Component {
       loading,
       stories,
       current,
-      muted,
+      channel,
       pan
     } = this.state;
+    const {online} = this.props;
+    console.log(stories[current]);
     const [translateY] = [pan.y];
     return (
       <Animated.View
@@ -406,7 +547,7 @@ class StoryScreen extends React.Component {
           stories.length > 0
           && stories[current] !== undefined
           && stories[current].type === 'post'
-          && <Post thumb={false} key={stories[current]._id} message={stories[current].message} />
+          && <Post key={stories[current]._id} data={stories[current]} />
         }
         {
           stories.length > 0
@@ -415,7 +556,8 @@ class StoryScreen extends React.Component {
           <PostImage
             key={stories[current]._id}
             message={stories[current].message}
-            image={JSON.parse(stories[current].media)[0]}
+            _id = {stories[current]._id}
+            image={online ?  stories[current].media[0] : JSON.parse(stories[current].media)[0]}
           />
           )
         }
@@ -426,9 +568,9 @@ class StoryScreen extends React.Component {
             && (
               <PostVideo
                 key={stories[current]._id}
+                _id = {stories[current]._id}
                 message={stories[current].message}
                 video={stories[current].media}
-                muted={muted}
               />
             )
         }
@@ -470,46 +612,51 @@ class StoryScreen extends React.Component {
               width: '100%'
             }}
           >
-            <TouchableOpacity onPress={() => this.gotoChannel({ channel: this.state.channel._id, channel_name: this.state.channel.name })} style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 12, marginTop: 5 }}>
+            <TouchableOpacity onPress={() => this.gotoChannel({ channel: channel._id, channel_name: channel.name })} style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 12, marginTop: 5 }}>
               <FastImage
                 style={{
                   width: 36, height: 36, borderRadius: 20
                 }}
-                source={{ uri: `https://www.mycampusdock.com/${JSON.parse(this.state.channel.media)[0]}` }}
+                source={{ uri:  encodeURI(urls.PREFIX + '/' +  `${JSON.parse(channel.media)[0]}`) }}
                 resizeMode={FastImage.resizeMode.cover}
               />
-              <Text style={{ fontSize: 14, color: '#fff', margin: 5, fontFamily: 'Roboto', fontWeight: 'bold' }} > {this.state.channel.name} </Text>
-              {this.state.stories !== null && this.state.stories !== undefined && this.state.stories[current] !== undefined &&<Text style={{fontSize : 13, color : '#dfdfdf'}}>{timelapse(this.state.stories[current].timestamp)}</Text>}
-              {stories[current] !== undefined && stories[current].read !== 'true' && <Text style={{fontSize : 13, color : '#ccc',}}>{'  •  New'}</Text>}
+              <Text style={{ fontSize: 14, color: '#fff', margin: 5, fontFamily: 'Roboto', fontWeight: 'bold' }} > {channel.name} </Text>
+              {stories !== null && stories !== undefined && stories[current] !== undefined &&<Text style={{fontSize : 13, color : '#dfdfdf'}}>{online ? timelapse(new Date(stories[current].timestamp)) :timelapse(stories[current].timestamp)}</Text>}
+              {stories[current] !== undefined && stories[current].read !== true && !online && <Text style={{fontSize : 13, color : '#ccc',}}>{'  •  New'}</Text>}
             </TouchableOpacity>
             <View style={{ flex: 1 }} />
-            <View
-              style={{
-                justifyContent: 'center',
-                textAlign: 'right',
-                padding: 4,
-                paddingLeft : 8,
-                paddingRight : 8,
-                marginRight: 12,
-                backgroundColor: '#ffffff99',
-                borderRadius: 20
-              }}
-            >
-              <Text
+            { !loading &&
+              <View
                 style={{
-                  fontFamily: 'Roboto',
-                  alignSelf: 'center',
-                  fontSize: 15,
-                  color: '#222'
+                  justifyContent: 'center',
+                  textAlign: 'right',
+                  padding: 4,
+                  paddingLeft : 8,
+                  paddingRight : 8,
+                  marginRight: 12,
+                  backgroundColor: '#ffffff99',
+                  borderRadius: 20
                 }}
               >
-                {this.state.stories.length - this.state.current}/{this.state.stories.length}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    fontFamily: 'Roboto',
+                    alignSelf: 'center',
+                    fontSize: 15,
+                    color: '#222'
+                  }}
+                >
+                
+                  {online ? (current + 1) : (stories.length - current)}
+                  {'/'}
+                  {stories.length}
+                </Text>
+              </View>
+            }    
           </View>
         </View>
       {
-          stories[current] !== undefined && stories[current].event_link !== null && stories[current].tag === null && 
+          stories[current] !== undefined && stories[current].event &&
           <TouchableOpacity 
             style={{
               position : 'absolute',
@@ -521,7 +668,7 @@ class StoryScreen extends React.Component {
               justifyContent : 'center', 
               alignItems : 'center'
             }} 
-            onPress = {()=>this.gotoEvent(stories[current].event_link)}
+            onPress = {()=>this.gotoEvent(stories[current].event)}
             >
             <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
             <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
@@ -529,7 +676,7 @@ class StoryScreen extends React.Component {
       }
 
       {
-          stories[current] !== undefined && stories[current].tag !== null && stories[current].event_link === null && 
+          stories[current] !== undefined && stories[current].hashtag &&
           <TouchableOpacity 
             style={{
               position : 'absolute',
@@ -541,11 +688,41 @@ class StoryScreen extends React.Component {
               justifyContent : 'center', 
               alignItems : 'center'
             }} 
-            onPress = {()=>this.gotoTag(stories[current].tag)}
+            onPress = {()=>this.gotoTag(stories[current].hashtag)}
             >
             <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
             <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
           </TouchableOpacity>
+      }
+
+      {
+          stories[current] !== undefined && stories[current].url &&
+          <TouchableOpacity 
+            style={{
+              position : 'absolute',
+              bottom : 10, 
+              alignSelf : 'center', 
+              padding : 15, 
+              paddingRight : 50, 
+              paddingLeft : 50, 
+              justifyContent : 'center',
+              alignItems : 'center'
+            }} 
+            onPress = {()=>this.gotoLink(stories[current].url)}
+            >
+            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
+            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Link</Text>
+          </TouchableOpacity>
+      }
+      { stories[current] !== undefined &&
+        <View style={{position : 'absolute', bottom : 20, right : 15,}}>
+          <ReactionButton index = {current} _id = {stories[current]._id} reactions = {stories[current].reactions} my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} data = {stories[current].reaction_type} online = {online} />
+        </View>
+      }
+      { stories[current] !== undefined &&
+        <TouchableOpacity activeOpacity = {0.7} onPress = {this.handleReport} style={{position : 'absolute', bottom : 20, left : 15, backgroundColor : 'rgba(255, 255, 255, 0.3)', padding : 5, borderRadius : 50 }}>
+          <IconMaterial name = 'report' size = {25} color = '#fff' />
+        </TouchableOpacity>
       }
       </Animated.View>
     );

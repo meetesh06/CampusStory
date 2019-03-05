@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
+import urls from '../URLS';
 
 const ChannelCard = (props) => {
   const {
@@ -45,7 +46,7 @@ const ChannelCard = (props) => {
           position: 'absolute',
           backgroundColor: '#000'
         }}
-        source={{ uri: `https://www.mycampusdock.com/${JSON.parse(media)[0]}` }}
+        source={{ uri: encodeURI( urls.PREFIX + '/' +  `${JSON.parse(media)[0]}`) }}
         resizeMode={FastImage.resizeMode.cover}
       />
       <LinearGradient

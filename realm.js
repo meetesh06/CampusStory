@@ -7,8 +7,7 @@ const Events = {
   primaryKey: '_id',
   properties: {
     _id: 'string',
-    email: 'string',
-    name: 'string',
+    email: 'string?',
     college: 'string',
     reach: 'string',
     views: 'string',
@@ -19,23 +18,18 @@ const Events = {
     description: 'string',
     location: 'string',
     category: 'string',
-    tags: 'string',
-    reg_start: 'date',
-    reg_end: 'date',
     date: 'date',
     time: 'date',
     channel_name: 'string',
     contact_details: 'string',
     faq: 'string',
-    price: 'string',
-    available_seats: 'string',
     audience: 'string',
     channel: 'string',
-    interested: 'string',
-    going: 'string',
+    interested: 'bool?',
+    going: 'bool?',
+    remind: 'bool?',
     media: 'string',
     reg_link: 'string',
-    remind: 'string'
   }
 };
 const Channels = {
@@ -43,20 +37,19 @@ const Channels = {
   primaryKey: '_id',
   properties: {
     _id: 'string',
-    priority: 'string',
+    priority: 'string?',
     name: 'string',
     media: 'string',
     followers: 'string',
     description: 'string',
     creator: 'string',
     private : 'bool?',
-    channel_already: 'string',
-    category_found: 'string',
     category: 'string',
-    recommended: 'string',
     subscribed: 'string',
     college: 'string',
-    updates: 'string'
+    social_link : 'string?',
+    reactions : 'string',
+    updates: 'bool?'
   }
 };
 
@@ -65,7 +58,7 @@ const Firebase = {
   primaryKey: '_id',
   properties: {
     _id: 'string',
-    notify: 'string',
+    notify: 'bool?',
     type: 'string',
     private : 'bool?'
   }
@@ -90,6 +83,8 @@ const Activity = {
     _id: 'string',
     reach: 'string',
     views: 'string',
+    reactions : 'string',
+    my_reactions : 'string?',
     type: 'string',
     timestamp: 'date',
     channel: 'string',
@@ -97,19 +92,14 @@ const Activity = {
     audience: 'string',
     message: 'string',
     email: 'string',
-    name: 'string',
     category: 'string',
-    // poll specific
-    poll_type: 'string',
-    options: 'string',
-    // poll data
-    answered: 'string',
-    // post-image, post-video specific
+    config : 'string?',
+    reaction_type : 'string',
     media: 'string',
-    // stuff
-    read: 'string',
-    tag : 'string?',
-    event_link : 'string?'
+    read: 'bool?',
+    hashtag : 'string?',
+    url : 'string?',
+    event : 'string?'
   }
 };
 

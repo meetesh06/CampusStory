@@ -7,10 +7,11 @@ import {
   View,
   Platform,
   Text,
-  StatusBar,
   Alert,
+  ActivityIndicator,
   PanResponder,
   BackHandler,
+  Linking,
   Animated,
   ScrollView
 } from 'react-native';
@@ -24,6 +25,7 @@ import Constants from '../constants';
 import { processRealmObj, getCategoryName } from './helpers/functions';
 import SessionStore from '../SessionStore';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Icon3 from 'react-native-vector-icons/FontAwesome5';
 import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
@@ -48,6 +50,7 @@ class ChannelDetailScreen extends React.Component {
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: null,
+      loading : false,
       subscribed: false,
       notify: false,
       partial: true,
@@ -101,7 +104,7 @@ class ChannelDetailScreen extends React.Component {
         duration: 400,
       })
     ]).start();
-
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const { id } = this.props;
     const {
       fetchChannelRequest
@@ -113,12 +116,11 @@ class ChannelDetailScreen extends React.Component {
         if (result.length > 0) {
           this.setState({ subscribed: true, notify: result[0].notify !== 'false' });
         }
-      });
-      processRealmObj(item, (result) => {
-        this.setState({ item: result[0] }, () => fetchChannelRequest(result[0] !== undefined));
+        processRealmObj(item, (result1) => {
+          this.setState({ item: result1[0], loading : true }, () => fetchChannelRequest(result1[0] !== undefined));
+        });
       });
     });
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   handleBackButtonClick = () =>{
@@ -144,16 +146,15 @@ class ChannelDetailScreen extends React.Component {
       if (!response.data.error) {
         response.data.data.forEach((el) => {
           el.priority = JSON.stringify(el.priority);
+          el.reactions = JSON.stringify(el.reactions);
+          el.priority = JSON.stringify(el.priority);
           el.media = JSON.stringify(el.media);
           el.followers = JSON.stringify(el.followers);
-          el.channel_already = 'false';
-          el.category_found = 'false';
-          el.recommended = JSON.stringify(true);
           el.subscribed = JSON.stringify(already === true ? subscribed : false);
-          el.updates = JSON.stringify(already !== true);
+          el.updates = (already !== true);
         });
         const { data } = response.data;
-        if (data.length === 0) return;
+        if (data.length === 0) return this.setState({loading : false});
         Realm.getRealm((realm) => {
           realm.write(() => {
             let i;
@@ -166,10 +167,13 @@ class ChannelDetailScreen extends React.Component {
             }
           });
         });
-        this.setState({ item: data[0] });
+        this.setState({ item: data[0], loading : false });
+      } else {
+        this.setState({loading : false });
       }
     }).catch(err => {
       console.log(err);
+      this.setState({loading : false});
       new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : err});
     });
   }
@@ -187,7 +191,7 @@ class ChannelDetailScreen extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id, notify: 'true', type: 'channel' }, true);
+            realm.create('Firebase', { _id, notify: true, type: 'channel' }, true);
             firebase.messaging().subscribeToTopic(_id);
             this.setState({ notify: true });
           } catch (e) {
@@ -197,7 +201,7 @@ class ChannelDetailScreen extends React.Component {
           try {
             const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
             realm.delete(element);
-            realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
+            realm.create('Firebase', { _id, notify: false, type: 'channel' });
             firebase.messaging().unsubscribeFromTopic(_id);
             this.setState({ notify: false });
           } catch (e) {
@@ -237,6 +241,7 @@ handleSubscribe = () =>{
       _id
     } = item;
     const URL = subscribed ? urls.UNFOLLOW_URL : urls.FOLLOW_URL;
+    this.setState({loading : true});
     axios.post(URL, { channel_id:_id}, {
       headers: {
         'Content-Type': 'application/json',
@@ -248,8 +253,8 @@ handleSubscribe = () =>{
           realm.write(() => {
             if (!subscribed) {
               try {
-                realm.create('Firebase', { _id, notify: 'false', type: 'channel' });
-                this.setState({ subscribed: true });
+                realm.create('Firebase', { _id, notify: false, type: 'channel' });
+                this.setState({ subscribed: true, loading : false });
               } catch (e) {
                 console.log(e);
               }
@@ -257,9 +262,10 @@ handleSubscribe = () =>{
               try {
                 const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
                 realm.delete(element);
-                this.setState({ subscribed: false, notify: false });
+                this.setState({ subscribed: false, notify: false, loading : false});
               } catch (e) {
                 console.log(e);
+                this.setState({loading : false});
               }
             }
           });
@@ -267,6 +273,7 @@ handleSubscribe = () =>{
       }
     }).catch(e =>{
       console.log(e);
+      this.setState({loading : false});
       new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : e});
     });
   }
@@ -302,12 +309,17 @@ handleSubscribe = () =>{
     }).start(() => pan.setOffset({ y: -(HEIGHT * 0.40) }));
   }
 
+  openSocialLink = (url) =>{
+    Linking.openURL(url).catch((err) => console.error('An error occurred', err));
+}
+
   render() {
     const {
       item,
       subscribed,
       notify,
-      pan
+      pan,
+      loading
     } = this.state;
     const [translateY] = [pan.y];
     return (
@@ -316,11 +328,6 @@ handleSubscribe = () =>{
           flex: 1
         }}
       >
-        {
-          Platform.OS === 'ios'
-          && (<StatusBar barStyle="light-content" hidden />)
-        }
-
         <Animated.View
           style={{
             flex: 1,
@@ -347,11 +354,11 @@ handleSubscribe = () =>{
 
           <View
             style={{
-              backgroundColor: '#222',
               justifyContent: 'center',
               width: WIDTH,
               padding: 10,
-              height: (WIDTH - 20) * 0.75 + 20
+              paddingTop : 70,
+              paddingBottom : 20,
             }}
           >
 
@@ -373,48 +380,20 @@ handleSubscribe = () =>{
             {
               item !== null && item !== undefined && item.media !== undefined
               && (
+              <View style={{width : 130, height : 130, borderRadius : 120,  backgroundColor : '#444', justifyContent : 'center', alignItems : 'center', alignSelf : 'center' }}>
               <FastImage
                 style={{
-                  width: WIDTH - 20,
-                  //backgroundColor : '#222',
-                  height: (WIDTH - 20) * 0.75,
-                  borderRadius: 10
+                  width: 120,
+                  backgroundColor : '#555',
+                  height: 120,
+                  borderRadius: 120,
                 }}
-                source={{ uri: `https://www.mycampusdock.com/${JSON.parse(item.media)[0]}` }}
+                source={{ uri:  encodeURI( urls.PREFIX + '/' +  `${JSON.parse(item.media)[0]}`) }}
                 resizeMode={FastImage.resizeMode.cover}
               />
+              </View>
               )
             }
-          </View>
-          <View
-            style={{
-              position: 'absolute',
-              flexDirection: 'row',
-              padding: 15
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: '#ffffff99',
-                borderRadius: 5,
-                justifyContent: 'center'
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: '#333',
-                  marginLeft: 10,
-                  marginRight: 10,
-                  margin: 5,
-                  alignSelf: 'center'
-                }}
-              >
-                {getCategoryName(item !== null && item !== undefined && item.category !== undefined && item.category)}
-              </Text>
-            </View>
-            
-            <View style={{ flex: 1 }} />
           </View>
         </View>
         <ScrollView
@@ -426,57 +405,76 @@ handleSubscribe = () =>{
           <Text
             style={{
               textAlign: 'center',
-              fontSize: 22,
+              fontSize: 20,
               margin : 10,
+              marginBottom : 0,
               color : '#fff',
               fontFamily: 'Roboto'
             }}
           >
             {item !== null && item !== undefined && item.name !== undefined && item.name}
           </Text>
-          <Text style={{
-            color : '#999',
-            fontSize : 15,
-            fontFamily : 'Roboto-Light',
-            textAlign : 'center',
-            marginBottom : 8,
-            margin : 5,
-
-          }}>
-            {item !== null && item !== undefined && item.private ? 'Private Channel' : 'Public Channel'}
-            {item !== null && item !== undefined && ' • ' + item.followers + ' Subscribers'}
+          <Text style={{color : '#888', fontSize : 14, textAlign : 'center', margin : 5, marginBottom : 15}}>
+            {'('}
+            {getCategoryName(item !== null && item !== undefined && item.category !== undefined && item.category)}
+            {')'}
           </Text>
-          <View style={{
-            backgroundColor: '#555', 
-            borderRadius: 10, 
-            height: 2, 
-            width: 180, 
-            alignSelf: 'center',
-          }}
-          />
-          
+          <View style={{flexDirection : 'row', justifyContent : 'center'}}>
+            <View style={{justifyContent : 'center'}}>
+                <Icon2 name = { item ? item.private ? 'lock' : 'public' : 'public'} size = {20} color = '#ddd' style={{alignSelf : 'center', margin : 5}}/>
+                <Text style={{fontSize : 13, color : '#ddd', textAlign : 'center'}}>{item !== null && item !== undefined && item.private ? 'Private Channel' : 'Public Channel'}</Text>
+            </View>
+            <View style={{width : 2, height : '80%', backgroundColor : '#444', margin : 5, marginLeft : 10, marginRight : 10 }} />
+            <View style={{justifyContent : 'center'}}>
+                <Icon2 name = 'person' size = {20} color = '#ddd' style={{alignSelf : 'center', margin : 5,}}/>
+                <Text style={{fontSize : 13, color : '#ddd', textAlign : 'center'}}>{item !== null && item !== undefined && item.followers + ' Subscribers '}</Text>
+            </View>
+            <View style={{width : 2, height : '80%', backgroundColor : '#444', margin : 5, marginLeft : 10, marginRight : 10}} />
+            <View style={{justifyContent : 'center'}}>
+                <Icon3 name = 'heartbeat' size = {18} color = '#ddd' style={{alignSelf : 'center', margin : 5}}/>
+                <Text style={{fontSize : 13, color : '#ddd', textAlign : 'center'}}>{item !== null && item !== undefined && item.reactions + ' Reactions '}</Text>
+            </View>
+          </View>
+
+          {item !== null && item !== undefined && item.subscribed &&
           <View style={{
             backgroundColor: '#444',
             margin: 10,
+            marginTop  : 20,
             borderRadius: 10,
           }}>
-          <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#999', marginBottom : 5}}>Description</Text>
-          <Text
-            selectable
-            style={{
-              fontFamily: 'Roboto-Light',
-              fontSize: 14,
-              margin : 10,
-              marginTop : 0,
-              marginBottom : 15,
-              overflow: 'hidden',
-              textAlign: 'center',
-              color: '#fff'
-            }}
-          >
-            {item !== null && item !== undefined && item.description !== undefined && item.description}
-          </Text>
+
+            <Text style={{textAlign : 'center', fontSize : 12, margin : 10, marginTop : 5, color : '#999', marginBottom : 5}}>Description</Text>
+            <Text
+              selectable
+              style={{
+                fontFamily: 'Roboto-Light',
+                fontSize: 15,
+                margin : 10,
+                marginTop : 0,
+                marginBottom : 15,
+                overflow: 'hidden',
+                textAlign: 'center',
+                color: '#fff'
+              }}
+            >
+              {item !== null && item !== undefined && item.description !== undefined && item.description}
+            </Text>
+            { item.social_link !== undefined && item.social_link !== null && item.social_link.length > 0 &&
+              <View>
+                  <Text style={{fontSize : 12, color : '#999', textAlign : 'center', marginTop : 10, marginBottom : 0}}>
+                      {'Social Link'}
+                  </Text>
+
+                  <TouchableOpacity activeOpacity = {0.7} onPress = {()=>this.openSocialLink(item.social_link)}>
+                      <Text selectable numberOfLines = {1} lineBreakMode = 'tail' style={{fontSize : 14, color : '#fff', textDecorationLine: 'underline', textAlign : 'center', marginTop : 10, marginBottom : 10, margin : 10}}>
+                          {item.social_link}
+                      </Text>
+                  </TouchableOpacity>
+              </View>
+              }
           </View>
+          }
 
           <Text style={{ fontSize: 12, color: '#888', textAlign: 'center', textAlignVertical : 'center', fontFamily : 'Roboto-Light'}}><Icon name = 'infocirlceo' size = {11} /> {' Subscribe channels for easy updates on home screen.'}</Text>
           
@@ -525,7 +523,7 @@ handleSubscribe = () =>{
                 <Text
                   style={{
                     textAlign: 'left',
-                    fontSize: 14,
+                    fontSize: 12,
                     marginRight : 8,
                     color: '#a0a0a0',
                   }}
@@ -535,6 +533,8 @@ handleSubscribe = () =>{
               </View>
             </View>
           }
+
+          { item && (subscribed || !item.private) &&
           <TouchableOpacity
             disabled={ this.state.item === null || this.state.item === undefined }
             onPress={this.handleSubscribe}
@@ -544,20 +544,28 @@ handleSubscribe = () =>{
               backgroundColor : subscribed ? '#666' : '#fa3e3e',
               paddingRight : 5,
               marginBottom: Platform.OS === 'ios' ? 0 : 20,
-              flex: 1
+              flexDirection : 'row',
+              justifyContent : 'center'
             }}
           >
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 20,
-                fontFamily: 'Roboto',
-                textAlign: 'center'
-              }}
-            >
-              { !subscribed ? 'Subscribe Now ' : 'Unsubscribe Now'}
-            </Text>
+            {
+              loading &&
+              <ActivityIndicator color = '#ddd' size = 'small' style={{margin : 5}} />
+            }
+            { !loading &&
+               <Text
+               style={{
+                 color: '#fff',
+                 fontSize: 20,
+                 fontFamily: 'Roboto',
+                 textAlign: 'center'
+               }}
+             >
+               { !subscribed ? 'Subscribe Now ' : 'Unsubscribe Now '}
+             </Text>
+            }
           </TouchableOpacity>
+          }
         </View>
       
         </ScrollView>

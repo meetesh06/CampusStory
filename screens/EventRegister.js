@@ -1,8 +1,7 @@
 /* eslint-disable consistent-return */
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, Platform, Text, StatusBar, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
-import Icon from 'react-native-vector-icons/AntDesign';
 import { Navigation } from 'react-native-navigation';
 
 const GoingRegister = (props) => {
@@ -10,33 +9,38 @@ const GoingRegister = (props) => {
     uri,
     componentId
   } = props;
+
+
+  const ActivityIndicatorLoadingView = () =>{
+    return (
+      <ActivityIndicator
+        color="#333"
+        size="large"
+        style={{flex : 1, justifyContent : 'center'}}
+      />
+    );
+  }
+
   return (
     <View
       style={{
-        flex: 1
+        flex: 1,
+        marginTop : Platform.OS === 'ios' ? 45 : 8
       }}
     >
+    <StatusBar hidden />
+    <View style={{flexDirection : 'row', height : 1, backgroundColor : '#efefef'}}/>
+      <View style={{flex : 1}}>
       <WebView
         source={{ uri }}
-        style={{ marginTop: 20 }}
+        style={{marginTop : 15}}
+        domStorageEnabled={true}
+        javaScriptEnabled={true}
       />
-      <TouchableOpacity
-        style={{
-          position: 'absolute',
-          justifyContent: 'center',
-          textAlign: 'right',
-          width: 35,
-          top: 10,
-          right: 10,
-          height: 35,
-          padding: 5,
-          backgroundColor: '#ffffff99',
-          borderRadius: 30
-        }}
-        onPress={() => Navigation.dismissModal(componentId)}
-      >
-        <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={25} name="close" />
+      <TouchableOpacity style={{position : 'absolute', top : 0, right : 0, margin : 10, marginTop :0, backgroundColor : '#ffffff55', padding : 5, borderRadius : 10}} onPress={()=>Navigation.dismissModal(componentId)}>
+        <Text style={{fontSize : 15}}>Close</Text>
       </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -10,6 +10,7 @@ import constants from '../constants';
 import Urls from '../URLS';
 import { Navigation } from 'react-native-navigation';
 import {timelapse} from '../screens/helpers/functions'
+import urls from '../URLS';
 
 const {TOKEN} = constants;
 
@@ -86,6 +87,7 @@ class StoryFeed extends React.PureComponent {
     }
 
     handleChannelClickStory = (item, image) => {
+      console.log('Story', item);
       this.setState({ peek: false }, () => {
         Navigation.showOverlay({
           component: {
@@ -136,29 +138,61 @@ class StoryFeed extends React.PureComponent {
       });
     }
 
+    openFullStory = () =>{
+      const { item } = this.props;
+      const image = item.media[0];
+      Navigation.showOverlay({
+        component: {
+          name: 'Story Screen',
+          passProps: { 
+            online : true,
+            data : this.state.feed,
+            channel_data : {_id : item._id, name : item.name, media : JSON.stringify(item.media)}
+          },
+          options: {
+            overlay: {
+              interceptTouchOutside: false
+            }
+          }
+        }
+      });
+    }
+
     render() {
       const { item } = this.props;
       const image = item.media[0];
+
       return(
           <View style={{flex : 1}}>
             {
               this.state.hidden &&
               <View style={{marginTop : 10, marginBottom : 5}}>
-              <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
-              <FastImage
-                style={{
-                  width: 36,
-                  height: 36,
-                  margin: 5,
-                  marginLeft : 10,
-                  borderRadius: 20
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-                source={{ uri: `https://www.mycampusdock.com/${image}` }}
-              />
-              <Text numberOfLines = {1} lineBreakMode = 'tail' style={{color : '#f0f0f0', fontSize : 15, margin : 5, maxWidth : 160}}>{item.name}</Text>
-              <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
-              </TouchableOpacity>
+              <View style={{flexDirection : 'row', alignItems : 'center'}} >
+                <TouchableOpacity style={{flexDirection : 'row', alignItems : 'center'}} onPress={()=>this.handleChannelClick(item._id, item.name)}>
+                  <FastImage
+                    style={{
+                      width: 36,
+                      height: 36,
+                      margin: 5,
+                      marginLeft : 10,
+                      borderRadius: 20
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                    source={{ uri: encodeURI( urls.PREFIX + '/' +  `${image}`) }}
+                  />
+                  <Text numberOfLines = {1} lineBreakMode = 'tail' style={{color : '#f0f0f0', fontSize : 14, margin : 5, maxWidth : 160}}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+                <Text style={{color : '#d0d0d0', fontSize : 12, margin : 5}}>{' '}{timelapse(new Date(item.last_updated))}{' ago'}</Text>
+                <View style={{flex : 1}}/>
+                
+                <TouchableOpacity activeOpacity = {0.7} onPress = {this.openFullStory} style={{borderRadius : 10, backgroundColor : '#ffffff66'}}>
+                  <Text style={{color : '#ddd', fontSize :12, margin : 5, marginRight : 8}}>
+                    View All
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
             <FlatList
               showsHorizontalScrollIndicator = {false}
@@ -175,7 +209,7 @@ class StoryFeed extends React.PureComponent {
                         onPressOut={() => this.handleClose()}
                         activeOpacity={0.9}
                       >
-                        <PostThumbnail message={item.message}/>
+                        <PostThumbnail data={item}/>
                       </TouchableOpacity>
                     );
                   }

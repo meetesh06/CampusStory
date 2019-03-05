@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   ActivityIndicator, 
-  TouchableWithoutFeedback,
-  TouchableOpacity, 
   Dimensions, 
   View, 
   Text,
@@ -11,12 +9,12 @@ import {
   ProgressViewIOS
 } from 'react-native';
 import Video from 'react-native-video';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 import constants from '../constants';
 
 const WIDTH = Dimensions.get('window').width;
-const {MUTED} = constants;
 
 class PostVideo extends React.PureComponent {
   constructor(props) {
@@ -24,14 +22,32 @@ class PostVideo extends React.PureComponent {
     this.state = {
       loading: true,
       buffering: false,
-      muted : this.props.muted === undefined ? new SessionStore().getValue(MUTED) : this.props.muted,
       progress : 0,
       hide : false,
     }
   }
 
-  componentDidUpdate(prevProps){
-    if(this.props.muted !== prevProps.muted) this.setState({muted : this.props.muted}); /* ANTI PATTERN */
+  componentDidMount(){
+    this.setState({launch_time : new Date()});
+  }
+
+  componentWillUnmount(){
+    const time_elpased = (new Date().getTime() - this.state.launch_time.getTime()) / 1000;
+    if(time_elpased >= 3){
+      this.viewed();
+    }
+  }
+
+  viewed = () =>{
+    const _id = this.props._id;
+    axios.post(urls.UPDATE_STORY_VIEWS, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(constants.TOKEN)
+      }
+    }).then((response) => {
+      console.log(response);
+    });
   }
 
   handleProgress = (details) =>{
@@ -57,15 +73,10 @@ class PostVideo extends React.PureComponent {
           justifyContent: 'center'
         }}
         >
-          <TouchableWithoutFeedback onPress = {()=>{
-            new SessionStore().putValue(MUTED, !this.state.muted);
-            this.setState({muted : !this.state.muted});
-          }}>
             <View>
             <Video
-              source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
+              source={{ uri: encodeURI( urls.PREFIX + '/' +  `${video}`) }}
               onLoad={() => this.setState({ loading: false })}
-              muted = {this.state.muted}
               onProgress = {(details)=>this.handleProgress(details)}
               onEnd = {()=>this.setState({hide : true})}
               // eslint-disable-next-line react/no-unused-state
@@ -78,7 +89,6 @@ class PostVideo extends React.PureComponent {
             />
             <View style={{width : '100%', height : '100%', top : 0, left : 0, position : 'absolute', backgroundColor : hide ? 'rgba(0, 0, 0, 0.7)' : 'transparent'}}/>
             </View>
-          </TouchableWithoutFeedback>
 
           <View style={{justifyContent: 'center',
                 flexDirection: 'row',
@@ -113,12 +123,6 @@ class PostVideo extends React.PureComponent {
                         )
                 }
             </View>
-            
-          <View style={{flexDirection : 'row',}}>
-              <TouchableOpacity style={{width : 25 , height : 25, borderRadius : 20, backgroundColor : '#555', justifyContent : 'center', alignItems : 'center'}} onPress ={()=>this.setState({muted : !this.state.muted})}>
-                <Icon name = {this.state.muted ? 'volume-mute' : 'volume-high' } size = {18} color = '#000' />
-              </TouchableOpacity>
-        </View>
 
           <Text
             style={{

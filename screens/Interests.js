@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
@@ -23,13 +22,13 @@ import Constants from '../constants';
 import Urls from '../URLS';
 import { goHome } from './helpers/Navigation';
 import AdvertCard from '../components/AdvertCard';
-import CustomModal from '../components/CustomModal';
 import Realm from '../realm';
 import InformationCard from '../components/InformationCard';
 import { categories } from './helpers/values';
 import SessionStore from '../SessionStore';
 import DeviceInfo from 'react-native-device-info';
 import { Navigation } from 'react-native-navigation';
+import urls from '../URLS';
 
 const uniqueId = DeviceInfo.getUniqueID();
 
@@ -140,8 +139,7 @@ class Interests extends React.Component {
         'Content-Type': 'multipart/form-data',
         'x-access-token' : config.token
       }
-    })
-      .then((result) => {
+    }).then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
           try {
@@ -269,15 +267,15 @@ class Interests extends React.Component {
       realm.write(() => {
         if (!notify) {
           try {
-            realm.create('Firebase', { _id: 'ogil7190', notify: 'true', type: 'universe' }, true);
+            realm.create('Firebase', { _id: 'ogil7190', notify: true, type: 'universe' }, true);
             firebase.messaging().subscribeToTopic('ogil7190');
             
             for (i = 0; i < array.length; i += 1) {
-              realm.create('Firebase', { _id: array[i], notify: 'true', type: 'category' }, true);
+              realm.create('Firebase', { _id: array[i], notify: true, type: 'category' }, true);
               firebase.messaging().subscribeToTopic(array[i]);
             }
             
-            realm.create('Firebase', { _id: clg, notify: 'true', type: 'college' }, true);
+            realm.create('Firebase', { _id: clg, notify: true, type: 'college' }, true);
             firebase.messaging().subscribeToTopic(clg);
           } catch (e) {
             console.log(e);
@@ -425,7 +423,7 @@ class Interests extends React.Component {
           >
             <FastImage
               style={{ width: 90, height: 75, borderRadius: 10 }}
-              source={{ uri: `https://www.mycampusdock.com/${media}` }}
+              source={{ uri: encodeURI(urls.PREFIX + '/' +  `${media}`) }}
               resizeMode={FastImage.resizeMode.contain}
             />
             <View style={{ flex: 1, marginLeft: 10, marginTop: 5 }}>
@@ -542,8 +540,8 @@ class Interests extends React.Component {
               }}
               onPress={this.handleNextScreen}
             >
-              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 20, textAlignVertical : 'center', textAlign : 'center'}}>{' Next'}</Text>
-              <IconMaterial name="navigate-next" size={30} color="#fff" />
+              <Text style={{color : '#fff', marginLeft : 10, marginRight : 0, margin : 5, fontSize : 20, fontFamily : 'Roboto', textAlignVertical : 'center', textAlign : 'center'}}>{' Done '}</Text>
+              <IconMaterial name="check-circle" size={20} color="#fff" style={{margin : 3, marginRight : 8}} />
             </TouchableOpacity>
           </View>
         </ScrollView>

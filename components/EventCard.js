@@ -5,6 +5,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {getMonthName, formatAMPM} from '../screens/helpers/functions'
+import urls from '../URLS';
 
 const EventCard = (props) => {
   const { item, width, height } = props;
@@ -37,7 +38,7 @@ const EventCard = (props) => {
         style={{
           width, height, borderRadius: 10, position: 'absolute'
         }}
-        source={{ uri: `https://mycampusdock.com/${JSON.parse(item.media)[0]}` }}
+        source={{ uri: encodeURI( urls.PREFIX + '/' +  `${JSON.parse(item.media)[0]}`) }}
         resizeMode={FastImage.resizeMode.cover}
       />
       {/* <LinearGradient

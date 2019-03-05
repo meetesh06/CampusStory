@@ -6,18 +6,23 @@ import {
   BackHandler,
   Text,
   TouchableOpacity,
+  Alert,
   Dimensions
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import Post from '../components/Post';
 import PostImage from '../components/PostImage';
 import PostVideo from '../components/PostVideo';
+import ReactionButton from '../components/ReactionButton';
 import FastImage from 'react-native-fast-image';
 import SessionStore from '../SessionStore';
+import axios from 'axios';
+import urls from '../URLS';
+import constants from '../constants';
 
 const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
 
 class DiscoverPreview extends React.Component {
   constructor(props) {
@@ -52,19 +57,29 @@ class DiscoverPreview extends React.Component {
     // eslint-disable-next-line default-case
     switch (item.type) {
       case 'post': return (
-        <Post message={item.message} />
+        <Post data={item} />
       );
       case 'post-image': return (
-        <PostImage image={item.media[0]}/>
+        <PostImage image={item.media[0]} _id = {item._id} />
       );
       case 'post-video': return (
-        <PostVideo video={item.media}/>
+        <PostVideo video={item.media} _id = {item._id}/>
       );
     }
   }
 
+  channel_visit = (_id) =>{
+    axios.post(urls.UPDATE_CHANNEL_VISITS, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(constants.TOKEN)
+      }
+    }).then((response) => {
+      console.log(response);
+    });
+  }
+
   gotoChannel = (item) =>{
-    new SessionStore().pushVisits(item.channel, item._id);
     Navigation.showOverlay({
       component: {
         name: 'Channel Detail Screen',
@@ -87,6 +102,7 @@ class DiscoverPreview extends React.Component {
         }
       }
     });
+    this.channel_visit(item._id);
     Navigation.dismissOverlay(this.props.componentId);
   }
 
@@ -114,11 +130,33 @@ class DiscoverPreview extends React.Component {
     return true;
   }
 
+  handleReport = ()=>{
+    Alert.alert(
+      'Report this Story',
+      'Any abusive content on the story? Are you sure you want to report this story?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Report', onPress: () => this.reportStory()},
+      ]
+    );
+  }
+
+  reportStory = () =>{
+    /* REPORT SOMETHING */
+    Alert.alert(
+      'Story Reported',
+      'We have flagged this story as a report from you and we will look into it if it does not follow our content guidelines we will remove it as soon as possible.',
+    );
+  }
+
   render() {
     const {item, image, hide_image} = this.props;
     return (
-      <TouchableOpacity
-        onPress = {()=> this.close()}
+      <View
         style={{
           flex: 1,
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -157,7 +195,7 @@ class DiscoverPreview extends React.Component {
                   width : 36, height : 36, borderRadius : 20, marginLeft : 10,
                 }}
 
-                source={{ uri: `https://www.mycampusdock.com/${image}` }}
+                source={{ uri: encodeURI(urls.PREFIX + '/' +  `${image}`) }}
                 resizeMode={FastImage.resizeMode.cover}
               />
             }
@@ -180,8 +218,19 @@ class DiscoverPreview extends React.Component {
               <Icon style={{ alignSelf: 'flex-end', color: '#333' }} size={20} name="close" />
             </TouchableOpacity>
           </View>
+
+          { item !== undefined &&
+              <View style={{position : 'absolute', bottom : 10, right : 15,}}>
+                <ReactionButton _id = {item._id} reactions = {item.reactions} my_reactions = {item.my_reactions} data = {item.reaction_type} online = {true} />
+              </View>
+            }
+            { item !== undefined &&
+              <TouchableOpacity activeOpacity = {0.7} onPress = {this.handleReport} style={{position : 'absolute', bottom : 10, left : 15, backgroundColor : 'rgba(255, 255, 255, 0.3)', padding : 5, borderRadius : 50 }}>
+                <IconMaterial name = 'report' size = {25} color = '#rgba(255, 255, 255, 0.8)' />
+              </TouchableOpacity>
+            }
         </Animated.View>
-      </TouchableOpacity>
+      </View>
     );
   }
 }

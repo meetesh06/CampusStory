@@ -72,10 +72,12 @@ export default class SessionStore {
   }
 
   getValueTemp = (key) =>{
+    console.log(key);
     return this.temp[key];
   }
 
   putValueTemp = (key, value) =>{
+    console.log(key, value);
     this.temp[key] = value;
   }
 
@@ -173,8 +175,6 @@ export default class SessionStore {
     }
     await AsyncStorage.multiSet(arr);
     this.publishUpdates();
-    this.publishViews();
-    this.publishVisits();
     this.publishUserData();
     this.publishLogs();
     this.publishTracks();

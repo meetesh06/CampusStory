@@ -94,7 +94,7 @@ export function resetSubscriptions(array, callback){
 export function formatAMPM(date) {
   let hours = date.getHours();
   let minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
+  const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
   hours = hours || 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? `0${minutes}` : minutes;
@@ -155,6 +155,12 @@ export function getCategoryName(category) {
       return 'Sports';
     case 'fun':
       return 'Fun';
+    case 'tech':
+      return 'Technology';
+    case 'fashion':
+      return 'Fashion';
+    case 'business':
+      return 'Business';
     default:
       return '';
   }

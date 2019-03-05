@@ -11,6 +11,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
+import urls from '../URLS';
 
 class CollegeSelectionScreen extends React.Component {
   
@@ -91,7 +92,7 @@ class CollegeSelectionScreen extends React.Component {
 						>
 							<FastImage
 								style={{  width: 100, height: 80, borderRadius: 15 }}
-								source={{ uri: "https://www.mycampusdock.com/" + item.media }}
+								source={{ uri: encodeURI(urls.PREFIX + '/' + item.media) }}
 								resizeMode={ FastImage.resizeMode.contain }
 							/>
 							<View style={{ flex: 1, marginLeft: 10, marginTop: 5}}>

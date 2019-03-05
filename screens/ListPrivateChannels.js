@@ -14,6 +14,7 @@ import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
 import IconIon from 'react-native-vector-icons/Ionicons';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import PrivateChannel from '../components/PrivateChannel';
 import urls from '../URLS';
 import SessionStore from '../SessionStore';
@@ -97,6 +98,7 @@ class ListPrivateChannels extends React.Component {
         }
       }
     });
+    Navigation.dismissModal(this.props.componentId)
   }
 
   render() {
@@ -128,7 +130,7 @@ class ListPrivateChannels extends React.Component {
           >
             {'Private Channels  '}
           </Text>
-          <IconIon name = 'ios-search' size = {25} color = '#ddd' />
+          <IconMaterial name = 'pageview' size = {25} color = '#ddd' />
           <TouchableOpacity
             style={{
               flex: 1,

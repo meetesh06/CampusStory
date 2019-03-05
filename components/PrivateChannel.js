@@ -42,7 +42,7 @@ class PrivateChannel extends React.Component {
       if(!response.data.error){
         Realm.getRealm((realm) => {
           realm.write(() => {
-            realm.create('Firebase', { _id, notify: 'true', type: 'channel', private : true});
+            realm.create('Firebase', { _id, notify: true, type: 'channel', private : true});
             firebase.messaging().subscribeToTopic(_id);
           });
         });
@@ -104,7 +104,7 @@ class PrivateChannel extends React.Component {
               height : width > height ? width / 2 + 20: height / 2 + 20,
               borderRadius: width > height ? width : height,
             }}
-            source={{ uri: encodeURI(`https://www.mycampusdock.com/${media}`) }}
+            source={{ uri: encodeURI( urls.PREFIX + '/' +  `${media}`) }}
             resizeMode={FastImage.resizeMode.cover}
           />
 

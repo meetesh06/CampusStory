@@ -1,10 +1,38 @@
 import React from 'react';
 import { Dimensions, View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import axios from 'axios';
+import SessionStore from '../SessionStore';
+import urls from '../URLS';
+import constants from '../constants';
 
 const WIDTH = Dimensions.get('window').width;
 
 class PostImage extends React.PureComponent {
+
+  componentDidMount(){
+    this.setState({launch_time : new Date()});
+  }
+
+  componentWillUnmount(){
+    const time_elpased = (new Date().getTime() - this.state.launch_time.getTime()) / 1000;
+    if(time_elpased >= 3){
+      this.viewed();
+    }
+  }
+
+  viewed = () =>{
+    const _id = this.props._id;
+    axios.post(urls.UPDATE_STORY_VIEWS, { _id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': new SessionStore().getValue(constants.TOKEN)
+      }
+    }).then((response) => {
+      console.log(response);
+    });
+  }
+
   render(){
     const {
       image,
@@ -26,7 +54,7 @@ class PostImage extends React.PureComponent {
             height: 300
           }}
           resizeMode={FastImage.resizeMode.contain}
-          source={{ uri: encodeURI(`https://www.mycampusdock.com/${image}`) }}
+          source={{ uri: encodeURI( urls.PREFIX + '/' +  `${image}`) }}
         />
         <Text
           style={{

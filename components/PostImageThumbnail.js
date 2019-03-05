@@ -2,6 +2,7 @@ import React from 'react';
 import { Dimensions, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Entypo';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -17,7 +18,7 @@ class PostImageThumbnail extends React.PureComponent {
           alignItems: 'center',
           justifyContent: 'center',
           margin: 0.5,
-          backgroundColor: '#efefef'
+          backgroundColor: '#555'
         }}
       >
         <FastImage
@@ -26,7 +27,7 @@ class PostImageThumbnail extends React.PureComponent {
             height: '100%',
           }}
           resizeMode={FastImage.resizeMode.cover}
-          source={{ uri: encodeURI(`https://www.mycampusdock.com/${image}`) }}
+          source={{ uri: encodeURI( urls.PREFIX + '/' +  `${image}`) }}
         />
         <View
           style={{

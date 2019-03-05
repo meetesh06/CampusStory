@@ -11,7 +11,7 @@ class AdvertCardText extends React.Component {
                     <View style={{ overflow: 'hidden', flex: 1 , height: this.props.height, backgroundColor: '#505050', margin: 10, borderRadius: 10 }}>
                         <FastImage
                             style={{ opacity: this.props.pressed ? 0.6 : 1, width: "100%", height: this.props.height, position: 'absolute' }}
-                            source={{ uri: this.props.image }}
+                            source={{ uri: encodeURI(this.props.image) }}
                             resizeMode={FastImage.resizeMode.cover}
                         />
                         <LinearGradient style={{ opacity: 0.8, flex: 1 }} colors={['#505050', '#000']}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Dimensions, View } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Entypo';
+import urls from '../URLS';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -16,14 +17,15 @@ class PostVideoThumbnail extends React.PureComponent {
           height: (1 * WIDTH) / 3 + 20,
           alignItems: 'center',
           justifyContent: 'center',
-          margin : 0.5
+          margin : 0.5,
+          backgroundColor: '#555'
         }}
       >
         <Video
           muted={true}
-          source={{ uri: encodeURI(`https://www.mycampusdock.com/${video}`) }}
+          source={{ uri: encodeURI(urls.PREFIX + '/' +  `${video}`) }}
           style={{
-            backgroundColor: '#efefef',
+            backgroundColor: '#555',
             width: '100%',
             height: '100%',
             margin : 5

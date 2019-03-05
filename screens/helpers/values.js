@@ -23,12 +23,12 @@ export const categoriesNew = {
   food: foodImage,
   mad: musicImage,
   art: dadImage,
-  society: communityImage,
-  sports: sagImage,
-  fun: funImage,
   tech : techImage,
+  fun: funImage,
+  business : businessImage,
+  society: communityImage,
   fashion : fashionImage,
-  business : businessImage
+  sports: sagImage,
 };
 
 export const categories = [

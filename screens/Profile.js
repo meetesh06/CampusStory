@@ -1,8 +1,10 @@
 /* eslint-disable global-require */
 import React from 'react';
 import {
-  SafeAreaView,
   FlatList,
+  ScrollView,
+  View,
+  Text,
   RefreshControl,
 } from 'react-native';
 import axios from 'axios';
@@ -115,22 +117,23 @@ class Profile extends React.Component {
     const {
       notifications
     } = this.state;
-    console.log(notifications);
     return (
-      <SafeAreaView
+      <ScrollView
+        refreshControl={(
+          <RefreshControl
+            colors={['#9Bd35A', '#689F38']}
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleUpdateData}
+          />
+        )}
         style={{
           flex: 1,
           backgroundColor: '#333'
         }}
       >
+      {
+        notifications.length > 0 &&
         <FlatList
-          refreshControl={(
-            <RefreshControl
-              colors={['#9Bd35A', '#689F38']}
-              refreshing={this.state.refreshing}
-              onRefresh={this.handleUpdateData}
-            />
-          )}
           keyExtractor={(item, index) => `${index}`}
           data={notifications}
           extraData={notifications}
@@ -158,7 +161,19 @@ class Profile extends React.Component {
           }
           }
         />
-      </SafeAreaView>
+      }
+
+      {
+        notifications.length === 0 &&
+        <View style={{margin : 10}}>
+          <Text style={{fontSize : 14, color : '#ddd', textAlign :'center'}}>
+            {
+              'No recent updates for you'
+            }
+          </Text>
+        </View>
+      }
+      </ScrollView>
     );
   }
 }

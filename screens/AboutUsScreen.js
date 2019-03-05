@@ -112,7 +112,7 @@ class AboutUsScreen extends React.Component {
             <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'Want to make channel? '} <IconMat name = 'person-pin' size = {18} /></Text>
             <Text style={{fontSize : 14, color : '#eee', marginBottom : 10, fontFamily : 'Roboto-Light'}}>
             {
-              'Channel brings a lot of power to share and spread, we want this power to be limited, if you are still interested, bring some recommendations with you and contact us on info@mycampusdock.com'
+              'Channel brings a lot of power to share and spread, we want this power to be limited, if you are still interested, bring some recommendations with you and contact us on admin@mycampusdock.chat'
             }
             </Text>
           </View>
@@ -123,7 +123,7 @@ class AboutUsScreen extends React.Component {
             <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'Contact Us '} <IconMat name = 'email' size = {18} /></Text>
             <Text style={{fontSize : 14, color : '#eee', marginBottom : 10, fontFamily : 'Roboto-Light'}}>
             {
-              'For any of your queries contact us at info@mycampusdock.com\nYou can reach us through our Instagram handle. Feel free to share your advice.'
+              'For any of your queries contact us at admin@mycampusdock.chat\nYou can reach us through our Instagram handle. Feel free to share your advice.'
             }
             </Text>
           </View>
