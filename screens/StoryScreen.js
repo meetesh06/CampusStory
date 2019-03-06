@@ -442,7 +442,7 @@ class StoryScreen extends React.Component {
         options: {
           bottomTabs: {
             animate: true,
-            drawBehind: true,
+            drawBehind: false,
             visible: false
           },
           topBar: {
