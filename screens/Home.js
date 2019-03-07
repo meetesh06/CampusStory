@@ -2,7 +2,6 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 import {
-  TouchableOpacity,
   Platform,
   Dimensions,
   RefreshControl,
@@ -291,57 +290,57 @@ class Home extends React.Component {
   }
 
   fetchEventsNetwork = (callback)=>{
-    let lastUpdated;
+    let lastUpdated = 'EMPTY';
     Realm.getRealm((realm) => {
       const Events = realm.objects('Events').sorted('timestamp', true);
       try {
-        lastUpdated = Events[0].timestamp;
+        lastUpdated = Events[0].timestamp ? Events[0].timestamp : 'STATIC';
       } catch (e) {
         lastUpdated = 'NONE';
       }
-    });
-
-    const form = new FormData();
-    form.append('last_updated', lastUpdated);
-    axios.post(urls.GET_EVENT_LIST, form , {
-      headers: {
-        'x-access-token': new SessionStore().getValue(TOKEN)
-      }
-    }).then((response) => {
-      if (!response.data.error) {
-        response.data.data.forEach((el) => {
-          el.reach = JSON.stringify(el.reach);
-          el.views = JSON.stringify(el.views);
-          el.enrollees = JSON.stringify(el.enrollees);
-          el.audience = JSON.stringify(el.audience);
-          el.media = JSON.stringify(el.media);
-          el.timestamp = new Date(el.timestamp);
-          el.time = new Date(el.time);
-          el.ms = Date.parse(`${el.date}`);
-          el.date = new Date(el.date);
-        });
-        const responseObject = response.data;
-        const { data } = responseObject;
-        if (data.length === 0) return;
-        Realm.getRealm((realm) => {
-          realm.write(() => {
-            let i;
-            for (i = 0; i < data.length; i += 1) {
-              try {
-                realm.create('Events', data[i], true);
-              } catch (e) {
-                console.log(e);
-              }
-            }
+      const form = new FormData();
+      form.append('last_updated', lastUpdated);
+      form.append('dummy', 'dummy');
+      axios.post(urls.GET_EVENT_LIST, form , {
+        headers: {
+          'x-access-token': new SessionStore().getValue(TOKEN)
+        }
+      }).then((response) => {
+        if (!response.data.error) {
+          response.data.data.forEach((el) => {
+            el.reach = JSON.stringify(el.reach);
+            el.views = JSON.stringify(el.views);
+            el.enrollees = JSON.stringify(el.enrollees);
+            el.audience = JSON.stringify(el.audience);
+            el.media = JSON.stringify(el.media);
+            el.timestamp = new Date(el.timestamp);
+            el.time = new Date(el.time);
+            el.ms = Date.parse(`${el.date}`);
+            el.date = new Date(el.date);
           });
-        });
+          const responseObject = response.data;
+          const { data } = responseObject;
+          if (data.length === 0) return;
+          Realm.getRealm((realm) => {
+            realm.write(() => {
+              let i;
+              for (i = 0; i < data.length; i += 1) {
+                try {
+                  realm.create('Events', data[i], true);
+                } catch (e) {
+                  console.log(e);
+                }
+              }
+            });
+          });
+          callback();
+        } else {
+          callback();
+        }
+      }).catch(err => {
+        console.log(err);
         callback();
-      } else {
-        callback();
-      }
-    }).catch(err => {
-      console.log(err);
-      callback();
+      });
     });
   }
 
@@ -371,11 +370,11 @@ class Home extends React.Component {
           // eslint-disable-next-line no-underscore-dangle
           subList[_id] = timestamp;
         });
+        const is_first_time = new SessionStore().getValue(Constants.FIRST_TIME);
+        if(is_first_time) new SessionStore().putValue(Constants.FIRST_TIME, false);
+        updateLists(lastUpdated, subList, is_first_time);
       });
     });
-    const is_first_time = new SessionStore().getValue(Constants.FIRST_TIME);
-    if(is_first_time) new SessionStore().putValue(Constants.FIRST_TIME, false);
-    updateLists(lastUpdated, subList, is_first_time);
   }
 
   handleEventOpenNotification = (_id) => {

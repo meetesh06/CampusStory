@@ -78,6 +78,7 @@ class PrivateChannel extends React.Component {
         }
       }
     });
+    Navigation.dismissModal(this.props.componentId);
   }
   
   render() {

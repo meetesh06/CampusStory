@@ -207,7 +207,7 @@ Navigation.registerComponent('Join Creators Club', () => JoinCreatorsClub);
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
   const store = new SessionStore();
-  //this.checkCodePushUpdate();
+  this.checkCodePushUpdate();
   await store.getValueBulk();
   this.init();
 });

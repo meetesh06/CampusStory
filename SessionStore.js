@@ -174,10 +174,10 @@ export default class SessionStore {
       arr.push([keys[i], JSON.stringify(this.state[keys[i]])]);
     }
     await AsyncStorage.multiSet(arr);
-    this.publishUpdates();
-    this.publishUserData();
-    this.publishLogs();
-    this.publishTracks();
+    // this.publishUpdates();
+    // this.publishUserData();
+    // this.publishLogs();
+    // this.publishTracks();
   }
 
   publishUpdates = () =>{

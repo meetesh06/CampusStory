@@ -49,6 +49,8 @@ class Post extends React.PureComponent {
       }
     }).then((response) => {
       console.log(response);
+    }).catch((e)=>{
+      console.log(e)
     });
   }
 

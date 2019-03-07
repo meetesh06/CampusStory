@@ -47,6 +47,8 @@ class PostVideo extends React.PureComponent {
       }
     }).then((response) => {
       console.log(response);
+    }).catch((e)=>{
+      console.log(e)
     });
   }
 
@@ -83,7 +85,7 @@ class PostVideo extends React.PureComponent {
               onBuffer={val => this.setState({ buffering: val.isBuffering })}
               style={{
                 width: WIDTH -5,
-                height: 300,
+                height: WIDTH + 50,
                 margin: 5,
               }}
             />

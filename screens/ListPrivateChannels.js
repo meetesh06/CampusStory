@@ -98,7 +98,7 @@ class ListPrivateChannels extends React.Component {
         }
       }
     });
-    Navigation.dismissModal(this.props.componentId)
+    Navigation.dismissModal(this.props.componentId);
   }
 
   render() {
@@ -165,6 +165,7 @@ class ListPrivateChannels extends React.Component {
               <PrivateChannel 
                 width={WIDTH / 2 - 30}
                 height = {140}
+                componentId = {this.props.componentId}
                 media = {item.media[0]}
                 item = {item}
               />
