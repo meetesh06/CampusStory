@@ -110,7 +110,7 @@ class PrivateChannel extends React.Component {
           />
 
           <TouchableOpacity style={{padding : 10, borderRadius : 10, backgroundColor : '#777', margin : 5, marginBottom : 10, marginTop : 10}} onPress ={this.handlePress}>
-            <Text style={{color : '#ddd', fontSize : 15}}>{this.state.enabled ? 'Verify PassKey' :'Enter PassKey'}</Text>
+            <Text style={{color : '#ddd', fontSize : 13}}>{this.state.enabled ? 'Verify PassKey' :'Enter PassKey'}</Text>
           </TouchableOpacity>
 
           { this.state.enabled &&
@@ -123,7 +123,7 @@ class PrivateChannel extends React.Component {
               placeholderTextColor = '#999'
               style={{
                 textAlign: 'center',
-                fontSize: 15,
+                fontSize: 14,
                 padding : 3,
                 marginBottom : 2, 
                 color : '#fff',

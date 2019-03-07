@@ -7,7 +7,6 @@ import {
   Text,
   FlatList,
   Alert,
-  ToastAndroid,
   Platform
 } from 'react-native';
 
@@ -58,9 +57,11 @@ class InterestsDetailsScreen extends React.Component {
       const prev_selections = prev_selections_str.split(',');
 
       for(let i=0; i<prev_selections.length; i++){
+        console.log(prev_selections[i]);
         firebase.messaging().unsubscribeFromTopic(prev_selections[i]);
       }
       for(let i=0; i<selections.length; i++){
+        console.log(selections[i]);
         firebase.messaging().subscribeToTopic(selections[i]);
       }
       const val = selections.join();

@@ -1,4 +1,4 @@
-const DEBUG_APP =  true; /* ACROSS THE APP */
+const DEBUG_APP =  false; /* ACROSS THE APP */
 const DEBUG_NETWORK = false; /* FOR ALL NETWORK REQUEST */
 
 const PREFIX = DEBUG_NETWORK ? 'http://127.0.0.1:65534' : 'https://www.mycampusdock.chat';
