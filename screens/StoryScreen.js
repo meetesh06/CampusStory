@@ -34,10 +34,15 @@ class StoryScreen extends React.Component {
   constructor(props) {
     super(props);
     this.position = new Animated.ValueXY();
-    this.opacity = new Animated.Value(1);
+    this.opacity = new Animated.Value(0.2);
     this.updateRead = this.updateRead.bind(true);
-    this.topHeight = new Animated.Value(HEIGHT);
-
+    // this.topHeight = new Animated.Value(HEIGHT / 2 - (200 / 2));
+    this.topHeight = new Animated.Value(100);
+    this.leftSide = new Animated.Value(WIDTH / 2 - (200 / 2));
+    this.width = new Animated.Value(200);
+    this.height = new Animated.Value(200);
+    this.radius = new Animated.Value(50);
+    this.pulled = new Animated.Value(1);
     // eslint-disable-next-line no-underscore-dangle
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -52,13 +57,22 @@ class StoryScreen extends React.Component {
         } = this.state;
         if (gestureState.dy > 0) {
           this.opacity.setValue(1 - gestureState.dy / HEIGHT);
+          this.pulled.setValue(0);
           pan.setValue({ y: gestureState.dy });
+        } else {
+          this.pulled.setValue(0);
         }
+        // this.topHeight.setValue(HEIGHT - (this.height._value - (gestureState.dy / HEIGHT * 100 )));
+        // this.leftSide.setValue(WIDTH - (this.height._value - (gestureState.dy / HEIGHT * 100 )));
+        
+        // this.height.setValue(this.height._value - (gestureState.dy / HEIGHT * 100 ));
+        // this.width.setValue(this.width._value - (gestureState.dy / HEIGHT * 100 ));
         return true;
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
-        if (((gestureState.dy / HEIGHT) * 100) > 30) {
+        // if (((gestureState.dy / HEIGHT) * 100) > 60) {
+        if (gestureState.vy > 0.75) {
           this.closeWithAnimation();
         } else {
           const {
@@ -67,6 +81,10 @@ class StoryScreen extends React.Component {
           Animated.parallel([
             Animated.spring(pan, {
               toValue: 0,
+              friction: 10
+            }),
+            Animated.spring(this.pulled, {
+              toValue: 1,
               friction: 10
             }),
             Animated.timing(this.opacity, {
@@ -103,7 +121,12 @@ class StoryScreen extends React.Component {
             if (current === stories.length - 1) {
               console.log('END');
               this.updateRead(()=>{
-                this.closeWithAnimation();
+                // this.closeWithAnimation();
+                this.pulled.setValue(0);
+                Animated.spring(this.pulled, {
+                  toValue: 1,
+                  friction: 10
+                }).start();
               });
             }
             else{
@@ -117,7 +140,12 @@ class StoryScreen extends React.Component {
             if (current === 0) {
               console.log('END');
               this.updateRead(()=>{
-                this.closeWithAnimation();
+                // this.closeWithAnimation();
+                this.pulled.setValue(0);
+                Animated.spring(this.pulled, {
+                  toValue: 1,
+                  friction: 10
+                }).start();
               });
             }
             else{
@@ -164,14 +192,31 @@ class StoryScreen extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     Animated.parallel([
       Animated.spring(this.topHeight, {
         toValue: 0,
         friction: 10
       }),
+      Animated.spring(this.leftSide, {
+        toValue: 0,
+        friction: 10
+      }),
+      Animated.spring(this.width, {
+        toValue: WIDTH,
+        friction: 10
+      }),
+      Animated.spring(this.height, {
+        toValue: HEIGHT,
+        friction: 10
+      }),
+      Animated.timing(this.radius, {
+        toValue: 0,
+        duration: 300
+      }),
       Animated.timing(this.opacity, {
         toValue: 1,
-        duration: 200
+        duration: 100
       })
     ]).start(() => {
       if(this.props.online){
@@ -370,7 +415,11 @@ class StoryScreen extends React.Component {
     if(online){
       if (current === stories.length - 1){
         this.updateRead(()=>{
-          this.closeWithAnimation();
+          this.pulled.setValue(0);
+          Animated.spring(this.pulled, {
+            toValue: 1,
+            friction: 10
+          }).start();
         });
       }else this.setState({ current : current + 1 }, ()=>{
         this.updateRead(()=>{
@@ -380,7 +429,11 @@ class StoryScreen extends React.Component {
     } else {
       if (current === 0){
         this.updateRead(()=>{
-          this.closeWithAnimation();
+          this.pulled.setValue(0);
+          Animated.spring(this.pulled, {
+            toValue: 1,
+            friction: 10
+          }).start();
         });
       }else this.setState({ current: current - 1 }, ()=>{
         this.updateRead(()=>{
@@ -522,8 +575,9 @@ class StoryScreen extends React.Component {
       <Animated.View
         style={{
           top: this.topHeight,
-          width: WIDTH,
-          height: HEIGHT,
+          left: this.leftSide,
+          width: this.width,
+          height: this.height,
           borderRadius: this.radius,
           overflow: 'hidden',
           justifyContent: 'center',
@@ -606,9 +660,10 @@ class StoryScreen extends React.Component {
             width: '100%'
           }}
         >
-          <View
+          <Animated.View
             style={{
               flexDirection: 'row',
+              opacity: this.pulled,
               justifyContent: 'center',
               alignItems: 'center',
               width: '100%'
@@ -654,67 +709,76 @@ class StoryScreen extends React.Component {
                   {stories.length}
                 </Text>
               </View>
-            }    
-          </View>
+            }
+          </Animated.View>
         </View>
       { stories[current] !== undefined &&
-        <View style={{position : 'absolute', bottom : 0, left : 0, flexDirection : 'row', height : 100, width : '100%',}}>
+        <Animated.View
+          style={{
+            opacity: this.pulled,
+            position : 'absolute',
+            bottom : 0,
+            left : 0,
+            flexDirection : 'row',
+            height : 100,
+            width : '100%'
+          }}
+        >
           <View style = {{paddingRight : 10}}>
-          <TouchableOpacity 
-            activeOpacity = {0.7} 
-            onPress = {this.handleReport} 
-            style={{backgroundColor : '#ffffff33',borderRadius : 50, width : 50, height : 50, margin : 5, marginTop : 25, marginLeft : 10, justifyContent : 'center', alignItems : 'center'}}>
-            
-            <IconMaterial name = 'report' size = {25} color = '#fff' />
-        </TouchableOpacity>
-        </View>
-        <View style={{flex : 1}} />
-        {
-          stories[current] !== undefined && stories[current].event &&
-          <TouchableOpacity 
-            style={{
-              justifyContent : 'center',
-              alignItems : 'center',
-            }}  
-            onPress = {()=>this.gotoEvent(stories[current].event)}
-            >
-            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
-            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
-          </TouchableOpacity>
-      }
+            <TouchableOpacity 
+              activeOpacity = {0.7} 
+              onPress = {this.handleReport} 
+              style={{backgroundColor : '#ffffff33',borderRadius : 50, width : 50, height : 50, margin : 5, marginTop : 25, marginLeft : 10, justifyContent : 'center', alignItems : 'center'}}>
+              <IconMaterial name = 'report' size = {25} color = '#fff' />
+            </TouchableOpacity>
+          </View>
+          <View style={{flex : 1}} />
+          {
+            stories[current] !== undefined && stories[current].event &&
+            <TouchableOpacity 
+              style={{
+                justifyContent : 'center',
+                alignItems : 'center',
+              }}  
+              onPress = {()=>this.gotoEvent(stories[current].event)}
+              >
+              <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
+              <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Event</Text>
+            </TouchableOpacity>
+          }
 
-      {
-          stories[current] !== undefined && stories[current].hashtag &&
-          <TouchableOpacity 
-            style={{
-              justifyContent : 'center',
-              alignItems : 'center',
-            }} 
-            onPress = {()=>this.gotoTag(stories[current].hashtag)}
-            >
-            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
-            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
-          </TouchableOpacity>
-      }
+          {
+            stories[current] !== undefined && stories[current].hashtag &&
+            <TouchableOpacity 
+              style={{
+                justifyContent : 'center',
+                alignItems : 'center',
+              }} 
+              onPress = {()=>this.gotoTag(stories[current].hashtag)}
+              >
+              <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
+              <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>View Hashtag</Text>
+            </TouchableOpacity>
+          }
 
-      {
-          stories[current] !== undefined && stories[current].url &&
-          <TouchableOpacity 
-            style={{
-              justifyContent : 'center',
-              alignItems : 'center',
-            }} 
-            onPress = {()=>this.gotoLink(stories[current].url)}
-            >
-            <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
-            <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Link</Text>
-          </TouchableOpacity>
-      }
-      <View style={{flex : 1}} />
-        <View>
-          <ReactionButton index = {current} _id = {stories[current]._id} reactions = {stories[current].reactions} my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} data = {stories[current].reaction_type} online = {online} />
-        </View>
-        </View>
+          {
+              stories[current] !== undefined && stories[current].url &&
+              <TouchableOpacity 
+                style={{
+                  justifyContent : 'center',
+                  alignItems : 'center',
+                }} 
+                onPress = {()=>this.gotoLink(stories[current].url)}
+                >
+                <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25}/>
+                <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Link</Text>
+              </TouchableOpacity>
+          }
+          <View style={{flex : 1}} />
+          <View>
+            <ReactionButton index = {current} _id = {stories[current]._id} reactions = {stories[current].reactions} my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} data = {stories[current].reaction_type} online = {online} />
+          </View>
+        </Animated.View>
       }
       </Animated.View>
     );

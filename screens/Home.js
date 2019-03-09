@@ -9,6 +9,7 @@ import {
   FlatList,
   StatusBar,
   View,
+  TouchableOpacity,
   Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
@@ -554,7 +555,10 @@ class Home extends React.Component {
     Navigation.showOverlay({
       component: {
         name: 'Story Screen',
-        passProps: { _id },
+        passProps: {
+          _id,
+          // component: this.myComponent
+        },
         options: {
           modalPresentationStyle: 'overCurrentContext',
           topBar: {
@@ -616,12 +620,16 @@ class Home extends React.Component {
                 data={channels}
                 extraData={channels}
                 renderItem={({ item, index }) => (
-                  <StoryIcon
-                    onPress={obj => this.handleStoryPress(obj, index)}
-                    width={84}
-                    height={56}
-                    item={item}
-                  />
+                  <View
+                    ref={view => { this.myComponent = view; }}
+                  >
+                    <StoryIcon
+                      onPress={obj => this.handleStoryPress(obj, index)}
+                      width={84}
+                      height={56}
+                      item={item}
+                    />
+                  </View>
                 )}
               />
             )
@@ -770,6 +778,7 @@ class Home extends React.Component {
           )
           }
         />
+        
       </ScrollView>
     );
   }
