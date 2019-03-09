@@ -657,19 +657,25 @@ class StoryScreen extends React.Component {
             }    
           </View>
         </View>
-      {
+      { stories[current] !== undefined &&
+        <View style={{position : 'absolute', bottom : 0, left : 0, flexDirection : 'row', height : 100, width : '100%',}}>
+          <View style = {{paddingRight : 10}}>
+          <TouchableOpacity 
+            activeOpacity = {0.7} 
+            onPress = {this.handleReport} 
+            style={{backgroundColor : '#ffffff33',borderRadius : 50, width : 50, height : 50, margin : 5, marginTop : 25, marginLeft : 10, justifyContent : 'center', alignItems : 'center'}}>
+            
+            <IconMaterial name = 'report' size = {25} color = '#fff' />
+        </TouchableOpacity>
+        </View>
+        <View style={{flex : 1}} />
+        {
           stories[current] !== undefined && stories[current].event &&
           <TouchableOpacity 
             style={{
-              position : 'absolute',
-              bottom : 10, 
-              alignSelf : 'center', 
-              padding : 15, 
-              paddingRight : 50, 
-              paddingLeft : 50, 
-              justifyContent : 'center', 
-              alignItems : 'center'
-            }} 
+              justifyContent : 'center',
+              alignItems : 'center',
+            }}  
             onPress = {()=>this.gotoEvent(stories[current].event)}
             >
             <IconIon name = 'ios-arrow-dropup-circle' color = '#fff' size = {25} />
@@ -681,14 +687,8 @@ class StoryScreen extends React.Component {
           stories[current] !== undefined && stories[current].hashtag &&
           <TouchableOpacity 
             style={{
-              position : 'absolute',
-              bottom : 10, 
-              alignSelf : 'center', 
-              padding : 15, 
-              paddingRight : 50, 
-              paddingLeft : 50, 
-              justifyContent : 'center', 
-              alignItems : 'center'
+              justifyContent : 'center',
+              alignItems : 'center',
             }} 
             onPress = {()=>this.gotoTag(stories[current].hashtag)}
             >
@@ -701,14 +701,8 @@ class StoryScreen extends React.Component {
           stories[current] !== undefined && stories[current].url &&
           <TouchableOpacity 
             style={{
-              position : 'absolute',
-              bottom : 10, 
-              alignSelf : 'center', 
-              padding : 15, 
-              paddingRight : 50, 
-              paddingLeft : 50, 
               justifyContent : 'center',
-              alignItems : 'center'
+              alignItems : 'center',
             }} 
             onPress = {()=>this.gotoLink(stories[current].url)}
             >
@@ -716,15 +710,11 @@ class StoryScreen extends React.Component {
             <Text style = {{color : '#fff', fontSize : 12, textAlign : 'center'}}>Visit Link</Text>
           </TouchableOpacity>
       }
-      { stories[current] !== undefined &&
-        <View style={{position : 'absolute', bottom : 20, right : 15,}}>
+      <View style={{flex : 1}} />
+        <View>
           <ReactionButton index = {current} _id = {stories[current]._id} reactions = {stories[current].reactions} my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} data = {stories[current].reaction_type} online = {online} />
         </View>
-      }
-      { stories[current] !== undefined &&
-        <TouchableOpacity activeOpacity = {0.7} onPress = {this.handleReport} style={{position : 'absolute', bottom : 20, left : 15, backgroundColor : 'rgba(255, 255, 255, 0.3)', padding : 5, borderRadius : 50 }}>
-          <IconMaterial name = 'report' size = {25} color = '#fff' />
-        </TouchableOpacity>
+        </View>
       }
       </Animated.View>
     );

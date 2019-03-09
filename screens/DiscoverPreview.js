@@ -90,16 +90,8 @@ class DiscoverPreview extends React.Component {
           modal: true
         },
         options: {
-          bottomTabs: {
-            animate: true,
-            drawBehind: true,
-            visible: false
-          },
-          topBar: {
-            title: {
-              text: item.channel_name
-            },
-            visible: true
+          overlay: {
+            interceptTouchOutside: false
           }
         }
       }
@@ -222,7 +214,7 @@ class DiscoverPreview extends React.Component {
           </View>
 
           { item !== undefined &&
-              <View style={{position : 'absolute', bottom : 10, right : 15,}}>
+              <View style={{position : 'absolute', bottom : 0, right : 0,}}>
                 <ReactionButton _id = {item._id} reactions = {item.reactions} my_reactions = {item.my_reactions} data = {item.reaction_type} online = {true} />
               </View>
             }

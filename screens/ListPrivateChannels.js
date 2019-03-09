@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
+  ActivityIndicator,
   Platform
 } from 'react-native';
 
@@ -31,10 +32,12 @@ class ListPrivateChannels extends React.Component {
 
   state = {
     channels : [],
-    already : []
+    already : [],
+    refreshing : false
   }
 
   componentDidMount(){
+    this.setState({refreshing : true});
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"').filtered('private=true');
       processRealmObj(Subs, (result) => {
@@ -71,6 +74,7 @@ class ListPrivateChannels extends React.Component {
       }
     }).catch((e)=>{
       console.log(e);
+      this.setState({refreshing : false});
       new SessionStore().pushLogs({type : 'error', line : 75, file : 'ListPrivateChannels.js', err : e});
     });
   }
@@ -149,9 +153,13 @@ class ListPrivateChannels extends React.Component {
             backgroundColor : '#333'
           }}
         >
-        {
-            this.state.channels.length  > 0 &&
+          {
+            this.state.channels.length  > 0 && !this.state.refreshing &&
                   <Text style={{color : '#ddd', textAlign : 'center', margin : 10, marginBottom : 0, fontSize : 14}}> There are {this.state.channels.length} private channels.</Text>
+          }
+          {
+            this.state.refreshing &&
+            <ActivityIndicator size = 'small' style={{margin : 10}} color = '#ddd' />
           }
           <FlatList
             style={{

@@ -22,7 +22,8 @@ const businessImageAlt = require('../../media/topics/cal-small.webp');
 export const categoriesNew = {
   food: foodImage,
   mad: musicImage,
-  art: dadImage,
+  aat: dadImage,
+  // art: dadImage,
   tech : techImage,
   fun: funImage,
   business : businessImage,
@@ -44,7 +45,7 @@ export const categories = [
   },
   {
     title: 'Art and Theater',
-    value: 'art',
+    value: 'aat',
     image: dadImageAlt
   },
   {

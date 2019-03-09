@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Platform
+  Platform,
+  WebView
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -31,10 +32,10 @@ class PrivacyPolicyScreen extends React.Component {
         style={{
           flex: 1,
           paddingTop : Platform.OS === 'ios' ? 45 : 8,
-          backgroundColor: '#222'
+          backgroundColor: '#333'
         }}
       >
-        <View
+        {/* <View
           style={{
             justifyContent: 'center',
             marginTop: 10,
@@ -112,7 +113,18 @@ class PrivacyPolicyScreen extends React.Component {
             </Text>
           </View>
         </View>
-        </ScrollView>
+        </ScrollView> */}
+        <View style={{backgroundColor : '#333', flexDirection : 'row'}}>
+          <TouchableOpacity onPress={()=>Navigation.dismissModal(this.props.componentId)}>
+            <Text style={{fontSize : 15, margin : 8, color : '#ddd'}}>
+              Close
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <WebView 
+        source = {{uri : 'https://mycampusdock.chat/privacy-policy'}}
+        />
+
       </View>
     );
   }

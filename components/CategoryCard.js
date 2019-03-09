@@ -3,6 +3,7 @@ import {
   View,
   Platform,
   Text,
+  Alert,
   TouchableOpacity
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -14,8 +15,9 @@ const CategoryCard = (props) => {
     width,
     height,
     name,
-    image
+    image,
   } = props;
+
   return (
     <TouchableOpacity
       style={{

@@ -56,7 +56,7 @@ const EventCard = (props) => {
           opacity: 1,
           flex: 1
         }}
-        colors={['#11111166', '#000000cc']}
+        colors={['#000000bb', '#000000dd']}
       />
 
       <Text

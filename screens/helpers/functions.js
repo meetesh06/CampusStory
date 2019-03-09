@@ -147,7 +147,7 @@ export function getCategoryName(category) {
       return 'Food';
     case 'mad':
       return 'Music and Dance';
-    case 'art':
+    case 'aat':
       return 'Art';
     case 'society':
       return 'Societies';
@@ -162,6 +162,6 @@ export function getCategoryName(category) {
     case 'business':
       return 'Business';
     default:
-      return '';
+      return 'Fun';
   }
 }

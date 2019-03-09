@@ -163,16 +163,17 @@ class ReactButton extends React.Component {
       activeOpacity = {0.7}
         style={{
           backgroundColor : 'transparent',
-          paddingTop : 20, paddingLeft : 20
+          padding : 10,
+          marginRight : 10,
         }}
         onPress = {this.addBubble}
       >
-      <View style={{flexDirection : 'row', alignSelf : 'center', justifyContent : 'center', alignItems : 'center',}}>
-        <Text style={{color : '#fff', fontSize : 14, fontWeight : '500', margin : 3}}>
+      <View style={{alignSelf : 'center', justifyContent : 'center', alignItems : 'center',}}>
+        <Text style={{color : '#fff', fontSize : 14, fontWeight : '500', marginBottom : 2}}>
           {new_total}
           {'  '}
         </Text>
-        <View style={{width : 40, height : 40, borderRadius : 40, padding : 0, backgroundColor : reacted ? '#rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.4)', justifyContent : 'center', alignItems : 'center'}}>
+        <View style={{width : 45, height : 45, borderRadius : 45, padding : 0, backgroundColor : reacted ? '#ffffffdd' : '#ffffff99', justifyContent : 'center', alignItems : 'center'}}>
           <Text style={{fontSize : 28, textAlign : 'center',}}>{reaction_type.value}</Text>
         </View>
       </View>

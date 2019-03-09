@@ -30,7 +30,7 @@ class PostVideoThumbnail extends React.PureComponent {
             height: '100%',
             margin : 5
           }}
-          resizeMode="cover"
+          resizeMode = 'cover'
           repeat
         />
         <View

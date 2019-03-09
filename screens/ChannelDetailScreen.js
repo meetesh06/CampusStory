@@ -357,6 +357,7 @@ handleSubscribe = () =>{
               justifyContent: 'center',
               width: WIDTH,
               padding: 10,
+              backgroundColor : '#333',
               paddingTop : 70,
               paddingBottom : 20,
             }}

@@ -20,10 +20,11 @@ class Spotlight extends React.PureComponent {
           style={{ height: 270, flexDirection: 'column' }}
           source={{
             uri: encodeURI(urls.PREFIX + '/' +  `${media[0]}`),
-            priority: FastImage.priority.high
+            priority: FastImage.priority.high,
           }}
           resizeMode={FastImage.resizeMode.cover}
         />
+        
         <LinearGradient
           style={{
             position: 'absolute',
@@ -31,7 +32,7 @@ class Spotlight extends React.PureComponent {
             height: 270,
             flex: 1
           }}
-          colors={['#00000066', '#000000dd']}
+          colors={['#000000bb', '#000000dd']}
         />
         <View
           style={{

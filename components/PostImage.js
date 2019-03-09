@@ -45,7 +45,7 @@ class PostImage extends React.PureComponent {
         style={{
           backgroundColor: '#000',
           flex: 1,
-          height: WIDTH + 60,
+          height: WIDTH,
           alignItems: 'center',
           justifyContent: 'center'
         }}
@@ -53,9 +53,9 @@ class PostImage extends React.PureComponent {
         <FastImage
           style={{
             width: WIDTH,
-            height: WIDTH + 60
+            height: WIDTH
           }}
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.contain}
           source={{ uri: encodeURI( urls.PREFIX + '/' +  `${image}`) }}
         />
         <Text

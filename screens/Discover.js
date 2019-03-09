@@ -11,12 +11,12 @@ export default class Discover extends React.Component {
     routes: [
       { key: 'food', title: 'Food' },
       { key: 'mad', title: 'Music and Dance' },
-      { key: 'art', title: 'Art and Theatre' },
-      { key: 'tech', title: 'Technology' },
       { key: 'fun', title: 'Fun' },
+      { key: 'aat', title: 'Art and Theatre' },
+      { key: 'tech', title: 'Technology' },
+      { key: 'sports', title: 'Sports' },
       { key: 'business', title: 'Business' },
       { key: 'society', title: 'Society' },
-      { key: 'sports', title: 'Sports' },
       { key: 'fashion', title: 'Fashion' }
     ],
   };

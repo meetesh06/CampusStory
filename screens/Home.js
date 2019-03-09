@@ -21,6 +21,7 @@ import Constants from '../constants';
 import EventCard from '../components/EventCard';
 import EventCardBig from '../components/EventCardBig';
 import StoryIcon from '../components/StoryIcon';
+import Hint from '../components/Hint';
 import Realm from '../realm';
 import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
@@ -48,7 +49,8 @@ class Home extends React.Component {
     refreshing: false,
     newUpdates: false,
     CAN_OPEN_EVENT : true,
-    volume : 0
+    volume : 0,
+    hint_closed : false
   }
 
   componentDidMount() {
@@ -242,7 +244,7 @@ class Home extends React.Component {
     interests = interests.split(',');
 
     Realm.getRealm((realm) => {
-      const Events = realm.objects('Events').sorted('timestamp', true);
+      const Events = realm.objects('Events').sorted('timestamp');
       const cs = Date.parse(new Date());
       const final = {};
       interests.forEach((value) => {
@@ -252,7 +254,7 @@ class Home extends React.Component {
         });
       });
 
-      const latestEvents = realm.objects('Events').filtered(`going!=${true}`).filtered(`ms > ${cs}`).sorted('date', true);
+      const latestEvents = realm.objects('Events').filtered(`going!=${true}`).filtered(`ms > ${cs}`).sorted('date');
       processRealmObj(latestEvents, (result) => {
         const keys = Object.keys(final);
         for(let i=0; i<keys.length; i++){
@@ -528,9 +530,17 @@ class Home extends React.Component {
         name: 'Story Screen',
         passProps: { _id },
         options: {
-          overlay: {
-            interceptTouchOutside: false
-          }
+          modalPresentationStyle: 'overCurrentContext',
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false,
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
         }
       }
     });
@@ -546,9 +556,17 @@ class Home extends React.Component {
         name: 'Story Screen',
         passProps: { _id },
         options: {
-          overlay: {
-            interceptTouchOutside: false
-          }
+          modalPresentationStyle: 'overCurrentContext',
+          topBar: {
+            animate: true,
+            visible: true,
+            drawBehind: false,
+          },
+          bottomTabs: {
+            visible: false,
+            drawBehind: true,
+            animate: true
+          },
         }
       }
     });
@@ -564,9 +582,9 @@ class Home extends React.Component {
       channels,
       weekEventList,
       interests,
-      eventList
+      eventList,
+      hint_closed
     } = this.state;
-    const { updateContent } = this;
     return (
       <ScrollView
         showsVerticalScrollIndicator = {false}
@@ -585,6 +603,10 @@ class Home extends React.Component {
           && (<StatusBar barStyle="light-content" translucent />)
         }
         {
+          !refreshing && !hint_closed &&
+          <Hint onClose = {()=>this.setState({hint_closed : true})}/>
+        }
+        {
           channels.length !== 0
             && (
               <FlatList
@@ -596,8 +618,8 @@ class Home extends React.Component {
                 renderItem={({ item, index }) => (
                   <StoryIcon
                     onPress={obj => this.handleStoryPress(obj, index)}
-                    width={96}
-                    height={64}
+                    width={84}
+                    height={56}
                     item={item}
                   />
                 )}
@@ -707,9 +729,30 @@ class Home extends React.Component {
                     >
                       {getCategoryName(value)}
                     </Text>
-                    <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />} />
+                      <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCard onPress={this.handleEventPress} width={200} height={150} item={item} />} />
                   </View>
-                )}
+                  )
+              }
+
+            { this.state[value] !== undefined && this.state[value].length === 1
+                && (
+                  <View>
+                    <Text style={{
+                      color: '#f0f0f0',
+                      marginTop: 8,
+                      marginBottom: 8,
+                      textAlign: 'center',
+                      fontFamily: 'Roboto-Light',
+                      fontSize: 20,
+                      marginLeft: 10
+                    }}
+                    >
+                      {getCategoryName(value)}
+                    </Text>
+                      <FlatList horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item, index) => `${index}`} data={this.state[value]} renderItem={({ item }) => <EventCardBig onPress={this.handleEventPress} width={WIDTH - 20} height={(WIDTH - 20) * 0.75} item={item} />} />
+                  </View>
+                  )
+              }
             </View>
           ))
         }

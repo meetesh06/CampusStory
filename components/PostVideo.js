@@ -81,6 +81,7 @@ class PostVideo extends React.PureComponent {
               onLoad={() => this.setState({ loading: false })}
               onProgress = {(details)=>this.handleProgress(details)}
               onEnd = {()=>this.setState({hide : true})}
+              resizeMode = 'contain'
               // eslint-disable-next-line react/no-unused-state
               onBuffer={val => this.setState({ buffering: val.isBuffering })}
               style={{
