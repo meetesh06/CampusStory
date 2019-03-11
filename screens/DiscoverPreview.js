@@ -21,6 +21,7 @@ import SessionStore from '../SessionStore';
 import axios from 'axios';
 import urls from '../URLS';
 import constants from '../constants';
+import { AnimatedEmoji } from 'react-native-animated-emoji';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -33,7 +34,9 @@ class DiscoverPreview extends React.Component {
   }
 
   state = {
-    channel : {media : this.props.image, name : this.props.item.channel_name }
+    channel : {media : this.props.image, name : this.props.item.channel_name },
+    enabled : true,
+    emojis : []
   }
 
   componentDidMount() {
@@ -147,6 +150,52 @@ class DiscoverPreview extends React.Component {
     );
   }
 
+  onLimit = (value) =>{
+    let emojis = [];
+    if(this.state.enabled){
+      for(let i=0; i< (constants.REACTIONS_LIMIT); i++){
+        emojis.push(value);
+      }
+      this.setState({emojis, enabled : false});
+      setTimeout(()=>{
+        this.setState({emojis : [], enabled : true});
+      }, 5000);
+    }
+  }
+
+  getRandomInt = (min, max) =>{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+  renderEmojis = () =>{
+    if(this.state.emojis.length === 0){
+      return <View />
+    }
+    return this.state.emojis.map((value, index)=>
+      <AnimatedEmoji
+        index={index}
+        key = {index}
+        style={{ bottom: this.getRandomInt(50, 300)}}
+        name={this.getEmoji(value)}
+        size={this.getRandomInt(10, 20)}
+        duration={this.getRandomInt(2000, 6000)}
+        onAnimationCompleted={this.onAnimationCompleted}
+      />
+    );
+  }
+
+  getEmoji = (name) =>{
+    switch(name){
+      case '😂' : return 'joy';
+      case '😋' : return 'yum';
+      case '😍' : return 'heart_eyes';
+      case '👏' : return 'clap';
+      case '👌' : return 'ok_hand';
+      case '🔥' : return 'fire';
+      default : return 'heart_eyes';
+    }
+  }
+
   render() {
     const {item, image, hide_image} = this.props;
     return (
@@ -176,6 +225,9 @@ class DiscoverPreview extends React.Component {
           >
             {
               this.getItemView(item)
+            }
+            {
+              this.renderEmojis()
             }
           </View>
 
@@ -215,7 +267,14 @@ class DiscoverPreview extends React.Component {
 
           { item !== undefined &&
               <View style={{position : 'absolute', bottom : 0, right : 0,}}>
-                <ReactionButton _id = {item._id} reactions = {item.reactions} my_reactions = {item.my_reactions} data = {item.reaction_type} online = {true} />
+                <ReactionButton 
+                  _id = {item._id} 
+                  reactions = {item.reactions} 
+                  my_reactions = {item.my_reactions} 
+                  data = {item.reaction_type} 
+                  online = {true} 
+                  onLimit = {this.onLimit}
+                />
               </View>
             }
             { item !== undefined &&

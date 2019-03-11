@@ -86,8 +86,9 @@ class ReactButton extends React.Component {
   addBubble = () =>{
     const {reaction_type, count, bubbles} = this.state;
     if(count >= REACTIONS_LIMIT){
-      bubbles.push({reaction_type, count});
-      this.setState({count, bubbles});
+      //bubbles.push({reaction_type, count});
+      //this.setState({count, bubbles});
+      this.props.onLimit(reaction_type.value);
     }
     else {
       let new_count = count + 1;
@@ -198,22 +199,18 @@ class Bubble extends React.Component{
   componentDidMount(){
     Animated.parallel([
       Animated.timing(this.state.yPos, {
-        toValue : -80,
-        duration : 500
+        toValue : -120,
+        duration : 600
       }),
       Animated.timing(this.state.opacity, {
         toValue : 1,
-        duration : 500
+        duration : 600
       })
     ]).start(()=>{
       Animated.timing(this.state.opacity, {
         toValue : 0,
         duration : 800
-      }).start(()=>{
-          // setTimeout(()=>{
-          //   this.props.onFinishAnimation(this.props.index);
-          // }, 500); 
-      });
+      }).start();
     });
   }
   

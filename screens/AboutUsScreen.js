@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import IconIon from 'react-native-vector-icons/Ionicons';
 import IconMat from 'react-native-vector-icons/MaterialIcons';
 import SessionStore from '../SessionStore';
+import urls from '../URLS';
 
 class AboutUsScreen extends React.Component {
   constructor(props) {
@@ -127,6 +128,20 @@ class AboutUsScreen extends React.Component {
             }
             </Text>
           </View>
+
+          </View>
+
+          <View style={{backgroundColor : '#555', margin : 10, borderRadius :10, padding : 10}}>
+            <View>
+              <Text style={{fontSize : 20, color : '#fff', marginBottom : 10}}>{'App Version '} <IconMat name = 'info-outline' size = {18} /></Text>
+              <Text style={{fontSize : 14, color : '#eee', marginBottom : 10, fontFamily : 'Roboto-Light'}}>
+              {'Campus Story'}
+              {'\n'}
+              {
+                urls.APP_VERSION
+              }
+              </Text>
+            </View>
         </View>
         </ScrollView>
       </View>

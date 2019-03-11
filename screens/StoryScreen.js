@@ -25,6 +25,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import urls from '../URLS';
 import axios from 'axios'
 import constants from '../constants';
+import { AnimatedEmoji } from 'react-native-animated-emoji';
 
 const STORY_THRESHOLD = constants.STORY_THRESHOLD;
 const WIDTH = Dimensions.get('window').width;
@@ -36,7 +37,6 @@ class StoryScreen extends React.Component {
     this.position = new Animated.ValueXY();
     this.opacity = new Animated.Value(0.2);
     this.updateRead = this.updateRead.bind(true);
-    // this.topHeight = new Animated.Value(HEIGHT / 2 - (200 / 2));
     this.topHeight = new Animated.Value(100);
     this.leftSide = new Animated.Value(WIDTH / 2 - (200 / 2));
     this.width = new Animated.Value(200);
@@ -62,17 +62,12 @@ class StoryScreen extends React.Component {
         } else {
           this.pulled.setValue(0);
         }
-        // this.topHeight.setValue(HEIGHT - (this.height._value - (gestureState.dy / HEIGHT * 100 )));
-        // this.leftSide.setValue(WIDTH - (this.height._value - (gestureState.dy / HEIGHT * 100 )));
-        
-        // this.height.setValue(this.height._value - (gestureState.dy / HEIGHT * 100 ));
-        // this.width.setValue(this.width._value - (gestureState.dy / HEIGHT * 100 ));
         return true;
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
-        // if (((gestureState.dy / HEIGHT) * 100) > 60) {
-        if (gestureState.vy > 0.75) {
+        console.log(gestureState.vy);
+        if (gestureState.vy > 0.1) {
           this.closeWithAnimation();
         } else {
           const {
@@ -125,7 +120,7 @@ class StoryScreen extends React.Component {
                 this.pulled.setValue(0);
                 Animated.spring(this.pulled, {
                   toValue: 1,
-                  friction: 10
+                  friction: 3
                 }).start();
               });
             }
@@ -144,7 +139,7 @@ class StoryScreen extends React.Component {
                 this.pulled.setValue(0);
                 Animated.spring(this.pulled, {
                   toValue: 1,
-                  friction: 10
+                  friction: 3
                 }).start();
               });
             }
@@ -170,25 +165,42 @@ class StoryScreen extends React.Component {
     current: 0,
     channel: { media: '"xxx"' },
     loading: true,
-    pan: new Animated.ValueXY()
+    pan: new Animated.ValueXY(),
+    emojis : [],
+    enabled : true
   }
 
   closeWithAnimation = () =>{
     const {
       componentId
     } = this.props;
+    setTimeout(() => Navigation.dismissOverlay(componentId), 500);
     Animated.parallel([
       Animated.spring(this.topHeight, {
-        toValue: HEIGHT + this.topHeight._value,
-        duration: 200,
-        friction: 7
+        toValue: 140,
+        friction: 10
+      }),
+      Animated.spring(this.leftSide, {
+        toValue: WIDTH / 2,
+        friction: 10
+      }),
+      Animated.spring(this.width, {
+        toValue: 0,
+        friction: 10
+      }),
+      Animated.spring(this.height, {
+        toValue: 0,
+        friction: 10
+      }),
+      Animated.timing(this.radius, {
+        toValue: 0,
+        duration: 3000
       }),
       Animated.timing(this.opacity, {
         toValue: 0,
-        duration: 200
+        duration: 3000
       })
     ]).start();
-    setTimeout(() => Navigation.dismissOverlay(componentId), 180);
   }
 
   componentDidMount() {
@@ -443,6 +455,52 @@ class StoryScreen extends React.Component {
     }
   }
 
+  onLimit = (value) =>{
+    let emojis = [];
+    if(this.state.enabled){
+      for(let i=0; i< (constants.REACTIONS_LIMIT); i++){
+        emojis.push(value);
+      }
+      this.setState({emojis, enabled : false});
+      setTimeout(()=>{
+        this.setState({emojis : [], enabled : true});
+      }, 5000);
+    }
+  }
+
+  getRandomInt = (min, max) =>{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+  renderEmojis = () =>{
+    if(this.state.emojis.length === 0){
+      return <View />
+    }
+    return this.state.emojis.map((value, index)=>
+      <AnimatedEmoji
+        index={index}
+        key = {index}
+        style={{ bottom: this.getRandomInt(150, 450)}}
+        name={this.getEmoji(value)}
+        size={this.getRandomInt(10, 25)}
+        duration={this.getRandomInt(2000, 6000)}
+        onAnimationCompleted={this.onAnimationCompleted}
+      />
+    );
+  }
+
+  getEmoji = (name) =>{
+    switch(name){
+      case '😂' : return 'joy';
+      case '😋' : return 'yum';
+      case '😍' : return 'heart_eyes';
+      case '👏' : return 'clap';
+      case '👌' : return 'ok_hand';
+      case '🔥' : return 'fire';
+      default : return 'heart_eyes';
+    }
+  }
+
   updateRead = (callback) => {
     const{online} = this.props;
     if(online) return callback();
@@ -630,7 +688,9 @@ class StoryScreen extends React.Component {
               />
             )
         }
-
+        {
+          this.renderEmojis()
+        }
         <View
           style={{
             flex: 1,
@@ -656,6 +716,8 @@ class StoryScreen extends React.Component {
           style={{
             position: 'absolute',
             top: 18,
+            backgroundColor : '#00000000',
+            paddingBottom : 25,
             left: 0,
             width: '100%'
           }}
@@ -686,11 +748,11 @@ class StoryScreen extends React.Component {
               <View
                 style={{
                   justifyContent: 'center',
-                  textAlign: 'right',
+                  textAlign : 'center',
                   padding: 4,
                   paddingLeft : 8,
                   paddingRight : 8,
-                  marginRight: 12,
+                  marginRight: 3,
                   backgroundColor: '#ffffff99',
                   borderRadius: 20
                 }}
@@ -709,6 +771,25 @@ class StoryScreen extends React.Component {
                   {stories.length}
                 </Text>
               </View>
+            }
+
+            { !loading &&
+              <TouchableOpacity
+              activeOpacity = {0.7}
+              onPress = {this.closeWithAnimation}
+                style={{
+                  justifyContent: 'center',
+                  alignItems : 'center',
+                  width : 28,
+                  height : 28,
+                  margin : 5,
+                  marginRight : 10,
+                  backgroundColor: '#ddd',
+                  borderRadius: 30
+                }}
+              >
+                <IconIon name = 'md-close-circle' size = {28} color = '#333' />
+              </TouchableOpacity>
             }
           </Animated.View>
         </View>
@@ -776,7 +857,14 @@ class StoryScreen extends React.Component {
           }
           <View style={{flex : 1}} />
           <View>
-            <ReactionButton index = {current} _id = {stories[current]._id} reactions = {stories[current].reactions} my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} data = {stories[current].reaction_type} online = {online} />
+            <ReactionButton
+              index = {current} 
+              _id = {stories[current]._id} 
+              reactions = {stories[current].reactions} 
+              my_reactions = { online ? stories[current].my_reactions : JSON.parse(stories[current].my_reactions)} 
+              data = {stories[current].reaction_type} online = {online}
+              onLimit = {this.onLimit}
+            />
           </View>
         </Animated.View>
       }

@@ -10,13 +10,15 @@ class Hint extends React.Component {
   getHint = () =>{
     let index =   0 + Math.floor(Math.random() * 8);
     switch(index){
-      case 3 : return 'Expore trending events of week in Spotlight!'
-      case 1 : return 'Save details in profile for easy events registration!'
-      case 2 : return 'Discover channels & stories in discover tab!'
-      case 0 : return 'Subscribe channels for easy updates from them!'
-      case 4 : return 'Bookmark events by marking interested!'
-      case 5 : return 'Find private channels in the settings!'
-      default : return 'React to stories with different emojis 😍!'
+      case 3 : return 'Expore trending events of week in SpotLight.'
+      case 1 : return 'Save details in profile for easy events registration.'
+      case 2 : return 'Explore channels & stories in discover tab.'
+      case 0 : return 'Subscribe channels for easy updates from them.'
+      case 4 : return 'Bookmark events by marking as interested.'
+      case 5 : return 'Find private channels in the settings.'
+      case 6 : return 'You can change your interests in settings.'
+      case 7 : return 'React to stories with different emojis 😍'
+      default : return 'React to stories with different emojis 😍'
     }
   }
 

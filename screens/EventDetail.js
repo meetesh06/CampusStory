@@ -50,14 +50,16 @@ class EventDetail extends React.Component {
     this.opacity = new Animated.Value(0.3);
     this.opacity1 = new Animated.Value(0);
     this.partial = true;
-    console.log(props);
+    this.tapped = 0;
+    this.tapped_time = new Date().getTime();
     this.state = {
       // eslint-disable-next-line react/destructuring-assignment
       item: props.item,
       remind : props.item.remind,
       loading: false,
       partial: true,
-      pan: new Animated.ValueXY()
+      pan: new Animated.ValueXY(),
+      zoom : false
     };
 
     // eslint-disable-next-line no-underscore-dangle
@@ -76,6 +78,12 @@ class EventDetail extends React.Component {
         } = pan.y;
         pan.setOffset({ y: _value });
         pan.setValue({ y: 0 });
+        if(this.tapped === 0){
+          this.tapped = 1;
+          this.tapped_time = new Date().getTime();
+        } else {
+          this.tapped = 2;
+        }
       },
       onPanResponderMove: (e, gestureState) => {
         const {
@@ -90,6 +98,23 @@ class EventDetail extends React.Component {
           this.handleClose();
         } else {
           this.handleFull();
+        }
+        if(this.tapped === 1){
+          let diff = new Date().getTime() - this.tapped_time;
+          if(diff > 800){
+            this.tapped = 0;
+          } else {
+            setTimeout(()=>{
+              this.tapped = 0;
+            }, 800);
+          }
+        }
+        else if(this.tapped === 2){
+          let diff = new Date().getTime() - this.tapped_time;
+          if(diff < 800){
+            this.setState({zoom : !this.state.zoom});
+          }
+          this.tapped = 0;
         }
       }
     });
@@ -376,7 +401,7 @@ class EventDetail extends React.Component {
   }
 
   render() {
-    const { item, loading, remind, partial } = this.state;
+    const { item, loading, remind, partial, zoom } = this.state;
     const { pan } = this.state;
     const [translateY] = [pan.y];
     const {
@@ -440,7 +465,7 @@ class EventDetail extends React.Component {
               source={{
                 uri: encodeURI(urls.PREFIX + '/' +  `${JSON.parse(item.media)[0]}`)
               }}
-              resizeMode={FastImage.resizeMode.cover}
+              resizeMode={zoom ? FastImage.resizeMode.contain : FastImage.resizeMode.cover}
             />
           </View>
           {

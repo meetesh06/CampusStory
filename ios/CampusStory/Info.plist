@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>5</string>
 	<key>CodePushDeploymentKey</key>
 	<string>GR8qw12ifVw7B4RN3IEoR_qeCOM-efea177c-2876-4bb3-b267-0f984d263df9</string>
 	<key>LSApplicationCategoryType</key>

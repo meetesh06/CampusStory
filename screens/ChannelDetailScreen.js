@@ -114,7 +114,7 @@ class ChannelDetailScreen extends React.Component {
       const item = realm.objects('Channels').filtered(`_id="${id}"`);
       processRealmObj(element, (result) => {
         if (result.length > 0) {
-          this.setState({ subscribed: true, notify: result[0].notify !== 'false' });
+          this.setState({ subscribed: true, notify: result[0].notify !== false});
         }
         processRealmObj(item, (result1) => {
           this.setState({ item: result1[0], loading : true }, () => fetchChannelRequest(result1[0] !== undefined));
