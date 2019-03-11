@@ -10,6 +10,7 @@ import {
   StatusBar,
   View,
   TouchableOpacity,
+  Alert,
   Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
@@ -51,7 +52,8 @@ class Home extends React.Component {
     newUpdates: false,
     CAN_OPEN_EVENT : true,
     volume : 0,
-    hint_closed : false
+    hint_closed : false,
+    test: ''
   }
 
   componentDidMount() {
@@ -181,9 +183,9 @@ class Home extends React.Component {
     const formData = new FormData();
     formData.append('channels_list', JSON.stringify(subList));
 
-    axios.post(urls.FETCH_ACTIVITY_LIST, formData, {
+    axios.post(urls.FETCH_ACTIVITY_LIST, { channels_list: JSON.stringify(subList) }, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        // 'Content-Type': 'multipart/form-data',
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
@@ -235,6 +237,7 @@ class Home extends React.Component {
         callback();
       }
     }).catch(err => {
+      Alert.alert(err);
       console.log(err);
       callback();
     });
@@ -301,11 +304,12 @@ class Home extends React.Component {
       } catch (e) {
         lastUpdated = 'NONE';
       }
-      const form = new FormData();
-      form.append('last_updated', lastUpdated);
-      form.append('dummy', 'dummy');
-      axios.post(urls.GET_EVENT_LIST, form , {
+      // const form = new FormData();
+      // form.append('last_updated', lastUpdated);
+      // form.append('dummy', 'dummy');
+      axios.post(urls.GET_EVENT_LIST, { last_updated: lastUpdated }, {
         headers: {
+          // 'Content-Type': 'application/json',
           'x-access-token': new SessionStore().getValue(TOKEN)
         }
       }).then((response) => {
@@ -323,7 +327,7 @@ class Home extends React.Component {
           });
           const responseObject = response.data;
           const { data } = responseObject;
-          if (data.length === 0) return;
+          if (data.length === 0) return callback();
           Realm.getRealm((realm) => {
             realm.write(() => {
               let i;
@@ -341,6 +345,8 @@ class Home extends React.Component {
           callback();
         }
       }).catch(err => {
+        // this.setState({ test: JSON.stringify(err) })
+        Alert.alert(JSON.stringify(err));
         console.log(err);
         callback();
       });
@@ -602,6 +608,9 @@ class Home extends React.Component {
           />
         )}
       >
+        <Text>
+          {this.state.test}
+        </Text>
         {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" translucent />)

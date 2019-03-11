@@ -5,4 +5,5 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <color name="colorNotification">#FF6A16</color>
 </resources>
