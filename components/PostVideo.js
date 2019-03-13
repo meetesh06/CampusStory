@@ -90,7 +90,7 @@ class PostVideo extends React.PureComponent {
                 margin: 5,
               }}
             />
-            <View style={{width : '100%', height : '100%', top : 0, left : 0, position : 'absolute', backgroundColor : hide ? 'rgba(0, 0, 0, 0.7)' : 'transparent'}}/>
+            <View style={{width : '120%', height : '100%', top : 0, left : 0, position : 'absolute', backgroundColor : hide ? 'rgba(0, 0, 0, 0.7)' : 'transparent'}}/>
             </View>
 
           <View style={{justifyContent: 'center',

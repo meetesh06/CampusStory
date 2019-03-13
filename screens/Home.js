@@ -53,7 +53,6 @@ class Home extends React.Component {
     CAN_OPEN_EVENT : true,
     volume : 0,
     hint_closed : false,
-    test: ''
   }
 
   componentDidMount() {
@@ -345,7 +344,6 @@ class Home extends React.Component {
           callback();
         }
       }).catch(err => {
-        // this.setState({ test: JSON.stringify(err) })
         Alert.alert(JSON.stringify(err));
         console.log(err);
         callback();
@@ -608,9 +606,6 @@ class Home extends React.Component {
           />
         )}
       >
-        <Text>
-          {this.state.test}
-        </Text>
         {
           Platform.OS === 'ios'
           && (<StatusBar barStyle="light-content" translucent />)
@@ -773,20 +768,37 @@ class Home extends React.Component {
             </View>
           ))
         }
-        <FlatList
-          horizontal={false}
-          keyExtractor={(item, index) => `${index}`}
-          data={eventList}
-          renderItem={({ item }) => (
-            <EventCardBig
-              onPress={this.handleEventPress}
-              width={WIDTH - 20}
-              height={(WIDTH - 20) * 0.75}
-              item={item}
-            />
-          )
-          }
-        />
+        {
+          eventList.length > 0 &&
+          <View>
+          <Text style={{
+            color: '#f0f0f0',
+            marginTop: 8,
+            marginBottom: 8,
+            textAlign: 'center',
+            fontFamily: 'Roboto-Light',
+            fontSize: 20,
+            marginLeft: 10
+          }}
+          >
+            {'Others'}
+          </Text>
+          <FlatList
+            horizontal={false}
+            keyExtractor={(item, index) => `${index}`}
+            data={eventList}
+            renderItem={({ item }) => (
+              <EventCardBig
+                onPress={this.handleEventPress}
+                width={WIDTH - 20}
+                height={(WIDTH - 20) * 0.75}
+                item={item}
+              />
+            )
+            }
+          />
+          </View>
+        }
         
       </ScrollView>
     );
