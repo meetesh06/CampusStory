@@ -7,6 +7,8 @@ import {
   Animated,
   View,
   Text,
+  BackHandler,
+  ScrollView,
   Switch,
   Dimensions
 } from 'react-native';
@@ -21,6 +23,21 @@ class GoingDetails extends React.Component {
     super(props);
     this.position = new Animated.Value(0);
     this.handleClose = this.handleClose.bind(this);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    this.handleClose();
+    return true;
   }
 
   state = {
@@ -32,6 +49,7 @@ class GoingDetails extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     Animated.spring(
       this.position,
       {
@@ -41,7 +59,7 @@ class GoingDetails extends React.Component {
     ).start();
     let user_data = new SessionStore().getValue(Constants.USER_DATA);
     if(user_data === null || user_data === undefined) return;
-    this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, auto : true});
+    if(this.mounted) this.setState({name : user_data.name, email : user_data.email, phone : user_data.phone, auto : true});
   }
 
   handleClose = () => {
@@ -56,7 +74,7 @@ class GoingDetails extends React.Component {
   }
 
   clear = () => {
-    this.setState({ name: '', email: '', phone: '', auto : false, future : true });
+    if(this.mounted) this.setState({ name: '', email: '', phone: '', auto : false, future : true });
   }
 
   handleSubmit = async () => {
@@ -128,10 +146,10 @@ class GoingDetails extends React.Component {
           backgroundColor: '#fff'
         }}
         >
-          <View
+          <ScrollView
             style={{
               flex: 1,
-              justifyContent: 'center'
+              // justifyContent: 'center'
             }}
           >
             <TextInput
@@ -140,15 +158,18 @@ class GoingDetails extends React.Component {
               style={{
                 textAlign: 'center',
                 fontSize: 15,
-                padding: 15,
+                padding: 10,
+                marginLeft: 5,
+                marginRight: 5,
+                borderRadius: 10,
                 marginTop: 10,
                 marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
               placeholder="Your Full Name"
-              onChangeText={val => this.setState({ name: val })}
+              onChangeText={val => {if(this.mounted) this.setState({ name: val })}}
               value={name}
-            />
+            /> 
             <TextInput
               autoCapitalize="none"
               keyboardType = 'email-address'
@@ -156,13 +177,16 @@ class GoingDetails extends React.Component {
               style={{
                 textAlign: 'center',
                 fontSize: 15,
-                padding: 15,
+                padding: 10,
+                marginLeft: 5,
+                marginRight: 5,
+                borderRadius: 10,
                 marginTop: 10,
                 marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
               placeholder="Your E-mail ID"
-              onChangeText={val => this.setState({ email: val })}
+              onChangeText={val => {if(this.mounted) this.setState({ email: val })}}
               value={email}
             />
             <TextInput
@@ -172,26 +196,29 @@ class GoingDetails extends React.Component {
               style={{
                 textAlign: 'center',
                 fontSize: 15,
-                padding: 15,
+                padding: 10,
+                marginLeft: 5,
+                marginRight: 5,
+                borderRadius: 10,
                 marginTop: 10,
                 marginBottom : 10,
                 backgroundColor: '#f0f0f0'
               }}
               placeholder="Your Phone Number"
-              onChangeText={val => this.setState({ phone: val })}
+              onChangeText={val => {if(this.mounted) this.setState({ phone: val })}}
               value={phone}
             />
 
             {
-              <View style={{flexDirection : 'row'}}>
-                <Text style={{fontSize : 14, color : '#555', flex : 1, margin : 10, marginLeft : 15}}>
-                {'Save these details for future use.'}
+              <View style={{flexDirection : 'row', marginBottom: 10, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 14, color: '#555', flex: 1, marginLeft: 15 }}>
+                  {'Save these details for future use.'}
                 </Text>
-                <Switch value = {future} onValueChange = {val=>this.setState({future : val})} style={{margin : 5}} />
+                <Switch value={future} onValueChange={ val => {if(this.mounted) this.setState({ future: val })}} />
               </View>
             }
             
-          </View>
+          </ScrollView>
           <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity style={{ backgroundColor: '#c0c0c0', width: '50%' }} onPress={this.clear}>
               <Text

@@ -9,6 +9,7 @@ import {
   PanResponder,
   Alert,
   View,
+  BackHandler,
   Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
@@ -43,6 +44,7 @@ class StoryScreen extends React.Component {
     this.height = new Animated.Value(200);
     this.radius = new Animated.Value(50);
     this.pulled = new Animated.Value(1);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     // eslint-disable-next-line no-underscore-dangle
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -100,7 +102,7 @@ class StoryScreen extends React.Component {
             }
             else {
               console.log('BACKWARD');
-              this.setState({ current: current - 1 });
+              if(this.mounted) this.setState({ current: current - 1 });
             }
           } else {
             if (current === stories.length - 1){
@@ -108,7 +110,7 @@ class StoryScreen extends React.Component {
             }
             else {
               console.log('BACKWARD');
-              this.setState({ current: current + 1 });
+              if(this.mounted) this.setState({ current: current + 1 });
             }
           }
         } else if (gestureState.x0 > (WIDTH * 2) / 3) {
@@ -125,7 +127,7 @@ class StoryScreen extends React.Component {
               });
             }
             else{
-              this.setState({ current: current + 1 }, ()=>{
+              if(this.mounted) this.setState({ current: current + 1 }, ()=>{
                 this.updateRead(()=>{
                   console.log('FORWARD');
                 });
@@ -144,7 +146,7 @@ class StoryScreen extends React.Component {
               });
             }
             else{
-              this.setState({ current: current - 1 }, ()=>{
+              if(this.mounted) this.setState({ current: current - 1 }, ()=>{
                 this.updateRead(()=>{
                   console.log('FORWARD');
                 });
@@ -168,6 +170,20 @@ class StoryScreen extends React.Component {
     pan: new Animated.ValueXY(),
     emojis : [],
     enabled : true
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick() {
+    this.closeWithAnimation();
+    return true;
   }
 
   closeWithAnimation = () =>{
@@ -204,6 +220,7 @@ class StoryScreen extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     console.log(this.props);
     Animated.parallel([
       Animated.spring(this.topHeight, {
@@ -232,7 +249,7 @@ class StoryScreen extends React.Component {
       })
     ]).start(() => {
       if(this.props.online){
-        this.setState({
+        if(this.mounted) this.setState({
           current : 0,
           stories: this.props.data,
           loading: false,
@@ -275,7 +292,7 @@ class StoryScreen extends React.Component {
             } else {
               current = (0 + (result2.length - 1)) > 0 ? 0 + (result2.length - 1) : 0;
             }
-            this.setState({
+            if(this.mounted) this.setState({
               current,
               stories: Final,
               loading: false,
@@ -380,7 +397,7 @@ class StoryScreen extends React.Component {
         }
       }
     });
-    Navigation.dismissOverlay(this.props.componentId);
+    // Navigation.dismissOverlay(this.props.componentId);
   }
 
   gotoEvent = (_id) =>{
@@ -433,7 +450,7 @@ class StoryScreen extends React.Component {
             friction: 10
           }).start();
         });
-      }else this.setState({ current : current + 1 }, ()=>{
+      }else if(this.mounted) this.setState({ current : current + 1 }, ()=>{
         this.updateRead(()=>{
           /* READ */
         });
@@ -447,7 +464,7 @@ class StoryScreen extends React.Component {
             friction: 10
           }).start();
         });
-      }else this.setState({ current: current - 1 }, ()=>{
+      }else if(this.mounted) this.setState({ current: current - 1 }, ()=>{
         this.updateRead(()=>{
           /* READ */
         });
@@ -461,9 +478,9 @@ class StoryScreen extends React.Component {
       for(let i=0; i< (constants.REACTIONS_LIMIT); i++){
         emojis.push(value);
       }
-      this.setState({emojis, enabled : false});
+      if(this.mounted) this.setState({emojis, enabled : false});
       setTimeout(()=>{
-        this.setState({emojis : [], enabled : true});
+        if(this.mounted) this.setState({emojis : [], enabled : true});
       }, 5000);
     }
   }
@@ -574,22 +591,19 @@ class StoryScreen extends React.Component {
   }
 
   gotoLink = (link)=>{
-    Navigation.dismissOverlay(this.props.componentId);
-    Navigation.showModal({
-      stack: {
-        children: [{
-          component: {
-            name: 'Event Register',
-            passProps: {
-              uri: link,
-            },
-            options: {
-              topBar: {
-                visible: false
-              }
-            }
+    // Navigation.dismissOverlay(this.props.componentId);
+    Navigation.showOverlay({
+      component: {
+        name: 'Event Register',
+        passProps: {
+          uri: link,
+        },
+        options: {
+          topBar: {
+            visible: false,
+            drawBehind: true,
           }
-        }]
+        }
       }
     });
     this.action_taken();
@@ -644,7 +658,7 @@ class StoryScreen extends React.Component {
           transform: [{ translateY }]
         }}
       >
-        <StatusBar barStyle="light-content" hidden />
+        <StatusBar barStyle="dark-content" hidden />
         {
           loading
           && <ActivityIndicator size="small" color="#fff" />

@@ -30,19 +30,24 @@ class DiscoverFeed extends React.PureComponent {
   }
 
   componentDidMount(){
+    this.mounted = true;
     const { category } = this.props;
     const value = new SessionStore().getValueTemp(category);
     if(value === null || value === undefined) {
       this.fetch_data(category);
     }
     else {
-      this.setState({channels : value, error : false, refreshing : false});
+      if(this.mounted) if(this.mounted) this.setState({channels : value, error : false, refreshing : false});
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   refresh = () =>{
     const { category } = this.props;
-    this.setState({refreshing : true, error : false});
+    if(this.mounted) this.setState({refreshing : true, error : false});
     this.fetch_data(category);
   }
 
@@ -55,13 +60,13 @@ class DiscoverFeed extends React.PureComponent {
       }
     }).then((response) => {
       if(!response.data.error){
-        this.setState({ channels: response.data.data, error : false, refreshing : false, update: !this.state.update });
+        if(this.mounted) this.setState({ channels: response.data.data, error : false, refreshing : false, update: !this.state.update });
         new SessionStore().putValueTemp(category, response.data.data);
       } else {
-        this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
+        if(this.mounted) this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>{
-      this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
+      if(this.mounted) this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       new SessionStore().pushLogs({type : 'error', line : 67, file : 'DicoverFeed.js', err : e});
     });
   }

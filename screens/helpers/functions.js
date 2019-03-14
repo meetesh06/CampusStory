@@ -1,7 +1,14 @@
+import firebase from 'react-native-firebase';
+import {
+  BackHandler
+} from 'react-native';
+import { Navigation } from 'react-native-navigation';
 import Realm from '../../realm';
 import SessionStore from '../../SessionStore';
 import { goInitializing } from './Navigation';
-import firebase from 'react-native-firebase';
+import Constants from '../../constants';
+
+const { STACK } = Constants;
 
 export function processRealmObj(RealmObject, callback) {
   const result = Object.keys(RealmObject).map(key => ({ ...RealmObject[key] }));
@@ -21,6 +28,20 @@ export function shuffleArray(array, callback) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   callback(array);
+}
+export function stackBackHandler() {
+  const stack = new SessionStore().getValue(STACK);
+  stack.pop();
+  if (stack.length === 0) {
+    BackHandler.exitApp();
+  } else {
+    Navigation.mergeOptions('home', {
+      bottomTabs: {
+        currentTabIndex: stack[stack.length - 1]
+      }
+    });
+  }
+  return true;
 }
 export function getMonthName(num) {
   switch (num) {
@@ -54,13 +75,13 @@ export function getMonthName(num) {
 }
 
 export function logout() {
-  try{
+  try {
     Realm.getRealm((realm) => {
       realm.write(() => {
         const subs = realm.objects('Firebase');
-        processRealmObj(subs, (result)=>{
-          objArrayToArray('_id', result, (output)=>{
-            resetSubscriptions(output, async ()=>{
+        processRealmObj(subs, (result) => {
+          objArrayToArray('_id', result, (output) => {
+            resetSubscriptions(output, async () => {
               const store = new SessionStore();
               realm.deleteAll();
               await store.setValueBulk();
@@ -71,21 +92,21 @@ export function logout() {
         });
       });
     });
-  } catch(e){
-    new SessionStore().pushLogs({line : 75, error : e, file : 'functions.js'});
+  } catch (e) {
+    new SessionStore().pushLogs({ line: 75, error: e, file: 'functions.js' });
   }
 }
 
-export function objArrayToArray(field, arrayObj, callback){
-  let array = [];
-  for(let i=0; i<arrayObj.length; i++){
-    array.push(arrayObj[i][field])
+export function objArrayToArray(field, arrayObj, callback) {
+  const array = [];
+  for (let i = 0; i < arrayObj.length; i++) {
+    array.push(arrayObj[i][field]);
   }
   callback(array);
 }
 
-export function resetSubscriptions(array, callback){
-  for(let i=0; i<array.length; i++){
+export function resetSubscriptions(array, callback) {
+  for (let i = 0; i < array.length; i++) {
     firebase.messaging().unsubscribeFromTopic(array[i]);
   }
   callback();
@@ -133,9 +154,9 @@ export function timelapse(date) {
       } else {
         return '' + Math.floor(hour) + 'h';
       }
-    } else {
+    } 
       return '' + Math.floor(min) + 'm';
-    }
+    
   } else {
     return '' + Math.floor(sec) + 's';
   }

@@ -93,6 +93,7 @@ class ChannelDetailScreen extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     Animated.parallel([
       Animated.spring(this.topHeight, {
         toValue: HEIGHT * 0.40,
@@ -114,10 +115,10 @@ class ChannelDetailScreen extends React.Component {
       const item = realm.objects('Channels').filtered(`_id="${id}"`);
       processRealmObj(element, (result) => {
         if (result.length > 0) {
-          this.setState({ subscribed: true, notify: result[0].notify !== false});
+          if(this.mounted) this.setState({ subscribed: true, notify: result[0].notify !== false});
         }
         processRealmObj(item, (result1) => {
-          this.setState({ item: result1[0], loading : true }, () => fetchChannelRequest(result1[0] !== undefined));
+          if(this.mounted) this.setState({ item: result1[0], loading : true }, () => fetchChannelRequest(result1[0] !== undefined));
         });
       });
     });
@@ -129,6 +130,7 @@ class ChannelDetailScreen extends React.Component {
   }
 
   componentWillUnmount(){
+    this.mounted = false;
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -154,7 +156,7 @@ class ChannelDetailScreen extends React.Component {
           el.updates = (already !== true);
         });
         const { data } = response.data;
-        if (data.length === 0) return this.setState({loading : false});
+        if (data.length === 0 && this.mounted) return this.setState({loading : false});
         Realm.getRealm((realm) => {
           realm.write(() => {
             let i;
@@ -167,13 +169,13 @@ class ChannelDetailScreen extends React.Component {
             }
           });
         });
-        this.setState({ item: data[0], loading : false });
+        if(this.mounted) this.setState({ item: data[0], loading : false });
       } else {
-        this.setState({loading : false });
+        if(this.mounted) this.setState({loading : false });
       }
     }).catch(err => {
       console.log(err);
-      this.setState({loading : false});
+      if(this.mounted) this.setState({loading : false});
       new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : err});
     });
   }
@@ -193,7 +195,7 @@ class ChannelDetailScreen extends React.Component {
           try {
             realm.create('Firebase', { _id, notify: true, type: 'channel' }, true);
             firebase.messaging().subscribeToTopic(_id);
-            this.setState({ notify: true });
+            if(this.mounted) this.setState({ notify: true });
           } catch (e) {
             console.log(e);
           }
@@ -203,7 +205,7 @@ class ChannelDetailScreen extends React.Component {
             realm.delete(element);
             realm.create('Firebase', { _id, notify: false, type: 'channel' });
             firebase.messaging().unsubscribeFromTopic(_id);
-            this.setState({ notify: false });
+            if(this.mounted) this.setState({ notify: false });
           } catch (e) {
             console.log(e);
           }
@@ -241,7 +243,7 @@ handleSubscribe = () =>{
       _id
     } = item;
     const URL = subscribed ? urls.UNFOLLOW_URL : urls.FOLLOW_URL;
-    this.setState({loading : true});
+    if(this.mounted) this.setState({loading : true});
     axios.post(URL, { channel_id:_id}, {
       headers: {
         'Content-Type': 'application/json',
@@ -254,7 +256,7 @@ handleSubscribe = () =>{
             if (!subscribed) {
               try {
                 realm.create('Firebase', { _id, notify: false, type: 'channel' });
-                this.setState({ subscribed: true, loading : false });
+                if(this.mounted) this.setState({ subscribed: true, loading : false });
               } catch (e) {
                 console.log(e);
               }
@@ -262,10 +264,10 @@ handleSubscribe = () =>{
               try {
                 const element = realm.objects('Firebase').filtered(`_id="${_id}"`);
                 realm.delete(element);
-                this.setState({ subscribed: false, notify: false, loading : false});
+                if(this.mounted) this.setState({ subscribed: false, notify: false, loading : false});
               } catch (e) {
                 console.log(e);
-                this.setState({loading : false});
+                if(this.mounted) this.setState({loading : false});
               }
             }
           });
@@ -273,7 +275,7 @@ handleSubscribe = () =>{
       }
     }).catch(e =>{
       console.log(e);
-      this.setState({loading : false});
+      if(this.mounted) this.setState({loading : false});
       new SessionStore().pushLogs({type : 'error', line : 162, file : 'ChannelDetailsScreen.js', err : e});
     });
   }
@@ -297,7 +299,7 @@ handleSubscribe = () =>{
   }
 
   handleFull = () => {
-    this.setState({ partial: false });
+    if(this.mounted) this.setState({ partial: false });
     this.partial = false;
     const {
       pan

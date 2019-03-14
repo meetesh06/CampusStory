@@ -9,7 +9,8 @@ import {
   FlatList,
   StatusBar,
   View,
-  TouchableOpacity,
+  BackHandler,
+  // TouchableOpacity,
   Alert,
   Text
 } from 'react-native';
@@ -18,6 +19,7 @@ import axios from 'axios';
 import Swiper from 'react-native-swiper';
 import firebase from 'react-native-firebase';
 import FastImage from 'react-native-fast-image';
+import CodePush from 'react-native-code-push';
 import SessionStore from '../SessionStore';
 import Constants from '../constants';
 import EventCard from '../components/EventCard';
@@ -27,15 +29,19 @@ import Hint from '../components/Hint';
 import Realm from '../realm';
 import Spotlight from '../components/Spotlight';
 import InformationCard from '../components/InformationCard';
-import { processRealmObj, getCategoryName, shuffleArray } from './helpers/functions';
+import { processRealmObj, getCategoryName, shuffleArray, stackBackHandler } from './helpers/functions';
 import urls from '../URLS';
 
-const { TOKEN, INTERESTS, CONFIG } = Constants;
+const { TOKEN, INTERESTS, STACK } = Constants;
 const WIDTH = Dimensions.get('window').width;
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
+    // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+    this.navigationEventListener = Navigation.events().bindComponent(this);
+    const store = new SessionStore();
+    store.putValue(STACK, []);
   }
 
   state = {
@@ -58,10 +64,26 @@ class Home extends React.Component {
   componentDidMount() {
     this.checkNotifications();
     this.callBackgroundRefresh();
+    this.checkCodePushUpdate();
+    const store = new SessionStore();
+    const current = store.getValue(STACK);
+    store.putValue(STACK, [...current, 0] );
+    // Alert.alert(JSON.stringify(store.getValue(STACK)));
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', stackBackHandler);
+  }
+
+  checkCodePushUpdate = () => {
+    CodePush.sync({
+      updateDialog: true,
+      installMode: CodePush.InstallMode.IMMEDIATE
+    });
   }
 
   callBackgroundRefresh = ()=>{
-    this.setState({refreshing : true});
+    this.setState({ refreshing: true });
     this.fetchEventsNetwork(()=>{
       this.fetchEventsFromRealm(()=>{
         this.fetchStoriesFromNetwork(()=>{
@@ -83,7 +105,7 @@ class Home extends React.Component {
       }
     }).then((response) => {
         if(!response.data.error){
-          this.setState({weekEventList : response.data.data});
+          this.setState({weekEventList: response.data.data });
           callback();
         } else {
           callback();
@@ -212,13 +234,13 @@ class Home extends React.Component {
                     try {
                       realm.create('Activity', data[i]); 
                       update = true; /* PROCEED ONLY IF HAVE UPDATE */
-                      console.log('Creating New');
+                      // console.log('Creating New');
                     } catch (e) {
                       try {
                         activity = realm.objects('Activity').filtered(`_id="${data[i]._id}"`);
                         data[i].read = activity[0].read;
                         realm.create('Activity', data[i], true); 
-                        console.log('Updating Old');
+                        // console.log('Updating Old');
                       } catch(e){
                         console.log('ERR', e);
                       }
@@ -584,6 +606,14 @@ class Home extends React.Component {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  componentDidAppear() {
+    BackHandler.addEventListener('hardwareBackPress', stackBackHandler);
+    const store = new SessionStore();
+    const current = store.getValue(STACK);
+    if (current[current.length - 1] !== 0) store.putValue(STACK, [...current, 0].slice(-3));
+  }
+
   render() {
     const {
       refreshing,
@@ -597,7 +627,7 @@ class Home extends React.Component {
       <ScrollView
         showsVerticalScrollIndicator = {false}
         style={{
-          backgroundColor: '#333'
+          backgroundColor: '#333',
         }}
         refreshControl={(
           <RefreshControl

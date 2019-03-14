@@ -4,6 +4,7 @@ import {
   ScrollView,
   View,
   Dimensions,
+  BackHandler,
   TouchableOpacity,
   Text,
   FlatList,
@@ -21,6 +22,21 @@ const WIDTH = Dimensions.get('window').width;
 class HelpScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   state = {
@@ -28,6 +44,7 @@ class HelpScreen extends React.Component {
   }
 
   componentDidMount(){
+    this.mounted = true;
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"');
       processRealmObj(Subs, (result) => {
@@ -39,7 +56,7 @@ class HelpScreen extends React.Component {
           final.push(current[0])
         });
         processRealmObj(final, (channels) => {
-          this.setState({ channels });
+          if(this.mounted) this.setState({ channels });
         });
       });
     });
@@ -106,7 +123,7 @@ class HelpScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

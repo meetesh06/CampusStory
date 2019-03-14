@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Text,
+  BackHandler,
   Platform
 } from 'react-native';
 
@@ -19,7 +20,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import EventCard from '../components/EventCard';
 import Realm from '../realm';
 import { goInitializing } from './helpers/Navigation';
-import { processRealmObj } from './helpers/functions';
+import { processRealmObj, stackBackHandler } from './helpers/functions';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -28,6 +29,7 @@ class InterestedScreen extends React.Component {
     super(props);
     this.handleLogout = this.handleLogout.bind(this);
     this.handleEventPress = this.handleEventPress.bind(this);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   state = {
@@ -35,19 +37,29 @@ class InterestedScreen extends React.Component {
     going: [],
     count: 0,
     refreshing: false,
-    loading : true,
+    loading: true,
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.navigationEventListener = Navigation.events().bindComponent(this);
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  
   updateContent = () => {
     Realm.getRealm((realm) => {
       const interested = realm.objects('Events').filtered(`interested=${true}`).filtered(`going != ${true}`).sorted('date');
       const going = realm.objects('Events').filtered(`going = ${true}`).sorted('date');
       processRealmObj(interested, (result) => {
-        this.setState({ interested: result });
+        if(this.mounted) this.setState({ interested: result });
       });
       processRealmObj(going, (result) => {
         this.setState({ going: result, loading : false});
@@ -104,8 +116,13 @@ class InterestedScreen extends React.Component {
     }
   }
 
-  async componentDidAppear() {
+  componentDidAppear() {
     this.updateContent();
+  }
+
+  handleBackButtonClick() {
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   render() {
@@ -151,7 +168,7 @@ class InterestedScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A15', }} name="closecircle" />

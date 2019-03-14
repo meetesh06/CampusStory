@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Platform
+  Platform,
+  BackHandler
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -18,9 +19,25 @@ import urls from '../URLS';
 class AboutUsScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   componentDidMount(){
+    this.mounted = true;
     new SessionStore().pushTrack({type : 'OPEN_HELP'});
   }
 
@@ -63,7 +80,7 @@ class AboutUsScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

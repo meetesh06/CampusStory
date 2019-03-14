@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  BackHandler,
   Platform,
   WebView
 } from 'react-native';
@@ -17,12 +18,28 @@ import SessionStore from '../SessionStore';
 class PrivacyPolicyScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   state = {
   }
 
   componentDidMount(){
+    this.mounted = true;
     new SessionStore().pushTrack({type : 'OPEN_T_N_C'});
   }
 
@@ -115,14 +132,14 @@ class PrivacyPolicyScreen extends React.Component {
         </View>
         </ScrollView> */}
         <View style={{backgroundColor : '#333', flexDirection : 'row'}}>
-          <TouchableOpacity onPress={()=>Navigation.dismissModal(this.props.componentId)}>
+          <TouchableOpacity onPress={()=>Navigation.dismissOverlay(this.props.componentId)}>
             <Text style={{fontSize : 15, margin : 8, color : '#ddd'}}>
               Close
             </Text>
           </TouchableOpacity>
         </View>
-        <WebView 
-        source = {{uri : 'https://mycampusdock.chat/privacy-policy'}}
+        <WebView
+          source = {{uri: 'https://mycampusdock.chat/privacy-policy'}}
         />
 
       </View>

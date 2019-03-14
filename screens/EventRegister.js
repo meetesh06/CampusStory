@@ -1,48 +1,73 @@
 /* eslint-disable consistent-return */
 import React from 'react';
-import { View, Platform, Text, StatusBar, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { BackHandler, View, Platform, Text, StatusBar, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Navigation } from 'react-native-navigation';
+import { goHome } from './helpers/Navigation';
 
-const GoingRegister = (props) => {
-  const {
-    uri,
-    componentId
-  } = props;
-
-
-  const ActivityIndicatorLoadingView = () =>{
-    return (
-      <ActivityIndicator
-        color="#333"
-        size="large"
-        style={{flex : 1, justifyContent : 'center'}}
-      />
-    );
+class GoingRegister extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        marginTop : Platform.OS === 'ios' ? 45 : 8
-      }}
-    >
-    <StatusBar hidden />
-    <View style={{flexDirection : 'row', height : 1, backgroundColor : '#efefef'}}/>
-      <View style={{flex : 1}}>
-      <WebView
-        source={{ uri }}
-        style={{marginTop : 15}}
-        domStorageEnabled={true}
-        javaScriptEnabled={true}
-      />
-      <TouchableOpacity style={{position : 'absolute', top : 0, right : 0, margin : 10, marginTop :0, backgroundColor : '#ffffff55', padding : 5, borderRadius : 10}} onPress={()=>Navigation.dismissModal(componentId)}>
-        <Text style={{fontSize : 15}}>Close</Text>
-      </TouchableOpacity>
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
+  }
+
+  componentDidMount(){
+    this.mounted = true;
+  }
+  render() {
+    const {
+      uri,
+      componentId
+    } = this.props;
+    return (
+      <View
+        style={{
+          flex: 1,
+          marginTop : Platform.OS === 'ios' ? 45 : 0,
+          backgroundColor: '#333'
+        }}
+      >
+      {/* <StatusBar hidden /> */}
+        <WebView
+          source={{ uri }}
+          domStorageEnabled={true}
+          javaScriptEnabled={true}
+          startInLoadingState={true}
+          renderLoading={() => <Text>Loading</Text>}
+        />
+        <TouchableOpacity style={{position : 'absolute', top : 0, right : 0, margin : 10, backgroundColor : '#c0c0c055', padding : 5, borderRadius : 10}} onPress={()=>Navigation.dismissOverlay(this.props.componentId)}>
+          <Text style={{fontSize : 15}}>Close</Text>
+        </TouchableOpacity>
       </View>
-    </View>
-  );
+    );
+  }
+  
+  // Navigation.dismissOverlay(parentId);
+  // const ActivityIndicatorLoadingView = () =>{
+  //   return (
+  //     <ActivityIndicator
+  //       color="#333"
+  //       size="large"
+  //       style={{flex : 1, justifyContent : 'center'}}
+  //     />
+  //   );
+  // }
+
+  
 };
 
 export default GoingRegister;

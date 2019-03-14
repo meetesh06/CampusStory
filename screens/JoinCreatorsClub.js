@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   Platform,
+  BackHandler,
   TextInput
 } from 'react-native';
 
@@ -20,6 +21,25 @@ import Constants from '../constants';
 class JoinCreatorsClub extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   state = {
@@ -52,9 +72,9 @@ class JoinCreatorsClub extends React.Component {
           if(already_list.includes(list[i]._id))continue;
           final_list.push(list[i]);
         }
-        this.setState({channels : final_list, error : false, refreshing : false});
+        if(this.mounted) this.setState({channels : final_list, error : false, refreshing : false});
       } else {
-        this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
+        if(this.mounted) this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>{
       console.log(e);
@@ -102,7 +122,7 @@ class JoinCreatorsClub extends React.Component {
               padding : 10, 
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />
@@ -129,7 +149,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="Your Full Name"
-            onChangeText={val => this.setState({ name: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ name: val })}}
             value={name}
           />
 
@@ -149,7 +169,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="Your E-mail ID"
-            onChangeText={val => this.setState({ email: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ email: val })}}
             value={email}
           />
 
@@ -168,7 +188,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="Your Phone Number"
-            onChangeText={val => this.setState({ phone: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ phone: val })}}
             value={phone}
           />
 
@@ -186,7 +206,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="Your Channel Name"
-            onChangeText={val => this.setState({ channel_name: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ channel_name: val })}}
             value={channel_name}
           />
 
@@ -204,7 +224,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="+ Youtube / Instagram / Facebook"
-            onChangeText={val => this.setState({ handle: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ handle: val })}}
             value={handle}
           />
 
@@ -225,7 +245,7 @@ class JoinCreatorsClub extends React.Component {
               backgroundColor: '#555'
             }}
             placeholder="Tell us about your channel"
-            onChangeText={val => this.setState({ channel_description: val })}
+            onChangeText={val => {if(this.mounted) this.setState({ channel_description: val })}}
             value={channel_description}
           />
           <Text style={{color : '#999', fontSize : 12, margin : 10, textAlign : 'center'}}>{'We will verify your details if your channel matches our categories, we will keep you posted on your email as we proceed on your application, please provide your popular youtube facebook or instagram handle which will help us to identify you confidently. This usually takes around 3 days of time but can be extended upto a working week.'}</Text>

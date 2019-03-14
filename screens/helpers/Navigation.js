@@ -96,6 +96,13 @@ export const goHome = async (first) => {
         options: {
           bottomTabs: {
             backgroundColor: '#222'
+          },
+          topBar: {
+            visible: false,
+            drawBehind: true,
+            background: {
+              color: '#222'
+            }
           }
         },
         children: [
@@ -113,8 +120,14 @@ export const goHome = async (first) => {
                   selectedTextColor: '#FF6A15',
                   selectedIconColor: '#FF6A15'
                 },
-                background: {
-                  color: '#333'
+                topBar: {
+                  visible: true,
+                  // drawBehind: false,
+                  drawBehind: Platform.OS === 'ios' ? true : false,
+                  hideOnScroll: true,
+                  background: {
+                    color: '#222'
+                  }
                 }
               },
               children: [
@@ -129,10 +142,19 @@ export const goHome = async (first) => {
                       topBar: {
                         visible: true,
                         animate: true,
+                        hideOnScroll: Platform.OS === 'ios' ? true : false,
+                        // hideOnScroll: true,
+                        title: {
+                          component: Platform.OS === 'android' ? undefined : {
+                            name: 'homeTopBar',
+                            alignment: 'fill'
+                          }
+                        },
                         background: {
                           color: '#222',
-                          component: {
-                            name: 'homeTopBar'
+                          component: Platform.OS === 'ios' ? undefined : {
+                            name: 'homeTopBar',
+                            alignment: 'fill'
                           }
                         },
                         rightButtons: [
@@ -140,6 +162,13 @@ export const goHome = async (first) => {
                             id: 'InterestedEvents',
                             component: {
                               name: 'app.HeartIcon'
+                            }
+                          }],
+                        leftButtons: Platform.OS === 'android' ? undefined : [
+                          {
+                            id: 'InterestedEvents',
+                            component: {
+                              name: 'app.LeftDummy'
                             }
                           }],
                       }

@@ -4,6 +4,7 @@ const constants = {
   COLLEGE: 'college',
   INTERESTS: 'interests',
   TOKEN: 'token',
+  STACK: [],
   MUTED : 'muted',
   VIEWS : 'views',
   VISITS : 'visits',

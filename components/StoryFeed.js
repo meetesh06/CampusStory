@@ -34,7 +34,12 @@ class StoryFeed extends React.PureComponent {
     }
 
     componentDidMount(){
+      this.mounted = true;
       this.fetch_data();
+    }
+
+    componentWillUnmount() {
+      this.mounted = false;
     }
 
     fetch_data = () =>{
@@ -48,12 +53,12 @@ class StoryFeed extends React.PureComponent {
         if(!response.data.error){
           const data = response.data.data;
           if(data.length > 0){
-            this.setState({feed : data, hidden : true});
+            if(this.mounted) this.setState({feed : data, hidden : true});
           } else {
-            this.setState({hidden : false});
+            if(this.mounted) this.setState({hidden : false});
           }
         } else {
-          this.setState({error : true});
+          if(this.mounted) this.setState({error : true});
         }
       }).catch((e)=>{
         console.log(e)
@@ -88,7 +93,7 @@ class StoryFeed extends React.PureComponent {
 
     handleChannelClickStory = (item, image) => {
       console.log('Story', item);
-      this.setState({ peek: false }, () => {
+      if(this.mounted) this.setState({ peek: false }, () => {
         Navigation.showOverlay({
           component: {
             id: 'preview_overlay',
@@ -118,7 +123,7 @@ class StoryFeed extends React.PureComponent {
 
     handlePreview = (item,image) => {
       console.log('long press');
-      this.setState({ peek: true }, () => {
+      if(this.mounted) this.setState({ peek: true }, () => {
         Navigation.showOverlay({
           component: {
             id: 'preview_overlay1',

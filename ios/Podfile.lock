@@ -71,30 +71,30 @@ PODS:
     - GoogleUtilities/Logger
   - JWT (3.0.0-beta.11):
     - Base64 (~> 1.1.2)
-  - libwebp (0.6.1):
-    - libwebp/core (= 0.6.1)
-    - libwebp/dec (= 0.6.1)
-    - libwebp/demux (= 0.6.1)
-    - libwebp/dsp (= 0.6.1)
-    - libwebp/enc (= 0.6.1)
-    - libwebp/mux (= 0.6.1)
-    - libwebp/utils (= 0.6.1)
-    - libwebp/webp (= 0.6.1)
-  - libwebp/core (0.6.1):
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
     - libwebp/webp
-  - libwebp/dec (0.6.1):
+  - libwebp/dec (1.0.2):
     - libwebp/core
-  - libwebp/demux (0.6.1):
+  - libwebp/demux (1.0.2):
     - libwebp/core
-  - libwebp/dsp (0.6.1):
+  - libwebp/dsp (1.0.2):
     - libwebp/core
-  - libwebp/enc (0.6.1):
+  - libwebp/enc (1.0.2):
     - libwebp/core
-  - libwebp/mux (0.6.1):
+  - libwebp/mux (1.0.2):
     - libwebp/core
-  - libwebp/utils (0.6.1):
+  - libwebp/utils (1.0.2):
     - libwebp/core
-  - libwebp/webp (0.6.1)
+  - libwebp/webp (1.0.2)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -155,12 +155,12 @@ PODS:
     - React/RCTBlob
   - RNDeviceInfo (0.21.5):
     - React
-  - SDWebImage/Core (4.4.5)
-  - SDWebImage/GIF (4.4.5):
+  - SDWebImage/Core (4.4.6)
+  - SDWebImage/GIF (4.4.6):
     - FLAnimatedImage (~> 1.0)
     - SDWebImage/Core
-  - SDWebImage/WebP (4.4.5):
-    - libwebp (~> 0.5)
+  - SDWebImage/WebP (4.4.6):
+    - libwebp (>= 0.5)
     - SDWebImage/Core
   - SPTPersistentCache (1.1.0)
   - SSZipArchive (2.1.4)
@@ -183,7 +183,6 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
-  - SDWebImage/WebP
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -233,7 +232,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CodePush: b4c024dfc7b1f44434aaadf9f6763bb22e243980
+  CodePush: f6b348759cdc42c734d9c3a46ceb2997c270b12e
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   DVAssetLoaderDelegate: 38a24530292bf77900fdfdf635434f7f9b49486d
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
@@ -248,20 +247,20 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   JWT: 05028b9624591bba9681bb57df2c5f95fa258bad
-  libwebp: 0f01098c6c17175391af621b2f14150f3ca16e16
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  RCTSystemSetting: 9279ff44c49bb4fb0a5d335a0851852c8f3eda99
-  React: adbac0757ce35e92fbd447ab98c810209d27d9b0
-  react-native-fast-image: 21d2d84a46b12cacbe7958ab6414fe828c094f82
-  react-native-video: aefb0f6a2a7cf21084a7ab3cf87354f40e7d7f3b
-  react-native-webview: 181350d3eafa1aa37120607f84158be5c648a640
-  RNDeviceInfo: e7c5fcde13d40e161d8a27f6c5dc69c638936002
-  SDWebImage: ecc03494e973b93b80213649d32175f8d2d17d4d
+  RCTSystemSetting: 67dc0e56f86c0eb005055d131b38853af5c968c4
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  react-native-fast-image: 4170ad074e9de6c428fc4580ecbaacabf74901a6
+  react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
+  react-native-webview: a42108b827082f8f0333529b0772102031d5960d
+  RNDeviceInfo: 568c5641057313b4912d08a7742ff0b2f753ed5c
+  SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  yoga: 74cdf036c30820443b25ade59916236b1e95ee93
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: d32a0efd329a3f6b72cac57faeecfc54eedf84a0
+PODFILE CHECKSUM: d7cf2794dbacbd46b948240a826c288fa841bde9
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.5.3

@@ -40,6 +40,7 @@ class DiscoverPreview extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     let {item,image} = this.props;
     if(image === null || image === undefined) image = '["xxx"]';
@@ -104,6 +105,7 @@ class DiscoverPreview extends React.Component {
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -156,9 +158,9 @@ class DiscoverPreview extends React.Component {
       for(let i=0; i< (constants.REACTIONS_LIMIT); i++){
         emojis.push(value);
       }
-      this.setState({emojis, enabled : false});
+      if(this.mounted) this.setState({emojis, enabled : false});
       setTimeout(()=>{
-        this.setState({emojis : [], enabled : true});
+        if(this.mounted) this.setState({emojis : [], enabled : true});
       }, 5000);
     }
   }
@@ -211,12 +213,11 @@ class DiscoverPreview extends React.Component {
           marginLeft: 10,
           borderRadius: 10,
           overflow: 'hidden',
-          height: 400,
+          minHeight: 400,
           opacity: this.opacity,
           backgroundColor: '#fff'
         }}
-        >
-          
+        > 
           <View
             style={{
               flex: 1,
@@ -283,6 +284,7 @@ class DiscoverPreview extends React.Component {
               </TouchableOpacity>
             }
         </Animated.View>
+        
       </View>
     );
   }

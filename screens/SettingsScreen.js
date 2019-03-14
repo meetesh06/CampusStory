@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  BackHandler,
   Platform
 } from 'react-native';
 
@@ -17,17 +18,28 @@ import SessionStore from '../SessionStore';
 class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentDidMount(){
-    new SessionStore().pushTrack({type : 'OPEN_SETTINGS'});
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    new SessionStore().pushTrack({ type: 'OPEN_SETTINGS' });
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   state = {
   }
 
   gotoScreen = (name) =>{
-    Navigation.showModal({
+    Navigation.showOverlay({
       component: {
         name,
         options: {
@@ -37,6 +49,11 @@ class SettingsScreen extends React.Component {
         }
       }
     });
+  }
+
+  handleBackButtonClick() {
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   render() {
@@ -75,7 +92,7 @@ class SettingsScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId)
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

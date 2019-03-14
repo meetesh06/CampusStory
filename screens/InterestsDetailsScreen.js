@@ -7,6 +7,7 @@ import {
   Text,
   FlatList,
   Alert,
+  BackHandler,
   Platform
 } from 'react-native';
 
@@ -22,6 +23,21 @@ import { categories } from './helpers/values';
 class InterestsDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   state = {
@@ -29,6 +45,7 @@ class InterestsDetailsScreen extends React.Component {
   }
 
   componentDidMount(){
+    this.mounted = true;
     const data = new SessionStore().getValue(Constants.INTERESTS);
     let selections;
     if(data === '' || data === undefined) selections = []
@@ -38,7 +55,7 @@ class InterestsDetailsScreen extends React.Component {
     for (i = 0; i < categories.length; i++) {
       interests.push(categories[i]);
     }
-    this.setState({selections, interests});
+    if(this.mounted) this.setState({selections, interests});
   }
 
   handleInterestSelection = (value) => {
@@ -66,7 +83,7 @@ class InterestsDetailsScreen extends React.Component {
       }
       const val = selections.join();
       new SessionStore().putValue(Constants.INTERESTS, val);
-      Navigation.dismissModal(this.props.componentId);
+      Navigation.dismissOverlay(this.props.componentId);
     } else {
       Alert.alert('Fill data correctly','Select at least 2 interests');
     }
@@ -108,7 +125,7 @@ class InterestsDetailsScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

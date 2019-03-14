@@ -45,6 +45,7 @@ class EventDetail extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleFull = this.handleFull.bind(this);
     this.handleChannelOpenNetwork = this.handleChannelOpenNetwork.bind(this);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     
     this.topHeight = new Animated.Value(HEIGHT);
     this.opacity = new Animated.Value(0.3);
@@ -112,12 +113,17 @@ class EventDetail extends React.Component {
         else if(this.tapped === 2){
           let diff = new Date().getTime() - this.tapped_time;
           if(diff < 800){
-            this.setState({zoom : !this.state.zoom});
+            if(this.mounted) this.setState({zoom : !this.state.zoom});
           }
           this.tapped = 0;
         }
       }
     });
+  }
+
+  componentWillMount() {
+    this.mounted = true;
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
   componentDidMount() {
@@ -132,7 +138,6 @@ class EventDetail extends React.Component {
         duration: 200,
       })
     ]).start( () => {
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
       this.fetchEventFromNetwork(()=>{
 
       });
@@ -175,7 +180,7 @@ class EventDetail extends React.Component {
             }
           });
           el.dummy = false
-          this.setState({ item: el, });
+          if(this.mounted) this.setState({ item: el, });
         });
         callback();
       } else {
@@ -193,6 +198,7 @@ class EventDetail extends React.Component {
   }
 
   componentWillUnmount(){
+    this.mounted = false;
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -201,7 +207,7 @@ class EventDetail extends React.Component {
     const { item } = this.props;
     const { _id } = item;
     if (loading) return;
-    this.setState({ loading: true });
+    if(this.mounted) this.setState({ loading: true });
     axios.post(urls.SET_USER_INTERESTED, { _id }, {
       headers: {
         'Content-Type': 'application/json',
@@ -214,7 +220,7 @@ class EventDetail extends React.Component {
           realm.write(() => {
             try {
               realm.create('Events', { _id, interested: true }, true);
-              this.setState({ item: { ...item, interested: true } });
+              if(this.mounted) this.setState({ item: { ...item, interested: true } });
             } catch (e) {
               console.log(e);
             }
@@ -224,7 +230,7 @@ class EventDetail extends React.Component {
     }).catch(err => {
       console.log(err)
       new SessionStore().pushLogs({type : 'error', line : 191, file : 'EventDetails.js', err : err});
-    }).finally(() => this.setState({ loading: false }));
+    }).finally(() => {if(this.mounted) this.setState({ loading: false })});
   }
 
   handleClose = () => {
@@ -247,7 +253,7 @@ class EventDetail extends React.Component {
   }
 
   handleFull = () => {
-    this.setState({ partial: false });
+    if(this.mounted) this.setState({ partial: false });
     this.partial = false;
     const {
       pan
@@ -269,7 +275,7 @@ class EventDetail extends React.Component {
     Realm.getRealm((realm) => {
       const element = realm.objects('Events').filtered(`_id="${_id}"`);
       const final = { ...element[0] };
-      this.setState({ item: final });
+      if(this.mounted) this.setState({ item: final });
     });
   }
 
@@ -279,22 +285,25 @@ class EventDetail extends React.Component {
 
     if (loading) return;
     if (item.reg_link !== '') {
-      Navigation.dismissOverlay(this.props.componentId);
-      Navigation.showModal({
-        stack: {
-          children: [{
-            component: {
-              name: 'Event Register',
-              passProps: {
-                uri: item.reg_link,
-              },
-              options: {
-                topBar: {
-                  visible: false
-                }
-              }
+      // Navigation.dismissOverlay(this.props.componentId);
+      // this.handleClose();
+      Navigation.showOverlay({
+        component: {
+          name: 'Event Register',
+          passProps: {
+            uri: item.reg_link,
+            parentId: this.props.componentId
+          },
+          options: {
+            topBar: {
+              visible: false,
+              drawBehind: true,
+              // title: {
+              //   text: 'Event Register',
+              //   color: '#333'
+              // }
             }
-          }]
+          }
         }
       });
     } else {
@@ -317,7 +326,7 @@ class EventDetail extends React.Component {
   submit = (data) => {
     const { _id } = this.props.item;
     data._id = _id;
-    this.setState({ loading: true });
+    if(this.mounted) this.setState({ loading: true });
     axios.post(urls.SET_ENROLLED, data, {
       headers: {
         'x-access-token': new SessionStore().getValue(TOKEN)
@@ -327,19 +336,19 @@ class EventDetail extends React.Component {
         Realm.getRealm((realm) => {
           realm.write(() => {
             realm.create('Events', { _id, going: true }, true);
-            this.setState({ loading: false });
+            if(this.mounted) this.setState({ loading: false });
             this.updateStatus();
           });
         });
-      } else { this.setState({ loading: false }); }
+      } else { if(this.mounted) this.setState({ loading: false }); }
     }).catch((e) => {
-      this.setState({ loading: false });
+      if(this.mounted) this.setState({ loading: false });
     });
   }
 
   success = () => {
     const { item } = this.props;
-    this.setState({ item: { ...item, going: true } });
+    if(this.mounted) this.setState({ item: { ...item, going: true } });
   }
 
   handleChannelOpenNetwork = () => {
@@ -381,7 +390,7 @@ class EventDetail extends React.Component {
             realm.create('Firebase', { _id, notify: true, type: 'event' }, true);
             realm.create('Events', { _id, remind: true }, true);
             firebase.messaging().subscribeToTopic(_id);
-            this.setState({ remind: true });
+            if(this.mounted) this.setState({ remind: true });
           } catch (e) {
             console.log(e);
           }
@@ -391,7 +400,7 @@ class EventDetail extends React.Component {
             realm.create('Events', { _id, remind: false }, true);
             realm.delete(element);
             firebase.messaging().unsubscribeFromTopic(_id);
-            this.setState({ remind: false });
+            if(this.mounted) this.setState({ remind: false });
           } catch (e) {
             console.log(e);
           }

@@ -6,6 +6,7 @@ import {
   TextInput,
   Alert,
   TouchableOpacity,
+  BackHandler,
   Text,
   Platform
 } from 'react-native';
@@ -29,9 +30,25 @@ class HelpScreen extends React.Component {
       gender : 'm',
       count : 0,
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   componentDidMount(){
+    this.mounted = true;
     new SessionStore().pushTrack({type : 'OPEN_PROFILE'});
     let user_data = new SessionStore().getValue(Constants.USER_DATA);
     if(user_data === null || user_data === undefined) return;
@@ -64,7 +81,7 @@ class HelpScreen extends React.Component {
     user_data['phone'] = phone;
     user_data['gender'] = gender;
     store.putValue(Constants.USER_DATA, user_data);
-    Navigation.dismissModal(this.props.componentId)
+    Navigation.dismissOverlay(this.props.componentId);
   }
 
   handleMysteryLogout = () =>{
@@ -118,7 +135,7 @@ class HelpScreen extends React.Component {
               paddingLeft : 30
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

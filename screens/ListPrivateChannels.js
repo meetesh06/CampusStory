@@ -8,6 +8,7 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
+  BackHandler,
   Platform
 } from 'react-native';
 
@@ -28,6 +29,21 @@ const WIDTH = Dimensions.get('window').width;
 class ListPrivateChannels extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick = () =>{
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   state = {
@@ -37,11 +53,12 @@ class ListPrivateChannels extends React.Component {
   }
 
   componentDidMount(){
-    this.setState({refreshing : true});
+    this.mounted = true;
+    if(this.mounted) this.setState({refreshing : true});
     Realm.getRealm((realm) => {
       const Subs = realm.objects('Firebase').filtered('type="channel"').filtered('private=true');
       processRealmObj(Subs, (result) => {
-        this.setState({already : result});
+        if(this.mounted) this.setState({already : result});
         this.fetch_data();
       });
     });
@@ -68,13 +85,13 @@ class ListPrivateChannels extends React.Component {
           if(already_list.includes(list[i]._id))continue;
           final_list.push(list[i]);
         }
-        this.setState({channels : final_list, error : false, refreshing : false});
+        if(this.mounted) this.setState({channels : final_list, error : false, refreshing : false});
       } else {
-        this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
+        if(this.mounted) this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
       }
     }).catch((e)=>{
       console.log(e);
-      this.setState({refreshing : false});
+      if(this.mounted) this.setState({refreshing : false});
       new SessionStore().pushLogs({type : 'error', line : 75, file : 'ListPrivateChannels.js', err : e});
     });
   }
@@ -102,7 +119,7 @@ class ListPrivateChannels extends React.Component {
         }
       }
     });
-    Navigation.dismissModal(this.props.componentId);
+    Navigation.dismissOverlay(this.props.componentId);
   }
 
   render() {
@@ -141,7 +158,7 @@ class ListPrivateChannels extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

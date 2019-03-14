@@ -60,9 +60,14 @@ class Interests extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.firebaseConfig();
     const { _onRefresh } = this;
     _onRefresh();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   firebaseConfig = async () => {
@@ -148,16 +153,16 @@ class Interests extends React.Component {
             });
           } catch (error) {
             console.log(error);
-            this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+            if(this.mounted) this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
           }
         }
         else {
-          this.setState({ loading: false, error : 'Something went wrong on server :('});
+          if(this.mounted) this.setState({ loading: false, error : 'Something went wrong on server :('});
         }
       }).catch((err) => {
         console.log(err);
         new SessionStore().pushLogs({type : 'error', line : 161, file : 'Interest.js', err});
-        this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
+        if(this.mounted) this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
 
@@ -167,7 +172,7 @@ class Interests extends React.Component {
         this.updateLocalState(this.state.config.college, this.state.config.interestsProcessed, this.state.config.data.token, this.state.config.data);
       });
     } catch (error) {
-      this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+      if(this.mounted) this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
     }
   }
 
@@ -211,7 +216,7 @@ class Interests extends React.Component {
       return;
     }
 
-    this.setState({ loading: true, error : null});
+    if(this.mounted) this.setState({ loading: true, error : null});
     interestsProcessed = interestsProcessed.join();
     // eslint-disable-next-line no-undef
     const id = uniqueId === undefined || uniqueId === null || uniqueId === '' || uniqueId.length < 2 ? this.UUID(24) : uniqueId;
@@ -238,7 +243,7 @@ class Interests extends React.Component {
         const resultObj = result.data;
         if (!resultObj.error) {
           if(resultObj.exists){
-            this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data, id}}, ()=>{
+            if(this.mounted) this.setState({ config : {formData, token : resultObj.data.token, temp, college, interestsProcessed, data : resultObj.data, id}}, ()=>{
               this.showBackupPrompt(result.data.data);
             });
           }
@@ -248,16 +253,16 @@ class Interests extends React.Component {
                 updateLocalState(college, interestsProcessed, resultObj.data, {_id : id, [COLLEGE] : college, [INTERESTS] : interestsProcessed});
               });
             } catch (error) {
-              this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
+              if(this.mounted) this.setState({ loading: false, error : 'Ohh Ohh! Try again!'});
             }
           }
         }
         else {
-          this.setState({ loading: false, error : 'Something went wrong on server :('});
+          if(this.mounted) this.setState({ loading: false, error : 'Something went wrong on server :('});
         }
       }).catch((err) => {
         new SessionStore().pushLogs({type : 'error', line : 261, file : 'Interest.js', err});
-        this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
+        if(this.mounted) this.setState({ loading: false, error : 'Something went wrong! Try Again:(' });
       });
   }
 
@@ -297,11 +302,11 @@ class Interests extends React.Component {
     } else {
       current[value] = 1;
     }
-    this.setState({ interests: current });
+    if(this.mounted) this.setState({ interests: current });
   }
 
   _onRefresh = () => {
-    this.setState({
+    if(this.mounted) this.setState({
       refreshing: true,
       collegeSelection: {
         _id: '', media: 'general/college.webp', name: '', location: ''
@@ -318,7 +323,7 @@ class Interests extends React.Component {
       .then((result) => {
         const resultObj = result.data;
         if (!resultObj.error) {
-          this.setState({ collegeSelection: resultObj.data[0], colleges: resultObj.data });
+          if(this.mounted) this.setState({ collegeSelection: resultObj.data[0], colleges: resultObj.data });
         }
       })
       .catch(err => {
@@ -326,7 +331,7 @@ class Interests extends React.Component {
         new SessionStore().pushLogs({type : 'error', line : 328, file : 'Interest.js', err});
       })
       .finally(() => {
-        this.setState({ refreshing: false });
+        if(this.mounted) this.setState({ refreshing: false });
       });
   }
 
@@ -356,7 +361,7 @@ class Interests extends React.Component {
   }
 
   onSelection = (data) =>{
-    this.setState({collegeSelection: data});
+    if(this.mounted) this.setState({collegeSelection: data});
   }
 
   render() {

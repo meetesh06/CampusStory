@@ -28,6 +28,7 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
+    this.mounted = true;
     try {
       const status = new SessionStore().getValue(SET_UP_STATUS);
       if (status === true) {
@@ -35,12 +36,16 @@ class App extends React.Component {
         goHome(false);
       } else {
         firebase.messaging().subscribeToTopic('ogil7190');
-        this.setState({ loading: false });
+        if(this.mounted) this.setState({ loading: false });
       }
     } catch (err) {
       console.log('error: ', err);
-      this.setState({ loading: false });
+      if(this.mounted) this.setState({ loading: false });
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   continueNext = () => {

@@ -2,9 +2,11 @@
 import React from 'react';
 import {
   FlatList,
+  BackHandler,
   ScrollView,
   View,
   Text,
+  Alert,
   RefreshControl,
 } from 'react-native';
 import axios from 'axios';
@@ -14,10 +16,10 @@ import Realm from '../realm';
 import EventNotification from '../components/EventNotification';
 import NormalNotification from '../components/NormalNotification';
 import Constants from '../constants';
-import { processRealmObj } from './helpers/functions';
+import { processRealmObj, stackBackHandler } from './helpers/functions';
 import urls from '../URLS';
 
-const { TOKEN } = Constants;
+const { TOKEN, STACK } = Constants;
 const today = new Date();
 
 class Profile extends React.Component {
@@ -31,7 +33,7 @@ class Profile extends React.Component {
     current: today,
     refreshing: false,
     notifications: [],
-    count : 0
+    count: 0
   }
 
   componentDidMount() {
@@ -101,16 +103,22 @@ class Profile extends React.Component {
           });
           this.handleDisplayData();
         }
-      }).catch(err => {
-        console.log(err)
-        new SessionStore().pushLogs({type : 'error', line : 106, file : 'Profile.js', err : err});
+      }).catch((err) => {
+        console.log(err);
+        new SessionStore().pushLogs({
+ type: 'error', line: 106, file: 'Profile.js', err 
+});
       })
         .finally(() => this.setState({ refreshing: false }));
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   componentDidAppear() {
-    this.handleDisplayData();
+    BackHandler.addEventListener('hardwareBackPress', stackBackHandler);
+    const store = new SessionStore();
+    const current = store.getValue(STACK);
+    if (current[current.length - 1] !== 2) store.putValue(STACK, [...current, 2].slice(-3));
   }
 
   render() {
@@ -131,14 +139,14 @@ class Profile extends React.Component {
           backgroundColor: '#333'
         }}
       >
-      {
-        notifications.length > 0 &&
-        <FlatList
+        {
+        notifications.length > 0
+        && <FlatList
           keyExtractor={(item, index) => `${index}`}
           data={notifications}
           extraData={notifications}
           renderItem={({ item, index }) => {
-            if(item.type === 'event') {
+            if (item.type === 'event') {
               return (
                 <EventNotification
                   _id={item._id}
@@ -146,14 +154,14 @@ class Profile extends React.Component {
                 />
               );
             }
-            if(item.type === 'college') {
+            if (item.type === 'college') {
               return (
                 <NormalNotification
                   _id={item._id}
                   title="Latest Updates"
                   updates={item.updates}
-                  touchable = {false}
-                  onPressNotification = {()=>console.log('Clicked')}
+                  touchable ={false}
+                  onPressNotification ={() => console.log('Clicked')}
                   timestamp={item.updates[0].timestamp}
                 />
               );
@@ -163,10 +171,10 @@ class Profile extends React.Component {
         />
       }
 
-      {
-        notifications.length === 0 &&
-        <View style={{margin : 10}}>
-          <Text style={{fontSize : 14, color : '#ddd', textAlign :'center'}}>
+        {
+        notifications.length === 0
+        && <View style={{ margin: 10 }}>
+          <Text style={{ fontSize: 14, color: '#ddd', textAlign: 'center' }}>
             {
               'No recent updates for you'
             }

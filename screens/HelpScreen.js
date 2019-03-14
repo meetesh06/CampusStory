@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  SafeAreaView
+  SafeAreaView,
+  BackHandler
 } from 'react-native';
 
 import { Navigation } from 'react-native-navigation';
@@ -18,6 +19,7 @@ import SessionStore from '../SessionStore';
 class HelpScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount(){
@@ -25,6 +27,19 @@ class HelpScreen extends React.Component {
   }
 
   state = {
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick() {
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   render() {
@@ -62,7 +77,7 @@ class HelpScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId);
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />

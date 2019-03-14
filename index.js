@@ -33,8 +33,6 @@ import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import ShowTagScreen from './screens/ShowTagScreen';
 import CollegeSelectionScreen from './screens/CollegeSelectionScreen';
 import JoinCreatorsClub from './screens/JoinCreatorsClub';
-import CodePush from 'react-native-code-push';
-import urls from './URLS';
 
 
 const whiteTopBarImage = require('./media/app-bar/logo.png');
@@ -43,6 +41,19 @@ this.state = {
 };
 
 const homeTopBar = () => (
+  // <FastImage
+  //     style={{
+  //       marginTop: Platform.OS === 'android' ? 5 : 0,
+  //       width: 36,
+  //       backgroundColor: 'red',
+  //       margin: 5,
+  //       height: 36
+  //     }}
+  //     resizeMode={FastImage.resizeMode.contain}
+  //     source={whiteTopBarImage}
+  //   />
+  // <Text style={{ fontFamily: 'Roboto', alignSelf: 'center', fontSize: 18, color: '#FF6A15' }}>Campus Story</Text>
+
   <View
     style={{
       flex: 1,
@@ -66,22 +77,36 @@ const homeTopBar = () => (
   </View>
 );
 
+const LeftDummy = () => (
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      // padding : 10,
+      alignItems : 'center',
+      justifyContent: 'center',
+    }}
+  >
+    <Icon size={22} style={{ color: '#222' }} name="heart"/>
+  </TouchableOpacity>
+);
+
 const HeartIcon = () => (
   <TouchableOpacity
     style={{
       flex: 1,
-      padding : 10,
-      alignItems : 'center',
+      padding: Platform.OS === 'ios' ? undefined : 10,
+      alignItems: 'center',
       justifyContent: 'center',
     }}
     onPress={
       () => {
-        Navigation.showModal({
+        Navigation.showOverlay({
           component: {
             name: 'Interested Screen',
             options: {
               topBar: {
-                visible: false
+                visible: false,
+                drawBehind: true
               }
             }
           }
@@ -102,7 +127,7 @@ const SettingsIcon = () => (
     }}
     onPress={
       () => {
-        Navigation.showModal({
+        Navigation.showOverlay({
           component: {
             name: 'Settings Screen',
             options: {
@@ -126,7 +151,7 @@ const HelpIcon = () => (
       paddingRight: 10,
       paddingLeft: 10,
     }}
-    onPress={()=>  Navigation.showModal({
+    onPress={()=>  Navigation.showOverlay({
       component: {
         name: 'Help Screen',
         options: {
@@ -142,13 +167,6 @@ const HelpIcon = () => (
   </TouchableOpacity>
 );
 
-checkCodePushUpdate  = () =>{
-  return  CodePush.sync({
-    checkFrequency: CodePush.CheckFrequency.ON_APP_START,
-    installMode: CodePush.InstallMode.ON_NEXT_SUSPEND,
-    deploymentKey: Platform.OS === 'ios' ? urls.CODEPUSH_IOS : urls.CODEPUSH_ANDROID,
-  });
-}
 
 init = () =>{
   Navigation.setRoot({
@@ -184,6 +202,7 @@ Navigation.registerComponent('Story Screen', () => StoryScreen);
 Navigation.registerComponent('Going Details', () => GoingDetails);
 Navigation.registerComponent('homeTopBar', () => homeTopBar);
 Navigation.registerComponent('app.HeartIcon', () => HeartIcon);
+Navigation.registerComponent('app.LeftDummy', () => LeftDummy);
 Navigation.registerComponent('app.SettingsIcon', () => SettingsIcon);
 Navigation.registerComponent('app.HelpIcon', () => HelpIcon);
 Navigation.registerComponent('Discover Preview', () => DiscoverPreview);
@@ -207,7 +226,6 @@ Navigation.registerComponent('Join Creators Club', () => JoinCreatorsClub);
 Navigation.events().registerAppLaunchedListener(async () => {
   AppState.addEventListener('change', this.onAppStateChanged);
   const store = new SessionStore();
-  this.checkCodePushUpdate();
   await store.getValueBulk();
   this.init();
 });

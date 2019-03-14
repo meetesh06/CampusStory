@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
+  BackHandler,
   Platform,
   RefreshControl
 } from 'react-native';
@@ -23,6 +24,7 @@ import PostVideoThumbnail from '../components/PostVideoThumbnail';
 class ShowTagScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   state = {
@@ -30,17 +32,27 @@ class ShowTagScreen extends React.Component {
     loading : false
   }
 
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  
+  componentWillUnmount() {
+    this.mounted = false;
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
   componentDidMount(){
+    this.mounted = true;
     new SessionStore().pushTrack({type : 'OPEN_TAG', hashtag : this.props.hashtag});
     this.fetch_data();
   }
 
   fetch_data = () =>{
     const hashtag = this.props.hashtag;
-    if(hashtag.length < 3){
+    if(hashtag.length < 3 && this.mounted){
       return this.setState({error : 'Not a possible hashtag, try again'});
     }
-    this.setState({loading : true, error : ''});
+    if(this.mounted) this.setState({loading : true, error : ''});
     axios.post(urls.GET_TAG, {hashtag}, {
       headers: {
         'Content-Type': 'application/json',
@@ -48,14 +60,14 @@ class ShowTagScreen extends React.Component {
       }
     }).then((response) => {
       if(!response.data.error){
-        this.setState({activites : response.data.data, loading : false});
+        if(this.mounted) this.setState({activites : response.data.data, loading : false});
       } else {
-        this.setState({error : 'Something went wrong', loading : false});
+        if(this.mounted) this.setState({error : 'Something went wrong', loading : false});
       }
     }).catch((e)=>{
       console.log(e);
       new SessionStore().pushLogs({type : 'error', line : 57, file : 'ShowTagScreen.js', err : e});
-      this.setState({error : 'Try Again! Something gone wrong :(', loading : false});
+      if(this.mounted) this.setState({error : 'Try Again! Something gone wrong :(', loading : false});
     });
   }
 
@@ -64,7 +76,7 @@ class ShowTagScreen extends React.Component {
   }
 
   handleChannelClickStory = (item, image) => {
-    this.setState({ peek: false }, () => {
+    if(this.mounted) this.setState({ peek: false }, () => {
       Navigation.showOverlay({
         component: {
           id: 'preview_overlay',
@@ -86,7 +98,7 @@ class ShowTagScreen extends React.Component {
   }
 
   handlePreview = (item, image) => {
-    this.setState({ peek: true }, () => {
+    if(this.mounted) this.setState({ peek: true }, () => {
       Navigation.showOverlay({
         component: {
           id: 'preview_overlay1',
@@ -105,6 +117,11 @@ class ShowTagScreen extends React.Component {
         }
       }).catch(err => console.log(e));
     });
+  }
+
+  handleBackButtonClick() {
+    Navigation.dismissOverlay(this.props.componentId);
+    return true;
   }
 
   render() {
@@ -143,7 +160,7 @@ class ShowTagScreen extends React.Component {
               padding : 10,
             }}
             onPress={() => {
-              Navigation.dismissModal(this.props.componentId)
+              Navigation.dismissOverlay(this.props.componentId)
             }}
           >
             <Icon size={22} style={{ position: 'absolute', right: 5, color: '#FF6A16', }} name="closecircle" />
@@ -156,11 +173,11 @@ class ShowTagScreen extends React.Component {
           }}
         >
           <View style={{padding : 10, backgroundColor : '#333', flexDirection : 'row', justifyContent : 'center', alignItems : 'center', paddingBottom : 15}}>
-            <View style={{borderRadius : 100, width : 70, height : 70, justifyContent : 'center', alignItems : 'center', backgroundColor : '#fff',}}>
-              <IconFeather name ='hash' size = {50} color = '#000' style={{alignSelf : 'center',}}/>
+            <View style={{ borderRadius : 100, width : 70, height : 70, justifyContent : 'center', alignItems : 'center', backgroundColor : '#fff',}}>
+              <IconFeather name ='hash' size={50} color = '#000' style={{alignSelf : 'center',}}/>
             </View>
 
-            <View>
+            <View style={{ flex: 2 }}>
               <Text style={{color : '#fff', fontSize : 20, margin : 10, marginLeft : 15, marginBottom : 5, marginTop : 15}}>{'#'}{this.props.hashtag}</Text>
               <Text style={{color : '#bbb', fontSize : 14, margin : 10, marginLeft : 15, marginTop : 0,}}>{this.state.activites.length}{' Posts'}</Text>
             </View>
