@@ -67,7 +67,7 @@ class DiscoverFeed extends React.PureComponent {
       }
     }).catch((e)=>{
       if(this.mounted) this.setState({error : true, mssg : 'No Internet Connection', refreshing : false});
-      new SessionStore().pushLogs({type : 'error', line : 67, file : 'DicoverFeed.js', err : e});
+      new SessionStore().pushLogs({type : 'error', line : 67, file : 'DicoverFeed.js', err : JSON.stringify(e) });
     });
   }
 

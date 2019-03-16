@@ -62,6 +62,7 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.checkNotifications();
     this.callBackgroundRefresh();
     this.checkCodePushUpdate();
@@ -72,6 +73,7 @@ class Home extends React.Component {
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     BackHandler.removeEventListener('hardwareBackPress', stackBackHandler);
   }
 
@@ -111,7 +113,8 @@ class Home extends React.Component {
           callback();
         }
     }).catch(e=>{
-      new SessionStore().pushLogs({type : 'error', line : 83, file : 'Home.js', err : e});
+      new SessionStore().pushLogs({type : 'error', line : 114, file : 'Home.js', err : JSON.stringify(e)});
+      if(this.mounted) this.setState({ loading: false });
       callback();
     });
   }
@@ -210,7 +213,7 @@ class Home extends React.Component {
         'x-access-token': new SessionStore().getValue(TOKEN)
       }
     }).then((response) => {
-      const responseObject = response.data;
+      const responseObject = rsponse.data;
       if (!responseObject.error) {
         console.log(responseObject);
         Realm.getRealm((realm) => {
@@ -257,9 +260,9 @@ class Home extends React.Component {
       } else {
         callback();
       }
-    }).catch(err => {
-      Alert.alert(err);
-      console.log(err);
+    }).catch(e => {
+      new SessionStore().pushLogs({type : 'error', line : 261, file : 'Home.js', err : JSON.stringify(e)});
+      if(this.mounted) this.setState({ loading: false });
       callback();
     });
   }
@@ -365,9 +368,9 @@ class Home extends React.Component {
         } else {
           callback();
         }
-      }).catch(err => {
-        Alert.alert(JSON.stringify(err));
-        console.log(err);
+      }).catch(e => {
+        new SessionStore().pushLogs({type : 'error', line : 369, file : 'Home.js', err : JSON.stringify(e)});
+        if(this.mounted) this.setState({ loading: false });
         callback();
       });
     });
