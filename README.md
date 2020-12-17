@@ -1,4 +1,4 @@
-# Part Of Campus Stort Project
+# Part Of Campus Story Project
 
 It was a great run while it lasted, 
 
