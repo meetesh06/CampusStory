@@ -21,7 +21,7 @@
     "cp-log-ios": "code-push deployment ls CampusStory-IOS -k"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "jwt-decode": "^2.2.0",
     "react": "16.6.3",
     "react-native": "^0.57.8",
