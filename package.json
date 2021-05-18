@@ -31,7 +31,7 @@
     "react-native-circle-reveal-view": "0.0.2",
     "react-native-code-push": "^5.5.2",
     "react-native-device-info": "^0.26.3",
-    "react-native-fast-image": "^5.2.0",
+    "react-native-fast-image": "^8.3.0",
     "react-native-firebase": "^5.2.0",
     "react-native-image-gradient": "^2.2.5",
     "react-native-linear-gradient": "^2.5.3",
